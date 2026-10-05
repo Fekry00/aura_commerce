@@ -16,6 +16,8 @@ dependencies:
   get_it: ^7.6.0
   google_fonts: ^6.1.0
   dio: ^5.4.0
+  shared_preferences: ^2.5.5
+  internet_connection_checker: ^3.0.1
 
 dev_dependencies:
   flutter_test:
