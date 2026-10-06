@@ -1,3 +1,5 @@
+import 'package:aura/core/routing/app_router.dart';
+import 'package:aura/core/routing/routes.dart';
 import 'package:flutter/material.dart';
 import 'core/databases/cache/cache_helper.dart';
 import 'core/di/injection_container.dart' as di;
@@ -22,7 +24,8 @@ class AuraApp extends StatelessWidget {
       title: 'Aura',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
-      home: const Scaffold(body: Center(child: Text('Aura'))),
+      initialRoute: Routes.homeView,
+      onGenerateRoute: AppRouter().generateRoute,
     );
   }
 }
