@@ -27,6 +27,14 @@ class AppTypography {
         color: AppColors.slateHeadline,
       );
 
+  static TextStyle get headlineSm => GoogleFonts.inter(
+        fontSize: 18,
+        fontWeight: FontWeight.w600,
+        height: 24 / 18,
+        letterSpacing: -0.01 * 18,
+        color: AppColors.slateHeadline,
+      );
+
   static TextStyle get priceHero => GoogleFonts.inter(
         fontSize: 24,
         fontWeight: FontWeight.w700,
@@ -43,11 +51,27 @@ class AppTypography {
         color: AppColors.onSurface,
       );
 
+  static TextStyle get bodyLg => GoogleFonts.inter(
+        fontSize: 16,
+        fontWeight: FontWeight.w400,
+        height: 24 / 16,
+        letterSpacing: -0.01 * 16,
+        color: AppColors.slateBody,
+      );
+
   static TextStyle get bodyMd => GoogleFonts.inter(
         fontSize: 14,
         fontWeight: FontWeight.w400,
         height: 20 / 14,
         letterSpacing: -0.005 * 14,
+        color: AppColors.slateBody,
+      );
+
+  static TextStyle get bodySm => GoogleFonts.inter(
+        fontSize: 12,
+        fontWeight: FontWeight.w400,
+        height: 16 / 12,
+        letterSpacing: 0,
         color: AppColors.slateBody,
       );
 
@@ -58,6 +82,14 @@ class AppTypography {
         letterSpacing: 0.08 * 11,
         color: AppColors.slateBody,
       );
+
+  static TextStyle get labelSm => GoogleFonts.inter(
+        fontSize: 12,
+        fontWeight: FontWeight.w500,
+        height: 16 / 12,
+        letterSpacing: 0,
+        color: AppColors.slateBody,
+      );
 }
 
 class AppSpacing {
@@ -66,5 +98,6 @@ class AppSpacing {
   static const double spaceMd = 16.0;
   static const double spaceLg = 24.0;
   static const double spaceXl = 40.0;
+  static const double gutter = 16.0;
   static const double margin = 20.0;
 }
