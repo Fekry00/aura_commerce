@@ -19,12 +19,14 @@ class AppColors {
   static const Color surfaceContainerLowest = Color(0xFFFFFFFF);
   static const Color surfaceContainerLow = Color(0xFFF2F4F6);
   static const Color surfaceContainer = Color(0xFFECEEF0);
+  static const Color surfaceContainerHigh = Color(0xFFF1F3F5);
 
   // Typography & Content
   static const Color onSurface = Color(0xFF191C1E);
   static const Color onSurfaceVariant = Color(0xFF414944);
   static const Color slateHeadline = Color(0xFF0F172A);
   static const Color slateBody = Color(0xFF64748B);
+  static const Color tertiary = Color(0xFF161E31);
 
   // Borders & Outlines
   static const Color outline = Color(0xFF717974);
