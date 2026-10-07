@@ -1,3 +1,5 @@
+import 'package:aura/features/auth/presentation/views/create_account_view.dart';
+import 'package:aura/features/auth/presentation/views/sign_in_view.dart';
 import 'package:aura/features/home/presentation/views/home_view.dart';
 import 'package:aura/features/product/presentation/views/product_details_view.dart';
 import 'package:aura/features/product/presentation/views/product_reviews_view.dart';
@@ -26,6 +28,10 @@ class AppRouter {
           ProductReviewsView(product: product),
           settings: settings,
         );
+      case Routes.createAccountView:
+        return _buildPageRoute(const CreateAccountView(), settings: settings);
+      case Routes.signInView:
+        return _buildPageRoute(const SignInView(), settings: settings);
 
       default:
         return MaterialPageRoute(
