@@ -4,92 +4,92 @@ import 'app_colors.dart';
 
 class AppTypography {
   static TextStyle get displayHero => GoogleFonts.inter(
-        fontSize: 32,
-        fontWeight: FontWeight.w700,
-        height: 38 / 32,
-        letterSpacing: -0.025 * 32,
-        color: AppColors.slateHeadline,
-      );
+    fontSize: 32,
+    fontWeight: FontWeight.w700,
+    height: 38 / 32,
+    letterSpacing: -0.025 * 32,
+    color: AppColors.slateHeadline,
+  );
 
   static TextStyle get headlineLg => GoogleFonts.inter(
-        fontSize: 24,
-        fontWeight: FontWeight.w600,
-        height: 30 / 24,
-        letterSpacing: -0.02 * 24,
-        color: AppColors.slateHeadline,
-      );
+    fontSize: 24,
+    fontWeight: FontWeight.w600,
+    height: 30 / 24,
+    letterSpacing: -0.02 * 24,
+    color: AppColors.slateHeadline,
+  );
 
   static TextStyle get headlineMd => GoogleFonts.inter(
-        fontSize: 20,
-        fontWeight: FontWeight.w600,
-        height: 26 / 20,
-        letterSpacing: -0.015 * 20,
-        color: AppColors.slateHeadline,
-      );
+    fontSize: 20,
+    fontWeight: FontWeight.w600,
+    height: 26 / 20,
+    letterSpacing: -0.015 * 20,
+    color: AppColors.slateHeadline,
+  );
 
   static TextStyle get headlineSm => GoogleFonts.inter(
-        fontSize: 18,
-        fontWeight: FontWeight.w600,
-        height: 24 / 18,
-        letterSpacing: -0.01 * 18,
-        color: AppColors.slateHeadline,
-      );
+    fontSize: 18,
+    fontWeight: FontWeight.w600,
+    height: 24 / 18,
+    letterSpacing: -0.01 * 18,
+    color: AppColors.slateHeadline,
+  );
 
   static TextStyle get priceHero => GoogleFonts.inter(
-        fontSize: 24,
-        fontWeight: FontWeight.w700,
-        height: 28 / 24,
-        letterSpacing: -0.02 * 24,
-        color: AppColors.primaryContainer,
-      );
+    fontSize: 24,
+    fontWeight: FontWeight.w700,
+    height: 28 / 24,
+    letterSpacing: -0.02 * 24,
+    color: AppColors.primaryContainer,
+  );
 
   static TextStyle get priceCatalog => GoogleFonts.inter(
-        fontSize: 16,
-        fontWeight: FontWeight.w600,
-        height: 20 / 16,
-        letterSpacing: -0.01 * 16,
-        color: AppColors.onSurface,
-      );
+    fontSize: 16,
+    fontWeight: FontWeight.w600,
+    height: 20 / 16,
+    letterSpacing: -0.01 * 16,
+    color: AppColors.onSurface,
+  );
 
   static TextStyle get bodyLg => GoogleFonts.inter(
-        fontSize: 16,
-        fontWeight: FontWeight.w400,
-        height: 24 / 16,
-        letterSpacing: -0.01 * 16,
-        color: AppColors.slateBody,
-      );
+    fontSize: 16,
+    fontWeight: FontWeight.w400,
+    height: 24 / 16,
+    letterSpacing: -0.01 * 16,
+    color: AppColors.slateBody,
+  );
 
   static TextStyle get bodyMd => GoogleFonts.inter(
-        fontSize: 14,
-        fontWeight: FontWeight.w400,
-        height: 20 / 14,
-        letterSpacing: -0.005 * 14,
-        color: AppColors.slateBody,
-      );
+    fontSize: 14,
+    fontWeight: FontWeight.w400,
+    height: 20 / 14,
+    letterSpacing: -0.005 * 14,
+    color: AppColors.slateBody,
+  );
 
   static TextStyle get bodySm => GoogleFonts.inter(
-        fontSize: 12,
-        fontWeight: FontWeight.w400,
-        height: 16 / 12,
-        letterSpacing: 0,
-        color: AppColors.slateBody,
-      );
+    fontSize: 12,
+    fontWeight: FontWeight.w400,
+    height: 16 / 12,
+    letterSpacing: 0,
+    color: AppColors.slateBody,
+  );
 
   static TextStyle get labelCaps => GoogleFonts.inter(
-        fontSize: 11,
-        fontWeight: FontWeight.w600,
-        height: 14 / 11,
-        letterSpacing: 0.08 * 11,
-        color: AppColors.slateBody,
-      );
+    fontSize: 11,
+    fontWeight: FontWeight.w600,
+    height: 14 / 11,
+    letterSpacing: 0.08 * 11,
+    color: AppColors.slateBody,
+  );
 
   static TextStyle get labelSm => GoogleFonts.inter(
-        fontSize: 12,
-        fontWeight: FontWeight.w500,
-        height: 16 / 12,
-        letterSpacing: 0,
-        color: AppColors.slateBody,
-      );
+    fontSize: 12,
+    fontWeight: FontWeight.w500,
+    height: 16 / 12,
+    letterSpacing: 0,
+    color: AppColors.slateBody,
+  );
 }
 
 class AppSpacing {
