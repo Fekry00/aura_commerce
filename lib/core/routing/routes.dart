@@ -6,4 +6,6 @@ class Routes {
   static const String signInView = '/signInView';
   static const String profileView = '/profileView';
   static const String editProfileView = '/editProfileView';
+  static const String cartView = '/cartView';
+  static const String checkoutView = '/checkoutView';
 }
