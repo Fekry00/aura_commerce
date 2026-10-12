@@ -3,6 +3,8 @@ import 'package:aura/features/auth/presentation/views/sign_in_view.dart';
 import 'package:aura/features/home/presentation/views/home_view.dart';
 import 'package:aura/features/product/presentation/views/product_details_view.dart';
 import 'package:aura/features/product/presentation/views/product_reviews_view.dart';
+import 'package:aura/features/cart/presentation/views/cart_view.dart';
+import 'package:aura/features/checkout/presentation/views/checkout_view.dart';
 import 'package:aura/features/profile/presentation/views/edit_profile_view.dart';
 import 'package:aura/features/profile/presentation/views/profile_view.dart';
 import 'package:flutter/material.dart';
@@ -38,6 +40,10 @@ class AppRouter {
         return _buildPageRoute(const ProfileView(), settings: settings);
       case Routes.editProfileView:
         return _buildPageRoute(const EditProfileView(), settings: settings);
+      case Routes.cartView:
+        return _buildPageRoute(const CartView(), settings: settings);
+      case Routes.checkoutView:
+        return _buildPageRoute(const CheckoutView(), settings: settings);
 
       default:
         return MaterialPageRoute(
