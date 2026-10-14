@@ -1,3 +1,4 @@
+import 'package:aura/core/routing/routes.dart';
 import 'package:aura/core/theme/app_typography.dart';
 import 'package:aura/core/utils/functions/custom_snack_bar.dart';
 import 'package:flutter/material.dart';
@@ -40,6 +41,7 @@ class _CreateAccountFormState extends State<CreateAccountForm> {
         message: 'Atelier Account Created Successfully!',
         type: SnackBarType.success,
       );
+      Navigator.pushReplacementNamed(context, Routes.homeView);
     } else {
       showCustomSnackBar(
         context,
