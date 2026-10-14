@@ -1,3 +1,4 @@
+import 'package:aura/core/routing/routes.dart';
 import 'package:aura/core/theme/app_colors.dart';
 import 'package:aura/core/theme/app_typography.dart';
 import 'package:aura/core/utils/functions/custom_snack_bar.dart';
@@ -25,7 +26,7 @@ class _ProductStickyBottomBarState extends State<ProductStickyBottomBar> {
         color: Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.06),
+            color: Colors.black.withValues(alpha: 0.06),
             blurRadius: 10,
             offset: const Offset(0, -4),
           ),
@@ -112,6 +113,7 @@ class _ProductStickyBottomBarState extends State<ProductStickyBottomBar> {
                       message: 'Added $_quantity item(s) to Bag!',
                       type: SnackBarType.success,
                     );
+                    Navigator.pushNamed(context, Routes.cartView);
                   },
                   icon: const Icon(
                     Icons.shopping_bag_outlined,
