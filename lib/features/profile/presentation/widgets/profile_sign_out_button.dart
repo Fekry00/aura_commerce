@@ -1,3 +1,4 @@
+import 'package:aura/core/routing/routes.dart';
 import 'package:aura/core/theme/app_colors.dart';
 import 'package:aura/core/theme/app_typography.dart';
 import 'package:flutter/material.dart';
@@ -8,7 +9,13 @@ class ProfileSignOutButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () {},
+      onTap: () {
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          Routes.signInView,
+          (route) => false,
+        );
+      },
       borderRadius: BorderRadius.circular(AppSpacing.margin),
       child: Container(
         width: double.infinity,
