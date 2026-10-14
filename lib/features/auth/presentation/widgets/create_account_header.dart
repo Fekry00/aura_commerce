@@ -58,7 +58,7 @@ class CreateAccountHeader extends StatelessWidget {
           width: double.infinity,
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
           decoration: BoxDecoration(
-            color: const Color(0xFFF3F4F6).withOpacity(0.6),
+            color: const Color(0xFFF3F4F6).withValues(alpha: 0.6),
             borderRadius: BorderRadius.circular(10),
           ),
           child: Row(
