@@ -1,6 +1,6 @@
 import 'package:aura/core/theme/app_colors.dart';
+import 'package:aura/features/wishlist/presentation/widgets/wishlist_view_body.dart';
 import 'package:flutter/material.dart';
-import '../widgets/wishlist_view_body.dart';
 
 class WishlistView extends StatelessWidget {
   const WishlistView({super.key});
