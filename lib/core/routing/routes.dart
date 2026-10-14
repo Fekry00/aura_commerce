@@ -8,4 +8,6 @@ class Routes {
   static const String editProfileView = '/editProfileView';
   static const String cartView = '/cartView';
   static const String checkoutView = '/checkoutView';
+  static const String orderSuccessReceiptView = '/orderSuccessReceiptView';
+  static const String orderTrackingDetailsView = '/orderTrackingDetailsView';
 }
