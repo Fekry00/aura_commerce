@@ -1,3 +1,5 @@
+import 'package:aura/core/routing/main_tab_controller.dart';
+import 'package:aura/core/routing/routes.dart';
 import 'package:aura/core/theme/app_colors.dart';
 import 'package:aura/core/theme/app_typography.dart';
 import 'package:aura/core/utils/functions/custom_snack_bar.dart';
@@ -14,6 +16,14 @@ class ProfileQuickActionsGrid extends StatelessWidget {
   });
 
   void _handleTap(BuildContext context, String title) {
+    if (title == 'Wishlist') {
+      MainTabController.switchTab(1);
+      return;
+    }
+    if (title == 'My Orders') {
+      Navigator.pushNamed(context, Routes.orderTrackingDetailsView);
+      return;
+    }
     if (scrollController != null && scrollController!.hasClients) {
       scrollController!.animateTo(0, duration: const Duration(milliseconds: 500), curve: Curves.easeOutCubic);
     } else {
