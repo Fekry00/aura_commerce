@@ -1,3 +1,4 @@
+import 'package:aura/core/routing/routes.dart';
 import 'package:aura/core/theme/app_colors.dart';
 import 'package:aura/core/theme/app_typography.dart';
 import 'package:aura/features/checkout/presentation/widgets/checkout_app_bar.dart';
@@ -16,9 +17,16 @@ class CheckoutView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return Scaffold(
       backgroundColor: AppColors.background,
-      bottomNavigationBar: CheckoutBottomBar(),
+      bottomNavigationBar: CheckoutBottomBar(
+        onProceed: () {
+          Navigator.pushReplacementNamed(
+            context,
+            Routes.orderSuccessReceiptView,
+          );
+        },
+      ),
       body: SafeArea(
         bottom: false,
         child: SingleChildScrollView(
