@@ -1,12 +1,11 @@
 import 'package:aura/features/auth/presentation/views/create_account_view.dart';
 import 'package:aura/features/auth/presentation/views/sign_in_view.dart';
+import 'package:aura/features/auth/presentation/views/verify_reset_password_view.dart';
 import 'package:aura/features/home/presentation/views/home_view.dart';
 import 'package:aura/features/product/presentation/views/product_details_view.dart';
 import 'package:aura/features/product/presentation/views/product_reviews_view.dart';
-import 'package:aura/features/cart/presentation/views/cart_view.dart';
 import 'package:aura/features/checkout/presentation/views/checkout_view.dart';
 import 'package:aura/features/profile/presentation/views/edit_profile_view.dart';
-import 'package:aura/features/profile/presentation/views/profile_view.dart';
 import 'package:aura/features/orders/presentation/views/order_success_receipt_view.dart';
 import 'package:aura/features/orders/presentation/views/order_tracking_details_view.dart';
 import 'package:flutter/material.dart';
@@ -18,7 +17,11 @@ class AppRouter {
 
     switch (settings.name) {
       case Routes.homeView:
-        return _buildPageRoute(const HomeView(), settings: settings);
+        final initialIndex = (arguments is int) ? arguments : 0;
+        return _buildPageRoute(
+          HomeView(initialIndex: initialIndex),
+          settings: settings,
+        );
 
       case Routes.productDetailsView:
         final product = arguments as Map<String, dynamic>;
@@ -39,11 +42,17 @@ class AppRouter {
       case Routes.signInView:
         return _buildPageRoute(const SignInView(), settings: settings);
       case Routes.profileView:
-        return _buildPageRoute(const ProfileView(), settings: settings);
+        return _buildPageRoute(
+          const HomeView(initialIndex: 3),
+          settings: settings,
+        );
       case Routes.editProfileView:
         return _buildPageRoute(const EditProfileView(), settings: settings);
       case Routes.cartView:
-        return _buildPageRoute(const CartView(), settings: settings);
+        return _buildPageRoute(
+          const HomeView(initialIndex: 2),
+          settings: settings,
+        );
       case Routes.checkoutView:
         return _buildPageRoute(const CheckoutView(), settings: settings);
 
@@ -56,6 +65,18 @@ class AppRouter {
       case Routes.orderTrackingDetailsView:
         return _buildPageRoute(
           const OrderTrackingDetailsView(),
+          settings: settings,
+        );
+
+      case Routes.verifyResetPasswordView:
+        return _buildPageRoute(
+          const VerifyResetPasswordView(),
+          settings: settings,
+        );
+
+      case Routes.wishlistView:
+        return _buildPageRoute(
+          const HomeView(initialIndex: 1),
           settings: settings,
         );
 
