@@ -3,7 +3,6 @@ import 'package:aura/core/theme/app_colors.dart';
 import 'package:aura/core/theme/app_typography.dart';
 import 'package:flutter/material.dart';
 
-
 class CustomBottomNavBar extends StatelessWidget {
   final int selectedIndex;
   final ValueChanged<int>? onItemTapped;
@@ -19,12 +18,14 @@ class CustomBottomNavBar extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.fromLTRB(20, 0, 20, 16),
       decoration: BoxDecoration(
-        color: AppColors.surfaceContainerLowest.withOpacity(0.92),
+        color: AppColors.surfaceContainerLowest.withValues(alpha: 0.92),
         borderRadius: BorderRadius.circular(28),
-        border: Border.all(color: AppColors.outlineVariant.withOpacity(0.4)),
+        border: Border.all(
+          color: AppColors.outlineVariant.withValues(alpha: 0.4),
+        ),
         boxShadow: [
           BoxShadow(
-            color: AppColors.onSurface.withOpacity(0.06),
+            color: AppColors.onSurface.withValues(alpha: 0.06),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
@@ -40,8 +41,13 @@ class CustomBottomNavBar extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 _buildNavItem(0, Icons.home_filled, 'Home'),
-                _buildNavItem(1, Icons.explore_outlined, 'Explore'),
-                _buildNavItem(2, Icons.shopping_bag_outlined, 'Cart', badgeCount: 3),
+                _buildNavItem(1, Icons.favorite_border_rounded, 'Wishlist'),
+                _buildNavItem(
+                  2,
+                  Icons.shopping_bag_outlined,
+                  'Cart',
+                  badgeCount: 3,
+                ),
                 _buildNavItem(3, Icons.person_outline_rounded, 'Profile'),
               ],
             ),
@@ -51,9 +57,15 @@ class CustomBottomNavBar extends StatelessWidget {
     );
   }
 
-  Widget _buildNavItem(int index, IconData icon, String label, {int? badgeCount}) {
+  Widget _buildNavItem(
+    int index,
+    IconData icon,
+    String label, {
+    int? badgeCount,
+  }) {
     final isSelected = selectedIndex == index;
-    final color = isSelected ? AppColors.primaryContainer : AppColors.onSurfaceVariant;
+    final color =
+        isSelected ? AppColors.primaryContainer : AppColors.onSurfaceVariant;
 
     return GestureDetector(
       onTap: () => onItemTapped?.call(index),
