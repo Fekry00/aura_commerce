@@ -1,3 +1,4 @@
+import 'package:aura/core/routing/routes.dart';
 import 'package:aura/core/theme/app_typography.dart';
 import 'package:aura/core/utils/functions/custom_snack_bar.dart';
 import 'package:flutter/material.dart';
@@ -41,6 +42,7 @@ class _SignInFormState extends State<SignInForm> {
         message: 'Welcome back to Aura Luxe Concierge.',
         type: SnackBarType.success,
       );
+      Navigator.pushReplacementNamed(context, Routes.homeView);
     }
   }
 
