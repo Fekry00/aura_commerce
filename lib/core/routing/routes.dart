@@ -10,4 +10,6 @@ class Routes {
   static const String checkoutView = '/checkoutView';
   static const String orderSuccessReceiptView = '/orderSuccessReceiptView';
   static const String orderTrackingDetailsView = '/orderTrackingDetailsView';
+  static const String verifyResetPasswordView = '/verifyResetPasswordView';
+  static const String wishlistView = '/wishlistView';
 }
