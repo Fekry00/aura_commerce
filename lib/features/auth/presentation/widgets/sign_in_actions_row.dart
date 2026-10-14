@@ -1,5 +1,5 @@
+import 'package:aura/core/routing/routes.dart';
 import 'package:aura/core/theme/app_typography.dart';
-import 'package:aura/core/utils/functions/custom_snack_bar.dart';
 import 'package:flutter/material.dart';
  
 
@@ -48,11 +48,7 @@ class SignInActionsRow extends StatelessWidget {
         ),
         GestureDetector(
           onTap: () {
-            showCustomSnackBar(
-              context,
-              message: 'Reset instructions sent to concierge dispatch.',
-              type: SnackBarType.info,
-            );
+            Navigator.pushNamed(context, Routes.verifyResetPasswordView);
           },
           child: Text(
             'Forgot Password?',
