@@ -19,6 +19,14 @@ import 'package:aura/features/home/domain/repositories/home_repository.dart';
 import 'package:aura/features/home/domain/usecases/get_home_feed_usecase.dart';
 import 'package:aura/features/home/domain/usecases/toggle_favorite_usecase.dart';
 import 'package:aura/features/home/presentation/cubit/home_cubit.dart';
+import 'package:aura/features/product/data/datasources/product_local_data_source.dart';
+import 'package:aura/features/product/data/datasources/product_remote_data_source.dart';
+import 'package:aura/features/product/data/repositories/product_repository_impl.dart';
+import 'package:aura/features/product/domain/repositories/product_repository.dart';
+import 'package:aura/features/product/domain/usecases/get_product_details_usecase.dart';
+import 'package:aura/features/product/domain/usecases/get_product_reviews_usecase.dart';
+import 'package:aura/features/product/domain/usecases/toggle_product_favorite_usecase.dart';
+import 'package:aura/features/product/presentation/cubit/product_cubit.dart';
 import 'package:aura/features/profile/data/datasources/profile_local_data_source.dart';
 import 'package:aura/features/profile/data/datasources/profile_remote_data_source.dart';
 import 'package:aura/features/profile/data/repositories/profile_repository_impl.dart';
@@ -149,5 +157,29 @@ Future<void> initDependencies() async {
   );
   sl.registerLazySingleton<ProfileLocalDataSource>(
     () => ProfileLocalDataSourceImpl(cacheHelper: sl()),
+  );
+
+  // Product
+  sl.registerFactory(
+    () => ProductCubit(
+      getProductDetailsUseCase: sl(),
+      toggleProductFavoriteUseCase: sl(),
+    ),
+  );
+  sl.registerLazySingleton(() => GetProductDetailsUseCase(sl()));
+  sl.registerLazySingleton(() => GetProductReviewsUseCase(sl()));
+  sl.registerLazySingleton(() => ToggleProductFavoriteUseCase(sl()));
+  sl.registerLazySingleton<ProductRepository>(
+    () => ProductRepositoryImpl(
+      remoteDataSource: sl(),
+      localDataSource: sl(),
+      networkInfo: sl(),
+    ),
+  );
+  sl.registerLazySingleton<ProductRemoteDataSource>(
+    () => ProductRemoteDataSourceImpl(apiConsumer: sl()),
+  );
+  sl.registerLazySingleton<ProductLocalDataSource>(
+    () => ProductLocalDataSourceImpl(cacheHelper: sl()),
   );
 }
