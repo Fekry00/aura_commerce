@@ -28,11 +28,6 @@ class _CartVoucherSectionState extends State<CartVoucherSection> {
   final TextEditingController _textController = TextEditingController();
 
   @override
-  void disposeWidget() {
-    _textController.dispose();
-  }
-
-  @override
   void dispose() {
     _textController.dispose();
     super.dispose();
