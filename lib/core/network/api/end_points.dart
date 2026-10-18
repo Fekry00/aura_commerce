@@ -7,6 +7,7 @@ class EndPoint {
   static const String cart = "cart";
   static const String home = "home";
   static const String favorites = "favorites";
+  static const String wishlist = "wishlist";
 }
 
 class ApiKey {
