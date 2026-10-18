@@ -9,6 +9,8 @@ class EndPoint {
   static const String favorites = "favorites";
   static const String wishlist = "wishlist";
   static const String profile = "profile";
+  static const String orders = "orders";
+  static const String checkout = "checkout";
 }
 
 class ApiKey {

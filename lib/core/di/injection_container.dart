@@ -12,6 +12,16 @@ import 'package:aura/features/cart/domain/usecases/remove_cart_item_usecase.dart
 import 'package:aura/features/cart/domain/usecases/remove_voucher_usecase.dart';
 import 'package:aura/features/cart/domain/usecases/update_cart_quantity_usecase.dart';
 import 'package:aura/features/cart/presentation/cubit/cart_cubit.dart';
+import 'package:aura/features/checkout/data/datasources/checkout_local_data_source.dart';
+import 'package:aura/features/checkout/data/datasources/checkout_remote_data_source.dart';
+import 'package:aura/features/checkout/data/repositories/checkout_repository_impl.dart';
+import 'package:aura/features/checkout/domain/repositories/checkout_repository.dart';
+import 'package:aura/features/checkout/domain/usecases/apply_privilege_passcode_usecase.dart';
+import 'package:aura/features/checkout/domain/usecases/get_checkout_details_usecase.dart';
+import 'package:aura/features/checkout/domain/usecases/place_order_usecase.dart';
+import 'package:aura/features/checkout/domain/usecases/select_delivery_method_usecase.dart';
+import 'package:aura/features/checkout/domain/usecases/select_shipping_address_usecase.dart';
+import 'package:aura/features/checkout/presentation/cubit/checkout_cubit.dart';
 import 'package:aura/features/home/data/datasources/home_local_data_source.dart';
 import 'package:aura/features/home/data/datasources/home_remote_data_source.dart';
 import 'package:aura/features/home/data/repositories/home_repository_impl.dart';
@@ -19,6 +29,14 @@ import 'package:aura/features/home/domain/repositories/home_repository.dart';
 import 'package:aura/features/home/domain/usecases/get_home_feed_usecase.dart';
 import 'package:aura/features/home/domain/usecases/toggle_favorite_usecase.dart';
 import 'package:aura/features/home/presentation/cubit/home_cubit.dart';
+import 'package:aura/features/orders/data/datasources/orders_local_data_source.dart';
+import 'package:aura/features/orders/data/datasources/orders_remote_data_source.dart';
+import 'package:aura/features/orders/data/repositories/orders_repository_impl.dart';
+import 'package:aura/features/orders/domain/repositories/orders_repository.dart';
+import 'package:aura/features/orders/domain/usecases/download_order_invoice_usecase.dart';
+import 'package:aura/features/orders/domain/usecases/get_order_details_usecase.dart';
+import 'package:aura/features/orders/domain/usecases/get_order_tracking_usecase.dart';
+import 'package:aura/features/orders/presentation/cubit/orders_cubit.dart';
 import 'package:aura/features/product/data/datasources/product_local_data_source.dart';
 import 'package:aura/features/product/data/datasources/product_remote_data_source.dart';
 import 'package:aura/features/product/data/repositories/product_repository_impl.dart';
@@ -181,5 +199,59 @@ Future<void> initDependencies() async {
   );
   sl.registerLazySingleton<ProductLocalDataSource>(
     () => ProductLocalDataSourceImpl(cacheHelper: sl()),
+  );
+
+  // Orders
+  sl.registerFactory(
+    () => OrdersCubit(
+      getOrderDetailsUseCase: sl(),
+      getOrderTrackingUseCase: sl(),
+      downloadOrderInvoiceUseCase: sl(),
+    ),
+  );
+  sl.registerLazySingleton(() => GetOrderDetailsUseCase(sl()));
+  sl.registerLazySingleton(() => GetOrderTrackingUseCase(sl()));
+  sl.registerLazySingleton(() => DownloadOrderInvoiceUseCase(sl()));
+  sl.registerLazySingleton<OrdersRepository>(
+    () => OrdersRepositoryImpl(
+      remoteDataSource: sl(),
+      localDataSource: sl(),
+      networkInfo: sl(),
+    ),
+  );
+  sl.registerLazySingleton<OrdersRemoteDataSource>(
+    () => OrdersRemoteDataSourceImpl(apiConsumer: sl()),
+  );
+  sl.registerLazySingleton<OrdersLocalDataSource>(
+    () => OrdersLocalDataSourceImpl(cacheHelper: sl()),
+  );
+
+  // Checkout
+  sl.registerFactory(
+    () => CheckoutCubit(
+      getCheckoutDetailsUseCase: sl(),
+      selectShippingAddressUseCase: sl(),
+      selectDeliveryMethodUseCase: sl(),
+      applyPrivilegePasscodeUseCase: sl(),
+      placeOrderUseCase: sl(),
+    ),
+  );
+  sl.registerLazySingleton(() => GetCheckoutDetailsUseCase(sl()));
+  sl.registerLazySingleton(() => SelectShippingAddressUseCase(sl()));
+  sl.registerLazySingleton(() => SelectDeliveryMethodUseCase(sl()));
+  sl.registerLazySingleton(() => ApplyPrivilegePasscodeUseCase(sl()));
+  sl.registerLazySingleton(() => PlaceOrderUseCase(sl()));
+  sl.registerLazySingleton<CheckoutRepository>(
+    () => CheckoutRepositoryImpl(
+      remoteDataSource: sl(),
+      localDataSource: sl(),
+      networkInfo: sl(),
+    ),
+  );
+  sl.registerLazySingleton<CheckoutRemoteDataSource>(
+    () => CheckoutRemoteDataSourceImpl(apiConsumer: sl()),
+  );
+  sl.registerLazySingleton<CheckoutLocalDataSource>(
+    () => CheckoutLocalDataSourceImpl(cacheHelper: sl()),
   );
 }
