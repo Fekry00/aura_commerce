@@ -5,6 +5,8 @@ class EndPoint {
   static const String products = "products";
   static const String categories = "categories";
   static const String cart = "cart";
+  static const String home = "home";
+  static const String favorites = "favorites";
 }
 
 class ApiKey {
