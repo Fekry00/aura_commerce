@@ -48,7 +48,7 @@ class TrackingDispatchItemCard extends StatelessWidget {
                     child: Image.network(
                       imageUrl,
                       fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => Container(
+                      errorBuilder: (_, _, _) => Container(
                         color: AppColors.surfaceContainerLow,
                         child: const Icon(
                           Icons.inventory_2_outlined,
