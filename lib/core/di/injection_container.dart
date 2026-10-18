@@ -19,6 +19,14 @@ import 'package:aura/features/home/domain/repositories/home_repository.dart';
 import 'package:aura/features/home/domain/usecases/get_home_feed_usecase.dart';
 import 'package:aura/features/home/domain/usecases/toggle_favorite_usecase.dart';
 import 'package:aura/features/home/presentation/cubit/home_cubit.dart';
+import 'package:aura/features/profile/data/datasources/profile_local_data_source.dart';
+import 'package:aura/features/profile/data/datasources/profile_remote_data_source.dart';
+import 'package:aura/features/profile/data/repositories/profile_repository_impl.dart';
+import 'package:aura/features/profile/domain/repositories/profile_repository.dart';
+import 'package:aura/features/profile/domain/usecases/get_profile_usecase.dart';
+import 'package:aura/features/profile/domain/usecases/sign_out_usecase.dart';
+import 'package:aura/features/profile/domain/usecases/update_profile_usecase.dart';
+import 'package:aura/features/profile/presentation/cubit/profile_cubit.dart';
 import 'package:aura/features/wishlist/data/datasources/wishlist_local_data_source.dart';
 import 'package:aura/features/wishlist/data/datasources/wishlist_remote_data_source.dart';
 import 'package:aura/features/wishlist/data/repositories/wishlist_repository_impl.dart';
@@ -43,7 +51,10 @@ Future<void> initDependencies() async {
 
   // Home
   sl.registerFactory(
-    () => HomeCubit(getHomeFeedUseCase: sl(), toggleFavoriteUseCase: sl()),
+    () => HomeCubit(
+      getHomeFeedUseCase: sl(),
+      toggleFavoriteUseCase: sl(),
+    ),
   );
   sl.registerLazySingleton(() => GetHomeFeedUseCase(sl()));
   sl.registerLazySingleton(() => ToggleFavoriteUseCase(sl()));
@@ -113,5 +124,30 @@ Future<void> initDependencies() async {
   );
   sl.registerLazySingleton<WishlistLocalDataSource>(
     () => WishlistLocalDataSourceImpl(cacheHelper: sl()),
+  );
+
+  // Profile
+  sl.registerFactory(
+    () => ProfileCubit(
+      getProfileUseCase: sl(),
+      updateProfileUseCase: sl(),
+      signOutUseCase: sl(),
+    ),
+  );
+  sl.registerLazySingleton(() => GetProfileUseCase(sl()));
+  sl.registerLazySingleton(() => UpdateProfileUseCase(sl()));
+  sl.registerLazySingleton(() => SignOutUseCase(sl()));
+  sl.registerLazySingleton<ProfileRepository>(
+    () => ProfileRepositoryImpl(
+      remoteDataSource: sl(),
+      localDataSource: sl(),
+      networkInfo: sl(),
+    ),
+  );
+  sl.registerLazySingleton<ProfileRemoteDataSource>(
+    () => ProfileRemoteDataSourceImpl(apiConsumer: sl()),
+  );
+  sl.registerLazySingleton<ProfileLocalDataSource>(
+    () => ProfileLocalDataSourceImpl(cacheHelper: sl()),
   );
 }
