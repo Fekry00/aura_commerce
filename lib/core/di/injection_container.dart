@@ -2,6 +2,15 @@ import 'package:aura/core/databases/cache/cache_helper.dart';
 import 'package:aura/core/network/api/api_consumer.dart';
 import 'package:aura/core/network/api/dio_consumer.dart';
 import 'package:aura/core/network/connection/network_info.dart';
+import 'package:aura/features/auth/data/datasources/auth_local_data_source.dart';
+import 'package:aura/features/auth/data/datasources/auth_remote_data_source.dart';
+import 'package:aura/features/auth/data/repositories/auth_repository_impl.dart';
+import 'package:aura/features/auth/domain/repositories/auth_repository.dart';
+import 'package:aura/features/auth/domain/usecases/send_reset_otp_usecase.dart';
+import 'package:aura/features/auth/domain/usecases/sign_in_usecase.dart';
+import 'package:aura/features/auth/domain/usecases/sign_up_usecase.dart';
+import 'package:aura/features/auth/domain/usecases/verify_reset_password_usecase.dart';
+import 'package:aura/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:aura/features/cart/data/datasources/cart_local_data_source.dart';
 import 'package:aura/features/cart/data/datasources/cart_remote_data_source.dart';
 import 'package:aura/features/cart/data/repositories/cart_repository_impl.dart';
@@ -253,5 +262,32 @@ Future<void> initDependencies() async {
   );
   sl.registerLazySingleton<CheckoutLocalDataSource>(
     () => CheckoutLocalDataSourceImpl(cacheHelper: sl()),
+  );
+
+  // Auth
+  sl.registerFactory(
+    () => AuthCubit(
+      signInUseCase: sl(),
+      signUpUseCase: sl(),
+      verifyResetPasswordUseCase: sl(),
+      sendResetOtpUseCase: sl(),
+    ),
+  );
+  sl.registerLazySingleton(() => SignInUseCase(sl()));
+  sl.registerLazySingleton(() => SignUpUseCase(sl()));
+  sl.registerLazySingleton(() => VerifyResetPasswordUseCase(sl()));
+  sl.registerLazySingleton(() => SendResetOtpUseCase(sl()));
+  sl.registerLazySingleton<AuthRepository>(
+    () => AuthRepositoryImpl(
+      remoteDataSource: sl(),
+      localDataSource: sl(),
+      networkInfo: sl(),
+    ),
+  );
+  sl.registerLazySingleton<AuthRemoteDataSource>(
+    () => AuthRemoteDataSourceImpl(apiConsumer: sl()),
+  );
+  sl.registerLazySingleton<AuthLocalDataSource>(
+    () => AuthLocalDataSourceImpl(cacheHelper: sl()),
   );
 }

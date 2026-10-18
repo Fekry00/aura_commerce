@@ -2,6 +2,8 @@ class EndPoint {
   static const String baseUrl = "https://api.aura-commerce.com/api/v1/";
   static const String login = "auth/login";
   static const String register = "auth/register";
+  static const String resetPassword = "auth/reset-password";
+  static const String sendOtp = "auth/send-otp";
   static const String products = "products";
   static const String categories = "categories";
   static const String cart = "cart";
