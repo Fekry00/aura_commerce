@@ -1,16 +1,31 @@
+
 class EndPoint {
-  static const String baseUrl = "https://api.aura-commerce.com/api/v1/";
+  // Connected via adb reverse tcp:8000 tcp:8000 or Desktop/Web
+  static const String baseUrl = "http://127.0.0.1:8000/api/v1/";
+
   static const String login = "auth/login";
   static const String register = "auth/register";
+  static const String refreshToken = "auth/refresh-token";
+  static const String logout = "auth/logout";
+  static const String changePassword = "auth/change-password";
   static const String resetPassword = "auth/reset-password";
   static const String sendOtp = "auth/send-otp";
+
+  // Other features
   static const String products = "products";
   static const String categories = "categories";
+  static const String banners = "banners";
   static const String cart = "cart";
   static const String home = "home";
   static const String favorites = "favorites";
-  static const String wishlist = "wishlist";
-  static const String profile = "profile";
+  static const String wishlist = "favorites";
+  static const String profile = "auth/me";
+  static const String updateProfile = "profile";
+  static const String updateAvatar = "profile/avatar";
+  static const String deleteAvatar = "profile/avatar";
+  static const String sendPhoneOtp = "profile/phone/send-otp";
+  static const String verifyPhoneOtp = "profile/phone/verify-otp";
+  static const String deleteAccount = "profile";
   static const String orders = "orders";
   static const String checkout = "checkout";
 }
@@ -21,4 +36,17 @@ class ApiKey {
   static const String id = "id";
   static const String message = "message";
   static const String status = "status";
+  static const String success = "success";
+  static const String data = "data";
+  static const String user = "user";
+  static const String email = "email";
+  static const String password = "password";
+  static const String passwordConfirmation = "password_confirmation";
+  static const String currentPassword = "current_password";
+  static const String phone = "phone";
+  static const String name = "name";
+  static const String role = "role";
+  static const String profileImage = "profile_image";
+  static const String avatar = "avatar";
+  static const String otp = "otp";
 }

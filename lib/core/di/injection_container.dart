@@ -58,9 +58,15 @@ import 'package:aura/features/profile/data/datasources/profile_local_data_source
 import 'package:aura/features/profile/data/datasources/profile_remote_data_source.dart';
 import 'package:aura/features/profile/data/repositories/profile_repository_impl.dart';
 import 'package:aura/features/profile/domain/repositories/profile_repository.dart';
+import 'package:aura/features/profile/domain/usecases/change_password_usecase.dart';
+import 'package:aura/features/profile/domain/usecases/delete_account_usecase.dart';
+import 'package:aura/features/profile/domain/usecases/delete_avatar_usecase.dart';
 import 'package:aura/features/profile/domain/usecases/get_profile_usecase.dart';
+import 'package:aura/features/profile/domain/usecases/send_phone_otp_usecase.dart';
 import 'package:aura/features/profile/domain/usecases/sign_out_usecase.dart';
+import 'package:aura/features/profile/domain/usecases/update_avatar_usecase.dart';
 import 'package:aura/features/profile/domain/usecases/update_profile_usecase.dart';
+import 'package:aura/features/profile/domain/usecases/verify_phone_otp_usecase.dart';
 import 'package:aura/features/profile/presentation/cubit/profile_cubit.dart';
 import 'package:aura/features/wishlist/data/datasources/wishlist_local_data_source.dart';
 import 'package:aura/features/wishlist/data/datasources/wishlist_remote_data_source.dart';
@@ -166,11 +172,23 @@ Future<void> initDependencies() async {
     () => ProfileCubit(
       getProfileUseCase: sl(),
       updateProfileUseCase: sl(),
+      updateAvatarUseCase: sl(),
+      deleteAvatarUseCase: sl(),
+      sendPhoneOtpUseCase: sl(),
+      verifyPhoneOtpUseCase: sl(),
+      changePasswordUseCase: sl(),
+      deleteAccountUseCase: sl(),
       signOutUseCase: sl(),
     ),
   );
   sl.registerLazySingleton(() => GetProfileUseCase(sl()));
   sl.registerLazySingleton(() => UpdateProfileUseCase(sl()));
+  sl.registerLazySingleton(() => UpdateAvatarUseCase(sl()));
+  sl.registerLazySingleton(() => DeleteAvatarUseCase(sl()));
+  sl.registerLazySingleton(() => SendPhoneOtpUseCase(sl()));
+  sl.registerLazySingleton(() => VerifyPhoneOtpUseCase(sl()));
+  sl.registerLazySingleton(() => ChangePasswordUseCase(sl()));
+  sl.registerLazySingleton(() => DeleteAccountUseCase(sl()));
   sl.registerLazySingleton(() => SignOutUseCase(sl()));
   sl.registerLazySingleton<ProfileRepository>(
     () => ProfileRepositoryImpl(

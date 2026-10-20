@@ -1,3 +1,5 @@
+import 'package:aura/core/di/injection_container.dart';
+import 'package:aura/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:aura/features/auth/presentation/views/create_account_view.dart';
 import 'package:aura/features/auth/presentation/views/sign_in_view.dart';
 import 'package:aura/features/auth/presentation/views/verify_reset_password_view.dart';
@@ -5,10 +7,12 @@ import 'package:aura/features/home/presentation/views/home_view.dart';
 import 'package:aura/features/product/presentation/views/product_details_view.dart';
 import 'package:aura/features/product/presentation/views/product_reviews_view.dart';
 import 'package:aura/features/checkout/presentation/views/checkout_view.dart';
+import 'package:aura/features/profile/presentation/cubit/profile_cubit.dart';
 import 'package:aura/features/profile/presentation/views/edit_profile_view.dart';
 import 'package:aura/features/orders/presentation/views/order_success_receipt_view.dart';
 import 'package:aura/features/orders/presentation/views/order_tracking_details_view.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'routes.dart';
 
 class AppRouter {
@@ -38,16 +42,34 @@ class AppRouter {
           settings: settings,
         );
       case Routes.createAccountView:
-        return _buildPageRoute(const CreateAccountView(), settings: settings);
+        return _buildPageRoute(
+          BlocProvider(
+            create: (context) => sl<AuthCubit>(),
+            child: const CreateAccountView(),
+          ),
+          settings: settings,
+        );
       case Routes.signInView:
-        return _buildPageRoute(const SignInView(), settings: settings);
+        return _buildPageRoute(
+          BlocProvider(
+            create: (context) => sl<AuthCubit>(),
+            child: const SignInView(),
+          ),
+          settings: settings,
+        );
       case Routes.profileView:
         return _buildPageRoute(
           const HomeView(initialIndex: 3),
           settings: settings,
         );
       case Routes.editProfileView:
-        return _buildPageRoute(const EditProfileView(), settings: settings);
+        return _buildPageRoute(
+          BlocProvider(
+            create: (context) => sl<ProfileCubit>()..fetchProfile(),
+            child: const EditProfileView(),
+          ),
+          settings: settings,
+        );
       case Routes.cartView:
         return _buildPageRoute(
           const HomeView(initialIndex: 2),
