@@ -2,6 +2,9 @@ class UserProfileEntity {
   const UserProfileEntity({
     required this.id,
     required this.name,
+    this.email = '',
+    this.phone = '',
+    this.role = 'customer',
     required this.tier,
     required this.tierTitle,
     required this.patronSince,
@@ -17,6 +20,9 @@ class UserProfileEntity {
 
   final String id;
   final String name;
+  final String email;
+  final String phone;
+  final String role;
   final String tier;
   final String tierTitle;
   final String patronSince;
