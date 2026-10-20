@@ -5,17 +5,35 @@ import 'package:flutter/material.dart';
 
 class EditProfilePhoneSection extends StatefulWidget {
   final String initialPhoneNumber;
+  final Future<void> Function(String phone)? onSendOtp;
+  final Future<void> Function(String phone, String otp)? onVerifyOtp;
   final ValueChanged<String>? onPhoneUpdated;
 
-  const EditProfilePhoneSection({super.key, this.initialPhoneNumber = '+20 100 000 0000', this.onPhoneUpdated});
+  const EditProfilePhoneSection({
+    super.key,
+    this.initialPhoneNumber = '+20 100 000 0000',
+    this.onSendOtp,
+    this.onVerifyOtp,
+    this.onPhoneUpdated,
+  });
 
   @override
-  State<EditProfilePhoneSection> createState() => _EditProfilePhoneSectionState();
+  State<EditProfilePhoneSection> createState() =>
+      _EditProfilePhoneSectionState();
 }
 
 class _EditProfilePhoneSectionState extends State<EditProfilePhoneSection> {
   late String _phoneNumber = widget.initialPhoneNumber;
   bool _isPanelOpen = false;
+
+  @override
+  void didUpdateWidget(covariant EditProfilePhoneSection oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.initialPhoneNumber != widget.initialPhoneNumber &&
+        widget.initialPhoneNumber.isNotEmpty) {
+      _phoneNumber = widget.initialPhoneNumber;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,36 +53,84 @@ class _EditProfilePhoneSectionState extends State<EditProfilePhoneSection> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('CONCIERGE RELAY', style: AppTypography.labelCaps.copyWith(color: AppColors.secondary, letterSpacing: 1.2)),
-                  Text('Security & Contact Link', style: AppTypography.headlineSm.copyWith(fontWeight: FontWeight.w700)),
+                  Text(
+                    'CONCIERGE RELAY',
+                    style: AppTypography.labelCaps.copyWith(
+                      color: AppColors.secondary,
+                      letterSpacing: 1.2,
+                    ),
+                  ),
+                  Text(
+                    'Security & Contact Link',
+                    style: AppTypography.headlineSm.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
                 ],
               ),
-              const Icon(Icons.phonelink_lock_rounded, color: AppColors.outline, size: AppSpacing.spaceLg),
+              const Icon(
+                Icons.phonelink_lock_rounded,
+                color: AppColors.outline,
+                size: AppSpacing.spaceLg,
+              ),
             ],
           ),
           const SizedBox(height: AppSpacing.spaceMd),
           Container(
-            padding: const EdgeInsets.all(AppSpacing.spaceSm + AppSpacing.spaceXs),
-            decoration: BoxDecoration(color: AppColors.surfaceContainerLow, borderRadius: BorderRadius.circular(AppSpacing.spaceSm)),
+            padding: const EdgeInsets.all(
+              AppSpacing.spaceSm + AppSpacing.spaceXs,
+            ),
+            decoration: BoxDecoration(
+              color: AppColors.surfaceContainerLow,
+              borderRadius: BorderRadius.circular(AppSpacing.spaceSm),
+            ),
             child: Row(
               children: [
                 Container(
                   padding: const EdgeInsets.all(AppSpacing.spaceSm),
-                  decoration: BoxDecoration(color: AppColors.secondaryContainer.withValues(alpha: 0.2), shape: BoxShape.circle),
-                  child: const Icon(Icons.smartphone_rounded, color: AppColors.secondary, size: AppSpacing.spaceMd),
+                  decoration: BoxDecoration(
+                    color: AppColors.secondaryContainer.withValues(alpha: 0.2),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.smartphone_rounded,
+                    color: AppColors.secondary,
+                    size: AppSpacing.spaceMd,
+                  ),
                 ),
                 const SizedBox(width: AppSpacing.spaceSm),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(_phoneNumber, style: AppTypography.headlineSm.copyWith(fontWeight: FontWeight.w700, fontSize: 16)),
+                      Text(
+                        _phoneNumber.isNotEmpty
+                            ? _phoneNumber
+                            : 'No handset registered',
+                        style: AppTypography.headlineSm.copyWith(
+                          fontWeight: FontWeight.w700,
+                          fontSize: 16,
+                        ),
+                      ),
                       const SizedBox(height: AppSpacing.spaceXs / 2),
                       Row(
                         children: [
-                          Container(width: AppSpacing.spaceSm - 2, height: AppSpacing.spaceSm - 2, decoration: const BoxDecoration(color: AppColors.secondary, shape: BoxShape.circle)),
+                          Container(
+                            width: AppSpacing.spaceSm - 2,
+                            height: AppSpacing.spaceSm - 2,
+                            decoration: const BoxDecoration(
+                              color: AppColors.secondary,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
                           const SizedBox(width: AppSpacing.spaceXs),
-                          Text('Protected by 2-Factor Escrow', style: AppTypography.labelCaps.copyWith(color: AppColors.onSurfaceVariant, fontSize: 10)),
+                          Text(
+                            'Protected by 2-Factor Escrow',
+                            style: AppTypography.labelCaps.copyWith(
+                              color: AppColors.onSurfaceVariant,
+                              fontSize: 10,
+                            ),
+                          ),
                         ],
                       ),
                     ],
@@ -79,14 +145,33 @@ class _EditProfilePhoneSectionState extends State<EditProfilePhoneSection> {
             borderRadius: BorderRadius.circular(AppSpacing.margin),
             child: Container(
               width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: AppSpacing.spaceSm + AppSpacing.spaceXs),
-              decoration: BoxDecoration(color: AppColors.surfaceContainer, borderRadius: BorderRadius.circular(AppSpacing.margin)),
+              padding: const EdgeInsets.symmetric(
+                vertical: AppSpacing.spaceSm + AppSpacing.spaceXs,
+              ),
+              decoration: BoxDecoration(
+                color: AppColors.surfaceContainer,
+                borderRadius: BorderRadius.circular(AppSpacing.margin),
+              ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.sync_alt_rounded, size: AppSpacing.spaceMd, color: AppColors.secondary),
+                  Icon(
+                    _isPanelOpen
+                        ? Icons.keyboard_arrow_up_rounded
+                        : Icons.sync_alt_rounded,
+                    size: AppSpacing.spaceMd,
+                    color: AppColors.secondary,
+                  ),
                   const SizedBox(width: AppSpacing.spaceSm),
-                  Text('Change Phone (via SMS OTP)', style: AppTypography.bodyMd.copyWith(fontWeight: FontWeight.w600, color: AppColors.onSurface)),
+                  Text(
+                    _isPanelOpen
+                        ? 'Close Phone Update Panel'
+                        : 'Change Phone (via SMS OTP)',
+                    style: AppTypography.bodyMd.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.onSurface,
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -94,6 +179,8 @@ class _EditProfilePhoneSectionState extends State<EditProfilePhoneSection> {
           if (_isPanelOpen) ...[
             const SizedBox(height: AppSpacing.spaceMd),
             PhoneOtpWorkflowBox(
+              onSendOtp: widget.onSendOtp,
+              onVerifyOtp: widget.onVerifyOtp,
               onVerified: (newPhone) {
                 setState(() {
                   _phoneNumber = newPhone;

@@ -1,27 +1,67 @@
 import 'package:aura/core/theme/app_colors.dart';
 import 'package:aura/core/theme/app_typography.dart';
-import 'package:aura/core/utils/functions/custom_snack_bar.dart';
+import 'package:aura/features/auth/presentation/widgets/auth_text_form_field.dart';
 import 'package:flutter/material.dart';
 
 class EditProfileCredentialsSection extends StatefulWidget {
-  final String initialName, initialEmail;
-  final void Function(String name, String email)? onSave;
+  final String initialName;
+  final String initialEmail;
+  final bool isLoading;
+  final void Function({required String name, required String email}) onSave;
 
-  const EditProfileCredentialsSection({super.key, this.initialName = 'Ahmed Mohamed', this.initialEmail = 'ahmed.m@auraluxe.com', this.onSave});
+  const EditProfileCredentialsSection({
+    super.key,
+    required this.initialName,
+    required this.initialEmail,
+    this.isLoading = false,
+    required this.onSave,
+  });
 
   @override
-  State<EditProfileCredentialsSection> createState() => _EditProfileCredentialsSectionState();
+  State<EditProfileCredentialsSection> createState() =>
+      _EditProfileCredentialsSectionState();
 }
 
-class _EditProfileCredentialsSectionState extends State<EditProfileCredentialsSection> {
-  late final TextEditingController _nameController = TextEditingController(text: widget.initialName);
-  late final TextEditingController _emailController = TextEditingController(text: widget.initialEmail);
+class _EditProfileCredentialsSectionState
+    extends State<EditProfileCredentialsSection> {
+  final _formKey = GlobalKey<FormState>();
+  late final TextEditingController _nameController;
+  late final TextEditingController _emailController;
+
+  @override
+  void initState() {
+    super.initState();
+    _nameController = TextEditingController(text: widget.initialName);
+    _emailController = TextEditingController(text: widget.initialEmail);
+  }
+
+  @override
+  void didUpdateWidget(covariant EditProfileCredentialsSection oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.initialName != widget.initialName &&
+        _nameController.text.isEmpty) {
+      _nameController.text = widget.initialName;
+    }
+    if (oldWidget.initialEmail != widget.initialEmail &&
+        _emailController.text.isEmpty) {
+      _emailController.text = widget.initialEmail;
+    }
+  }
 
   @override
   void dispose() {
     _nameController.dispose();
     _emailController.dispose();
     super.dispose();
+  }
+
+  void _handleSave() {
+    if (_formKey.currentState?.validate() ?? false) {
+      widget.onSave(
+        name: _nameController.text.trim(),
+        email: _emailController.text.trim(),
+      );
+    }
   }
 
   @override
@@ -33,96 +73,132 @@ class _EditProfileCredentialsSectionState extends State<EditProfileCredentialsSe
         borderRadius: BorderRadius.circular(AppSpacing.margin),
         border: Border.all(color: AppColors.outlineVariant, width: 1.0),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('IDENTITY', style: AppTypography.labelCaps.copyWith(color: AppColors.secondary, letterSpacing: 1.2)),
-                  Text('Personal Credentials', style: AppTypography.headlineSm.copyWith(fontWeight: FontWeight.w700)),
-                ],
-              ),
-              const Icon(Icons.badge_outlined, color: AppColors.outline, size: AppSpacing.spaceLg),
-            ],
-          ),
-          const SizedBox(height: AppSpacing.spaceMd),
-          _buildField('FULL NAME', _nameController, Icons.person_outline_rounded),
-          const SizedBox(height: AppSpacing.spaceMd),
-          _buildField('EMAIL ADDRESS', _emailController, Icons.mail_outline_rounded, badge: _buildVerifiedBadge()),
-          const SizedBox(height: AppSpacing.spaceMd),
-          InkWell(
-            onTap: () {
-              widget.onSave?.call(_nameController.text, _emailController.text);
-              showCustomSnackBar(context, message: 'Profile credentials saved • PUT /profile', type: SnackBarType.success);
-            },
-            borderRadius: BorderRadius.circular(AppSpacing.margin),
-            child: Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: AppSpacing.spaceMd - 2),
-              decoration: BoxDecoration(color: AppColors.primaryContainer, borderRadius: BorderRadius.circular(AppSpacing.margin)),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.save_outlined, size: AppSpacing.spaceMd + 2, color: AppColors.onPrimary),
-                  const SizedBox(width: AppSpacing.spaceSm),
-                  Text('Update Credentials', style: AppTypography.bodyMd.copyWith(color: AppColors.onPrimary, fontWeight: FontWeight.w700)),
-                ],
+      child: Form(
+        key: _formKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'ACCOUNT CREDENTIALS',
+                      style: AppTypography.labelCaps.copyWith(
+                        color: AppColors.secondary,
+                        letterSpacing: 1.2,
+                      ),
+                    ),
+                    Text(
+                      'Personal Information',
+                      style: AppTypography.headlineSm.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ],
+                ),
+                const Icon(
+                  Icons.badge_outlined,
+                  color: AppColors.outline,
+                  size: AppSpacing.spaceLg,
+                ),
+              ],
+            ),
+            const SizedBox(height: AppSpacing.spaceMd),
+
+            // Full Name Field
+            Text(
+              'FULL NAME',
+              style: AppTypography.labelCaps.copyWith(
+                color: AppColors.onSurfaceVariant,
+                letterSpacing: 0.8,
               ),
             ),
-          ),
-        ],
-      ),
-    );
-  }
+            const SizedBox(height: AppSpacing.spaceXs),
+            AuthTextFormField(
+              controller: _nameController,
+              hintText: 'Enter your full name',
+              prefixIcon: Icons.person_outline_rounded,
+              validator: (val) {
+                if (val == null || val.trim().isEmpty) {
+                  return 'Name cannot be empty';
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: AppSpacing.spaceMd),
 
-  Widget _buildField(String label, TextEditingController controller, IconData icon, {Widget? badge}) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(label, style: AppTypography.labelCaps.copyWith(color: AppColors.onSurfaceVariant, fontSize: 10)),
-            ?badge,
+            // Email Address Field
+            Text(
+              'EMAIL ADDRESS',
+              style: AppTypography.labelCaps.copyWith(
+                color: AppColors.onSurfaceVariant,
+                letterSpacing: 0.8,
+              ),
+            ),
+            const SizedBox(height: AppSpacing.spaceXs),
+            AuthTextFormField(
+              controller: _emailController,
+              hintText: 'Enter your email address',
+              prefixIcon: Icons.mail_outline_rounded,
+              keyboardType: TextInputType.emailAddress,
+              validator: (val) {
+                if (val == null || val.trim().isEmpty) {
+                  return 'Email address is required';
+                }
+                final emailRegex =
+                    RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+                if (!emailRegex.hasMatch(val.trim())) {
+                  return 'Please enter a valid email address';
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: AppSpacing.spaceLg),
+
+            // Save Button
+            SizedBox(
+              width: double.infinity,
+              height: 48,
+              child: ElevatedButton(
+                onPressed: widget.isLoading ? null : _handleSave,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(AppSpacing.spaceSm),
+                  ),
+                  elevation: 0,
+                ),
+                child: widget.isLoading
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
+                      )
+                    : Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.check_rounded, size: 18),
+                          const SizedBox(width: AppSpacing.spaceSm),
+                          Text(
+                            'Save Changes',
+                            style: AppTypography.bodyMd.copyWith(
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
+                      ),
+              ),
+            ),
           ],
         ),
-        const SizedBox(height: AppSpacing.spaceXs / 2),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.spaceSm + AppSpacing.spaceXs, vertical: AppSpacing.spaceXs),
-          decoration: BoxDecoration(color: AppColors.surfaceContainerLow, borderRadius: BorderRadius.circular(AppSpacing.spaceSm)),
-          child: Row(
-            children: [
-              Icon(icon, size: AppSpacing.spaceMd, color: AppColors.outline),
-              const SizedBox(width: AppSpacing.spaceSm),
-              Expanded(
-                child: TextField(
-                  controller: controller,
-                  style: AppTypography.bodyMd.copyWith(color: AppColors.onSurface, fontWeight: FontWeight.w500),
-                  decoration: const InputDecoration(border: InputBorder.none, isDense: true, contentPadding: EdgeInsets.zero),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildVerifiedBadge() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.spaceSm, vertical: AppSpacing.spaceXs / 2),
-      decoration: BoxDecoration(color: const Color(0xFFD1FADF), borderRadius: BorderRadius.circular(AppSpacing.margin)),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Icon(Icons.check_circle_rounded, size: AppSpacing.spaceSm + AppSpacing.spaceXs, color: Color(0xFF027A48)),
-          const SizedBox(width: AppSpacing.spaceXs / 2),
-          Text('Verified', style: AppTypography.labelCaps.copyWith(color: const Color(0xFF027A48), fontSize: 9, fontWeight: FontWeight.w700)),
-        ],
       ),
     );
   }

@@ -1,6 +1,9 @@
+import 'package:aura/core/routing/routes.dart';
 import 'package:aura/core/theme/app_colors.dart';
 import 'package:aura/core/theme/app_typography.dart';
+import 'package:aura/features/profile/presentation/cubit/profile_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ProfileTierCard extends StatelessWidget {
   final String userName, userTier, customerId, patronSince, avatarUrl, targetTier;
@@ -9,10 +12,10 @@ class ProfileTierCard extends StatelessWidget {
 
   const ProfileTierCard({
     super.key,
-    this.userName = 'Claire Daniels',
+    this.userName = 'Aura Client',
     this.userTier = 'Tier 01',
     this.customerId = '#AL-98421',
-    this.patronSince = 'Oct 2022',
+    this.patronSince = 'Oct 2026',
     this.avatarUrl = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=300',
     this.targetTier = 'TIER 02 SOVEREIGN',
     this.progress = 0.78,
@@ -35,7 +38,7 @@ class ProfileTierCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildUserInfoHeader(),
+          _buildUserInfoHeader(context),
           const SizedBox(height: AppSpacing.spaceLg),
           _buildProgressSection(),
           const SizedBox(height: AppSpacing.spaceMd),
@@ -45,27 +48,50 @@ class ProfileTierCard extends StatelessWidget {
     );
   }
 
-  Widget _buildUserInfoHeader() {
+  Widget _buildUserInfoHeader(BuildContext context) {
     return Row(
       children: [
-        Stack(
-          clipBehavior: Clip.none,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(AppSpacing.spaceXs / 2),
-              decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: AppColors.outlineVariant, width: 1.5)),
-              child: CircleAvatar(radius: AppSpacing.spaceLg + AppSpacing.spaceXs, backgroundImage: NetworkImage(avatarUrl)),
-            ),
-            Positioned(
-              bottom: 0,
-              right: 0,
-              child: Container(
-                padding: const EdgeInsets.all(AppSpacing.spaceXs),
-                decoration: const BoxDecoration(color: AppColors.primaryContainer, shape: BoxShape.circle),
-                child: const Icon(Icons.diamond_rounded, size: AppSpacing.spaceSm + AppSpacing.spaceXs, color: AppColors.mintHighlight),
+        InkWell(
+          onTap: () {
+            Navigator.of(context).pushNamed(Routes.editProfileView).then((_) {
+              if (context.mounted) {
+                context.read<ProfileCubit>().fetchProfile();
+              }
+            });
+          },
+          borderRadius: BorderRadius.circular(AppSpacing.margin),
+          child: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(AppSpacing.spaceXs / 2),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: AppColors.outlineVariant, width: 1.5),
+                ),
+                child: CircleAvatar(
+                  radius: AppSpacing.spaceLg + AppSpacing.spaceXs,
+                  backgroundImage: NetworkImage(avatarUrl),
+                ),
               ),
-            ),
-          ],
+              Positioned(
+                bottom: 0,
+                right: 0,
+                child: Container(
+                  padding: const EdgeInsets.all(AppSpacing.spaceXs),
+                  decoration: const BoxDecoration(
+                    color: AppColors.primaryContainer,
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.diamond_rounded,
+                    size: AppSpacing.spaceSm + AppSpacing.spaceXs,
+                    color: AppColors.mintHighlight,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
         const SizedBox(width: AppSpacing.spaceMd),
         Expanded(
@@ -74,19 +100,68 @@ class ProfileTierCard extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  Text(userName, style: AppTypography.headlineSm.copyWith(fontWeight: FontWeight.w700)),
+                  Flexible(
+                    child: Text(
+                      userName,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppTypography.headlineSm.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
                   const SizedBox(width: AppSpacing.spaceSm),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: AppSpacing.spaceSm, vertical: AppSpacing.spaceXs / 2),
-                    decoration: BoxDecoration(color: const Color(0xFFD1FADF), borderRadius: BorderRadius.circular(AppSpacing.margin)),
-                    child: Text(userTier, style: AppTypography.labelCaps.copyWith(color: const Color(0xFF027A48), fontWeight: FontWeight.w700)),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.spaceSm,
+                      vertical: AppSpacing.spaceXs / 2,
+                    ),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFD1FADF),
+                      borderRadius: BorderRadius.circular(AppSpacing.margin),
+                    ),
+                    child: Text(
+                      userTier,
+                      style: AppTypography.labelCaps.copyWith(
+                        color: const Color(0xFF027A48),
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
                   ),
                 ],
               ),
               const SizedBox(height: AppSpacing.spaceXs / 2),
-              Text('VIP Luminary • $customerId', style: AppTypography.bodySm.copyWith(color: AppColors.slateBody)),
-              Text('Patron since $patronSince', style: AppTypography.bodySm.copyWith(color: AppColors.slateBody)),
+              Text(
+                'VIP Luminary • $customerId',
+                style: AppTypography.bodySm.copyWith(color: AppColors.slateBody),
+              ),
+              Text(
+                'Patron since $patronSince',
+                style: AppTypography.bodySm.copyWith(color: AppColors.slateBody),
+              ),
             ],
+          ),
+        ),
+        InkWell(
+          onTap: () {
+            Navigator.of(context).pushNamed(Routes.editProfileView).then((_) {
+              if (context.mounted) {
+                context.read<ProfileCubit>().fetchProfile();
+              }
+            });
+          },
+          borderRadius: BorderRadius.circular(AppSpacing.margin),
+          child: Container(
+            padding: const EdgeInsets.all(AppSpacing.spaceSm),
+            decoration: BoxDecoration(
+              color: AppColors.surfaceContainerLow,
+              borderRadius: BorderRadius.circular(AppSpacing.spaceSm),
+            ),
+            child: const Icon(
+              Icons.edit_outlined,
+              size: AppSpacing.spaceMd + 2,
+              color: AppColors.secondary,
+            ),
           ),
         ),
       ],
@@ -100,21 +175,50 @@ class ProfileTierCard extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text('PATH TO $targetTier', style: AppTypography.labelCaps.copyWith(fontWeight: FontWeight.w700, letterSpacing: 0.5)),
-            Text('$percent%', style: AppTypography.labelCaps.copyWith(color: AppColors.secondary, fontWeight: FontWeight.w700)),
+            Text(
+              'PATH TO $targetTier',
+              style: AppTypography.labelCaps.copyWith(
+                fontWeight: FontWeight.w700,
+                letterSpacing: 0.5,
+              ),
+            ),
+            Text(
+              '$percent%',
+              style: AppTypography.labelCaps.copyWith(
+                color: AppColors.secondary,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
           ],
         ),
         const SizedBox(height: AppSpacing.spaceSm),
         ClipRRect(
           borderRadius: BorderRadius.circular(AppSpacing.spaceXs),
-          child: LinearProgressIndicator(value: progress, minHeight: AppSpacing.spaceSm - 2, backgroundColor: AppColors.surfaceContainer, color: AppColors.primaryContainer),
+          child: LinearProgressIndicator(
+            value: progress,
+            minHeight: AppSpacing.spaceSm - 2,
+            backgroundColor: AppColors.surfaceContainer,
+            color: AppColors.primaryContainer,
+          ),
         ),
         const SizedBox(height: AppSpacing.spaceSm),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(spentAmount, style: AppTypography.bodySm.copyWith(fontSize: 11, color: AppColors.slateBody)),
-            Text(remainingToPrivilege, style: AppTypography.bodySm.copyWith(fontSize: 11, color: AppColors.slateBody)),
+            Text(
+              spentAmount,
+              style: AppTypography.bodySm.copyWith(
+                fontSize: 11,
+                color: AppColors.slateBody,
+              ),
+            ),
+            Text(
+              remainingToPrivilege,
+              style: AppTypography.bodySm.copyWith(
+                fontSize: 11,
+                color: AppColors.slateBody,
+              ),
+            ),
           ],
         ),
       ],
@@ -124,13 +228,24 @@ class ProfileTierCard extends StatelessWidget {
   Widget _buildStatsRow() {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: AppSpacing.spaceMd),
-      decoration: BoxDecoration(color: AppColors.surfaceContainerLow, borderRadius: BorderRadius.circular(AppSpacing.spaceMd)),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceContainerLow,
+        borderRadius: BorderRadius.circular(AppSpacing.spaceMd),
+      ),
       child: Row(
         children: [
           _buildStatItem(deliveredCount, 'DELIVERED', AppColors.slateHeadline),
-          Container(width: 1.0, height: AppSpacing.spaceLg, color: AppColors.outlineVariant),
+          Container(
+            width: 1.0,
+            height: AppSpacing.spaceLg,
+            color: AppColors.outlineVariant,
+          ),
           _buildStatItem(curationsCount, 'CURATIONS', AppColors.slateHeadline),
-          Container(width: 1.0, height: AppSpacing.spaceLg, color: AppColors.outlineVariant),
+          Container(
+            width: 1.0,
+            height: AppSpacing.spaceLg,
+            color: AppColors.outlineVariant,
+          ),
           _buildStatItem(vaultCredit, 'VAULT CREDIT', AppColors.secondary),
         ],
       ),
@@ -141,9 +256,21 @@ class ProfileTierCard extends StatelessWidget {
     return Expanded(
       child: Column(
         children: [
-          Text(val, style: AppTypography.headlineSm.copyWith(fontWeight: FontWeight.w700, color: color)),
+          Text(
+            val,
+            style: AppTypography.headlineSm.copyWith(
+              fontWeight: FontWeight.w700,
+              color: color,
+            ),
+          ),
           const SizedBox(height: AppSpacing.spaceXs / 2),
-          Text(label, style: AppTypography.labelCaps.copyWith(fontSize: 9, color: AppColors.slateBody)),
+          Text(
+            label,
+            style: AppTypography.labelCaps.copyWith(
+              fontSize: 9,
+              color: AppColors.slateBody,
+            ),
+          ),
         ],
       ),
     );

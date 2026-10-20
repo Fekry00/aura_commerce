@@ -1,7 +1,8 @@
-import 'package:aura/core/routing/routes.dart';
 import 'package:aura/core/theme/app_colors.dart';
 import 'package:aura/core/theme/app_typography.dart';
+import 'package:aura/features/profile/presentation/cubit/profile_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ProfileSignOutButton extends StatelessWidget {
   const ProfileSignOutButton({super.key});
@@ -10,11 +11,7 @@ class ProfileSignOutButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        Navigator.pushNamedAndRemoveUntil(
-          context,
-          Routes.signInView,
-          (route) => false,
-        );
+        context.read<ProfileCubit>().signOut();
       },
       borderRadius: BorderRadius.circular(AppSpacing.margin),
       child: Container(
