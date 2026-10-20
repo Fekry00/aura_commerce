@@ -4,6 +4,9 @@ class UserProfileModel extends UserProfileEntity {
   const UserProfileModel({
     required super.id,
     required super.name,
+    super.email = '',
+    super.phone = '',
+    super.role = 'customer',
     required super.tier,
     required super.tierTitle,
     required super.patronSince,
@@ -18,16 +21,44 @@ class UserProfileModel extends UserProfileEntity {
   });
 
   factory UserProfileModel.fromJson(Map<String, dynamic> json) {
+    final String rawId = (json['id'] ?? '').toString();
+    final String formattedId = rawId.isNotEmpty ? '#AL-$rawId' : '#AL-98421';
+    final String userName = (json['name'] ?? json['fullName']) as String? ?? 'Aura Member';
+    final String userEmail = (json['email'] ?? '').toString();
+    final String userPhone = (json['phone'] ?? '').toString();
+    final String userRole = (json['role'] ?? json['tier']) as String? ?? 'Private Client';
+    
+    String avatar = (json['profile_image'] ?? json['avatar_url'] ?? json['avatarUrl']) as String? ?? '';
+    if (avatar.isNotEmpty) {
+      if (!avatar.startsWith('http')) {
+        avatar = 'http://127.0.0.1:8000/${avatar.startsWith('/') ? avatar.substring(1) : avatar}';
+      }
+    } else {
+      avatar = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=300';
+    }
+
+    String memberSince = 'Oct 2026';
+    if (json['created_at'] is String && (json['created_at'] as String).length >= 10) {
+      final dateStr = (json['created_at'] as String).substring(0, 10);
+      try {
+        final parsed = DateTime.parse(dateStr);
+        final months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        memberSince = '${months[parsed.month - 1]} ${parsed.year}';
+      } catch (_) {
+        memberSince = dateStr;
+      }
+    }
+
     return UserProfileModel(
-      id: json['id']?.toString() ?? '#AL-98421',
-      name: json['name'] as String? ?? 'Claire Daniels',
-      tier: json['tier'] as String? ?? 'Tier 01',
-      tierTitle: (json['tier_title'] ?? json['tierTitle']) as String? ??
-          'VIP Luminary',
-      patronSince: (json['patron_since'] ?? json['patronSince']) as String? ??
-          'Oct 2022',
-      avatarUrl: (json['avatar_url'] ?? json['avatarUrl']) as String? ??
-          'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=300',
+      id: formattedId,
+      name: userName,
+      email: userEmail,
+      phone: userPhone,
+      role: userRole,
+      tier: userRole == 'customer' ? 'Tier 01' : userRole,
+      tierTitle: userRole == 'customer' ? 'VIP Luminary' : userRole,
+      patronSince: memberSince,
+      avatarUrl: avatar,
       targetTier: (json['target_tier'] ?? json['targetTier']) as String? ??
           'TIER 02 SOVEREIGN',
       progress: (json['progress'] as num?)?.toDouble() ?? 0.78,
@@ -51,6 +82,9 @@ class UserProfileModel extends UserProfileEntity {
     return {
       'id': id,
       'name': name,
+      'email': email,
+      'phone': phone,
+      'role': role,
       'tier': tier,
       'tier_title': tierTitle,
       'patron_since': patronSince,

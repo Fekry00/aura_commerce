@@ -1,5 +1,4 @@
 import 'package:aura/features/profile/domain/entities/profile_entity.dart';
-
 import 'sub_models/concierge_liaison_model.dart';
 import 'sub_models/user_profile_model.dart';
 
@@ -10,25 +9,13 @@ class ProfileModel extends ProfileEntity {
   });
 
   factory ProfileModel.fromJson(Map<String, dynamic> json) {
+    final dynamic data = json['data'] ?? json['user'] ?? json;
+    final Map<String, dynamic> userMap = (data is Map<String, dynamic> && data['user'] is Map<String, dynamic>)
+        ? data['user'] as Map<String, dynamic>
+        : (data is Map<String, dynamic> ? data : json);
+
     return ProfileModel(
-      user: json['user'] is Map<String, dynamic>
-          ? UserProfileModel.fromJson(json['user'] as Map<String, dynamic>)
-          : const UserProfileModel(
-              id: '#AL-98421',
-              name: 'Claire Daniels',
-              tier: 'Tier 01',
-              tierTitle: 'VIP Luminary',
-              patronSince: 'Oct 2022',
-              avatarUrl:
-                  'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=300',
-              targetTier: 'TIER 02 SOVEREIGN',
-              progress: 0.78,
-              spentAmount: '\$12,450 spent',
-              remainingToPrivilege: '\$2,550 to Sovereign Privileges',
-              deliveredCount: '14',
-              curationsCount: '28',
-              vaultCredit: '\$450',
-            ),
+      user: UserProfileModel.fromJson(userMap),
       liaison: json['liaison'] is Map<String, dynamic>
           ? ConciergeLiaisonModel.fromJson(
               json['liaison'] as Map<String, dynamic>,
