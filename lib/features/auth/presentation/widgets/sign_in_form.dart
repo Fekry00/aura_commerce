@@ -1,7 +1,10 @@
 import 'package:aura/core/routing/routes.dart';
 import 'package:aura/core/theme/app_typography.dart';
 import 'package:aura/core/utils/functions/custom_snack_bar.dart';
+import 'package:aura/features/auth/presentation/cubit/auth_cubit.dart';
+import 'package:aura/features/auth/presentation/cubit/auth_state.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'auth_field_header.dart';
 import 'auth_text_form_field.dart';
 import 'fast_sign_in_button.dart';
@@ -22,7 +25,6 @@ class _SignInFormState extends State<SignInForm> {
 
   bool _obscurePassword = true;
   bool _rememberDevice = true;
-  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -31,18 +33,13 @@ class _SignInFormState extends State<SignInForm> {
     super.dispose();
   }
 
-  void _onSignIn() async {
+  void _onSignIn() {
     if (_formKey.currentState!.validate()) {
-      setState(() => _isLoading = true);
-      await Future.delayed(const Duration(milliseconds: 1400));
-      if (!mounted) return;
-      setState(() => _isLoading = false);
-      showCustomSnackBar(
-        context,
-        message: 'Welcome back to Aura Luxe Concierge.',
-        type: SnackBarType.success,
-      );
-      Navigator.pushReplacementNamed(context, Routes.homeView);
+      context.read<AuthCubit>().signIn(
+            email: _emailController.text.trim(),
+            password: _passwordController.text,
+            rememberDevice: _rememberDevice,
+          );
     }
   }
 
@@ -101,9 +98,30 @@ class _SignInFormState extends State<SignInForm> {
           ),
           const SizedBox(height: AppSpacing.spaceLg),
 
-          SignInSubmitButton(
-            isLoading: _isLoading,
-            onPressed: _onSignIn,
+          BlocConsumer<AuthCubit, AuthState>(
+            listener: (context, state) {
+              if (state is AuthErrorState) {
+                showCustomSnackBar(
+                  context,
+                  message: state.message,
+                  type: SnackBarType.error,
+                );
+              } else if (state is AuthSuccessState) {
+                showCustomSnackBar(
+                  context,
+                  message: 'Welcome back, ${state.auth.name}!',
+                  type: SnackBarType.success,
+                );
+                Navigator.pushReplacementNamed(context, Routes.homeView);
+              }
+            },
+            builder: (context, state) {
+              final isLoading = state is AuthLoadingState;
+              return SignInSubmitButton(
+                isLoading: isLoading,
+                onPressed: _onSignIn,
+              );
+            },
           ),
           const SizedBox(height: AppSpacing.spaceSm + 4),
 

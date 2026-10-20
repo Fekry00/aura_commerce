@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'package:aura/core/databases/cache/cache_helper.dart';
+import 'package:aura/core/network/api/end_points.dart';
 import 'package:aura/features/auth/data/models/auth_model.dart';
 
 abstract class AuthLocalDataSource {
@@ -20,37 +22,35 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
 
   @override
   Future<void> cacheAuth(AuthModel auth) async {
-    // await cacheHelper.saveData(key: cachedTokenKey, value: auth.token);
-    // await cacheHelper.saveData(key: cachedUserKey, value: auth.toJson());
+    await CacheHelper.saveData(key: ApiKey.token, value: auth.token);
+    await CacheHelper.saveData(key: cachedTokenKey, value: auth.token);
+    await CacheHelper.saveData(key: cachedUserKey, value: jsonEncode(auth.toJson()));
   }
 
   @override
   Future<AuthModel?> getLastAuth() async {
-    return _buildDefaultAuth();
+    final userJsonStr = CacheHelper.getDataString(key: cachedUserKey);
+    if (userJsonStr != null && userJsonStr.isNotEmpty) {
+      try {
+        final Map<String, dynamic> jsonMap = jsonDecode(userJsonStr);
+        return AuthModel.fromJson(jsonMap);
+      } catch (_) {
+        return null;
+      }
+    }
+    return null;
   }
 
   @override
   Future<void> clearAuth() async {
-    // await cacheHelper.removeData(key: cachedTokenKey);
-    // await cacheHelper.removeData(key: cachedUserKey);
+    await CacheHelper.removeData(key: ApiKey.token);
+    await CacheHelper.removeData(key: cachedTokenKey);
+    await CacheHelper.removeData(key: cachedUserKey);
   }
 
   @override
   Future<String?> getToken() async {
-    // return cacheHelper.getData(key: cachedTokenKey) as String?;
-    return 'aura_vault_jwt_token_mock';
-  }
-
-  AuthModel _buildDefaultAuth() {
-    return const AuthModel(
-      token: 'aura_vault_jwt_token_mock',
-      userId: '1',
-      name: 'Ahmed Mohamed',
-      email: 'ahmed@aura.luxury',
-      phone: '+20 100 000 0000',
-      membershipTier: 'Private Client',
-      avatarUrl:
-          'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=300',
-    );
+    return CacheHelper.getDataString(key: ApiKey.token) ??
+        CacheHelper.getDataString(key: cachedTokenKey);
   }
 }

@@ -1,3 +1,4 @@
+import 'package:aura/core/errors/exceptions.dart';
 import 'package:aura/core/errors/failure.dart';
 import 'package:aura/core/network/connection/network_info.dart';
 import 'package:aura/features/auth/data/datasources/auth_local_data_source.dart';
@@ -23,41 +24,25 @@ class AuthRepositoryImpl implements AuthRepository {
     required String password,
     bool rememberDevice = true,
   }) async {
-    if (await networkInfo.isConnected) {
-      try {
-        final remoteAuth = await remoteDataSource.signIn(
-          email: email,
-          password: password,
-        );
-        if (rememberDevice) {
-          await localDataSource.cacheAuth(remoteAuth);
-        }
-        return Right(remoteAuth);
-      } catch (e) {
-        try {
-          final localAuth = await localDataSource.getLastAuth();
-          if (localAuth != null) {
-            return Right(localAuth);
-          }
-          return Left(ServerFailure(errMessage: e.toString()));
-        } catch (_) {
-          return Left(ServerFailure(errMessage: e.toString()));
-        }
+    try {
+      final remoteAuth = await remoteDataSource.signIn(
+        email: email,
+        password: password,
+      );
+      if (rememberDevice) {
+        await localDataSource.cacheAuth(remoteAuth);
       }
-    } else {
+      return Right(remoteAuth);
+    } on ServerException catch (e) {
+      return Left(ServerFailure(errMessage: e.errorModel.errorMessage));
+    } catch (e) {
       try {
         final localAuth = await localDataSource.getLastAuth();
         if (localAuth != null) {
           return Right(localAuth);
         }
-        return const Left(
-          CacheFailure(errMessage: 'No internet connection and no cached session.'),
-        );
-      } catch (e) {
-        return Left(
-          CacheFailure(errMessage: 'No internet connection: ${e.toString()}'),
-        );
-      }
+      } catch (_) {}
+      return Left(ServerFailure(errMessage: e.toString()));
     }
   }
 
@@ -68,41 +53,19 @@ class AuthRepositoryImpl implements AuthRepository {
     required String phone,
     required String password,
   }) async {
-    if (await networkInfo.isConnected) {
-      try {
-        final remoteAuth = await remoteDataSource.signUp(
-          name: name,
-          email: email,
-          phone: phone,
-          password: password,
-        );
-        await localDataSource.cacheAuth(remoteAuth);
-        return Right(remoteAuth);
-      } catch (e) {
-        try {
-          final localAuth = await localDataSource.getLastAuth();
-          if (localAuth != null) {
-            return Right(localAuth);
-          }
-          return Left(ServerFailure(errMessage: e.toString()));
-        } catch (_) {
-          return Left(ServerFailure(errMessage: e.toString()));
-        }
-      }
-    } else {
-      try {
-        final localAuth = await localDataSource.getLastAuth();
-        if (localAuth != null) {
-          return Right(localAuth);
-        }
-        return const Left(
-          CacheFailure(errMessage: 'No internet connection and no cached session.'),
-        );
-      } catch (e) {
-        return Left(
-          CacheFailure(errMessage: 'No internet connection: ${e.toString()}'),
-        );
-      }
+    try {
+      final remoteAuth = await remoteDataSource.signUp(
+        name: name,
+        email: email,
+        phone: phone,
+        password: password,
+      );
+      await localDataSource.cacheAuth(remoteAuth);
+      return Right(remoteAuth);
+    } on ServerException catch (e) {
+      return Left(ServerFailure(errMessage: e.errorModel.errorMessage));
+    } catch (e) {
+      return Left(ServerFailure(errMessage: e.toString()));
     }
   }
 

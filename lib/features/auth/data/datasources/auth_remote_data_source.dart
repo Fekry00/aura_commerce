@@ -59,6 +59,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         'email': email,
         'phone': phone,
         'password': password,
+        'password_confirmation': password,
       },
     );
     return AuthModel.fromJson(response);

@@ -31,26 +31,28 @@ class SignInFooter extends StatelessWidget {
                 child: const Icon(Icons.shield_outlined, color: Colors.white, size: 16),
               ),
               const SizedBox(width: 12),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'ATELIER MEMBERSHIP',
-                    style: AppTypography.labelCaps.copyWith(
-                      color: const Color(0xFF0B3B2C),
-                      fontWeight: FontWeight.w800,
-                      fontSize: 9,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'ATELIER MEMBERSHIP',
+                      style: AppTypography.labelCaps.copyWith(
+                        color: const Color(0xFF0B3B2C),
+                        fontWeight: FontWeight.w800,
+                        fontSize: 9,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    'Encrypted access & complimentary white-glove delivery',
-                    style: AppTypography.bodySm.copyWith(
-                      color: const Color(0xFF4B5563),
-                      fontSize: 11,
+                    const SizedBox(height: 2),
+                    Text(
+                      'Encrypted access & complimentary white-glove delivery',
+                      style: AppTypography.bodySm.copyWith(
+                        color: const Color(0xFF4B5563),
+                        fontSize: 11,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ],
           ),

@@ -1,7 +1,10 @@
 import 'package:aura/core/routing/routes.dart';
 import 'package:aura/core/theme/app_typography.dart';
 import 'package:aura/core/utils/functions/custom_snack_bar.dart';
+import 'package:aura/features/auth/presentation/cubit/auth_cubit.dart';
+import 'package:aura/features/auth/presentation/cubit/auth_state.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'auth_field_header.dart';
 import 'auth_passphrase_section.dart';
 import 'auth_phone_field.dart';
@@ -36,12 +39,21 @@ class _CreateAccountFormState extends State<CreateAccountForm> {
 
   void _onRegisterPressed() {
     if (_formKey.currentState!.validate()) {
-      showCustomSnackBar(
-        context,
-        message: 'Atelier Account Created Successfully!',
-        type: SnackBarType.success,
-      );
-      Navigator.pushReplacementNamed(context, Routes.homeView);
+      if (_passwordController.text != _confirmPasswordController.text) {
+        showCustomSnackBar(
+          context,
+          message: 'Passwords do not match.',
+          type: SnackBarType.error,
+        );
+        return;
+      }
+
+      context.read<AuthCubit>().signUp(
+            name: _nameController.text.trim(),
+            email: _emailController.text.trim(),
+            phone: _phoneController.text.trim(),
+            password: _passwordController.text,
+          );
     } else {
       showCustomSnackBar(
         context,
@@ -102,32 +114,62 @@ class _CreateAccountFormState extends State<CreateAccountForm> {
           const SizedBox(height: AppSpacing.spaceLg),
           const AuthSalonAndTerms(),
           const SizedBox(height: AppSpacing.spaceLg),
-          SizedBox(
-            width: double.infinity,
-            height: 48,
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF0B3B2C),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                elevation: 0,
-              ),
-              onPressed: _onRegisterPressed,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'Create Atelier Account',
-                    style: AppTypography.bodySm.copyWith(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w700,
-                      fontSize: 13,
-                    ),
+          BlocConsumer<AuthCubit, AuthState>(
+            listener: (context, state) {
+              if (state is AuthErrorState) {
+                showCustomSnackBar(
+                  context,
+                  message: state.message,
+                  type: SnackBarType.error,
+                );
+              } else if (state is AuthSuccessState) {
+                showCustomSnackBar(
+                  context,
+                  message: 'Welcome to Aura, ${state.auth.name}!',
+                  type: SnackBarType.success,
+                );
+                Navigator.pushReplacementNamed(context, Routes.homeView);
+              }
+            },
+            builder: (context, state) {
+              final isLoading = state is AuthLoadingState;
+              return SizedBox(
+                width: double.infinity,
+                height: 48,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF0B3B2C),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                    elevation: 0,
                   ),
-                  const SizedBox(width: 8),
-                  const Icon(Icons.arrow_forward, color: Colors.white, size: 16),
-                ],
-              ),
-            ),
+                  onPressed: isLoading ? null : _onRegisterPressed,
+                  child: isLoading
+                      ? const SizedBox(
+                          width: 22,
+                          height: 22,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                          ),
+                        )
+                      : Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              'Create Atelier Account',
+                              style: AppTypography.bodySm.copyWith(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w700,
+                                fontSize: 13,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            const Icon(Icons.arrow_forward, color: Colors.white, size: 16),
+                          ],
+                        ),
+                ),
+              );
+            },
           ),
         ],
       ),
