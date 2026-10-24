@@ -5,12 +5,19 @@ import 'package:aura/features/cart/data/models/cart_model.dart';
 abstract class CartRemoteDataSource {
   Future<CartModel> getCart();
 
+  Future<bool> addToCart({
+    required int productId,
+    int quantity = 1,
+  });
+
   Future<bool> updateCartItemQuantity({
     required String itemId,
     required int quantity,
   });
 
   Future<bool> removeCartItem({required String itemId});
+
+  Future<bool> clearCart();
 
   Future<bool> applyVoucher({required String promoCode});
 
@@ -29,6 +36,21 @@ class CartRemoteDataSourceImpl implements CartRemoteDataSource {
   }
 
   @override
+  Future<bool> addToCart({
+    required int productId,
+    int quantity = 1,
+  }) async {
+    final response = await apiConsumer.post(
+      '${EndPoint.cart}/items',
+      data: {
+        'productId': productId,
+        'quantity': quantity,
+      },
+    );
+    return response['success'] ?? true;
+  }
+
+  @override
   Future<bool> updateCartItemQuantity({
     required String itemId,
     required int quantity,
@@ -43,6 +65,12 @@ class CartRemoteDataSourceImpl implements CartRemoteDataSource {
   @override
   Future<bool> removeCartItem({required String itemId}) async {
     final response = await apiConsumer.delete('${EndPoint.cart}/items/$itemId');
+    return response['success'] ?? true;
+  }
+
+  @override
+  Future<bool> clearCart() async {
+    final response = await apiConsumer.delete('${EndPoint.cart}/items');
     return response['success'] ?? true;
   }
 
