@@ -8,6 +8,8 @@ abstract class WishlistLocalDataSource {
 
   Future<void> cacheWishlist(WishlistModel wishlistToCache);
 
+  Future<bool> addToWishlistLocal(int productId);
+
   Future<bool> removeFromWishlistLocal(String productId);
 
   Future<bool> moveAllToBagLocal();
@@ -27,6 +29,11 @@ class WishlistLocalDataSourceImpl implements WishlistLocalDataSource {
   @override
   Future<void> cacheWishlist(WishlistModel wishlistToCache) async {
     // await cacheHelper.saveData(key: cachedWishlistKey, value: wishlistToCache.toJson());
+  }
+
+  @override
+  Future<bool> addToWishlistLocal(int productId) async {
+    return true;
   }
 
   @override

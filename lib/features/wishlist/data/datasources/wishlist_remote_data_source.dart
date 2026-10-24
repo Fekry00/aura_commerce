@@ -5,6 +5,8 @@ import 'package:aura/features/wishlist/data/models/wishlist_model.dart';
 abstract class WishlistRemoteDataSource {
   Future<WishlistModel> getWishlist();
 
+  Future<bool> addToWishlist({required int productId});
+
   Future<bool> removeFromWishlist({required String productId});
 
   Future<bool> moveAllToBag();
@@ -19,6 +21,15 @@ class WishlistRemoteDataSourceImpl implements WishlistRemoteDataSource {
   Future<WishlistModel> getWishlist() async {
     final response = await apiConsumer.get(EndPoint.wishlist);
     return WishlistModel.fromJson(response);
+  }
+
+  @override
+  Future<bool> addToWishlist({required int productId}) async {
+    final response = await apiConsumer.post(
+      EndPoint.favorites,
+      data: {'productId': productId},
+    );
+    return response['success'] ?? true;
   }
 
   @override

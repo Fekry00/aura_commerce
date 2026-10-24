@@ -62,7 +62,7 @@ class WishlistItemDetails extends StatelessWidget {
           textBaseline: TextBaseline.alphabetic,
           children: [
             Text(
-              '\$${item.price.toStringAsFixed(2)}',
+              '${item.price.toStringAsFixed(item.price % 1 == 0 ? 0 : 2)} EGP',
               style: AppTypography.priceCatalog.copyWith(
                 color: AppColors.primary,
                 fontWeight: FontWeight.w700,
@@ -71,7 +71,7 @@ class WishlistItemDetails extends StatelessWidget {
             if (item.originalPrice != null) ...[
               const SizedBox(width: AppSpacing.spaceSm),
               Text(
-                '\$${item.originalPrice!.toStringAsFixed(2)}',
+                '${item.originalPrice!.toStringAsFixed(item.originalPrice! % 1 == 0 ? 0 : 2)} EGP',
                 style: AppTypography.bodySm.copyWith(
                   color: AppColors.outline,
                   decoration: TextDecoration.lineThrough,

@@ -5,6 +5,10 @@ import 'package:dartz/dartz.dart';
 abstract class WishlistRepository {
   Future<Either<Failure, WishlistEntity>> getWishlist();
 
+  Future<Either<Failure, bool>> addToWishlist({
+    required int productId,
+  });
+
   Future<Either<Failure, bool>> removeFromWishlist({
     required String productId,
   });
