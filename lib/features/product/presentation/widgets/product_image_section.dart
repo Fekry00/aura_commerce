@@ -29,7 +29,17 @@ class _ProductImageSectionState extends State<ProductImageSection> {
         children: [
           AspectRatio(
             aspectRatio: 1.0,
-            child: Image.network(widget.imageUrl, fit: BoxFit.contain),
+            child: Image.network(
+              widget.imageUrl,
+              fit: BoxFit.contain,
+              errorBuilder: (_, __, ___) => const Center(
+                child: Icon(
+                  Icons.inventory_2_outlined,
+                  size: 72,
+                  color: Color(0xFFCED4DA),
+                ),
+              ),
+            ),
           ),
 
           Positioned(

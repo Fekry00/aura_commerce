@@ -2,6 +2,7 @@ import 'package:aura/core/errors/failure.dart';
 import 'package:aura/core/network/connection/network_info.dart';
 import 'package:aura/features/product/data/datasources/product_local_data_source.dart';
 import 'package:aura/features/product/data/datasources/product_remote_data_source.dart';
+import 'package:aura/features/product/data/models/product_list_model.dart';
 import 'package:aura/features/product/domain/entities/product_details_entity.dart';
 import 'package:aura/features/product/domain/entities/sub_entities/product_review_entity.dart';
 import 'package:aura/features/product/domain/repositories/product_repository.dart';
@@ -17,6 +18,36 @@ class ProductRepositoryImpl implements ProductRepository {
   final ProductRemoteDataSource remoteDataSource;
   final ProductLocalDataSource localDataSource;
   final NetworkInfo networkInfo;
+
+  @override
+  Future<Either<Failure, ProductListModel>> getProducts({
+    String? search,
+    int? categoryId,
+    String? filterBy,
+    bool? inStock,
+    num? minPrice,
+    num? maxPrice,
+    String? sortBy,
+    int? page,
+    int? perPage,
+  }) async {
+    try {
+      final remoteList = await remoteDataSource.getProducts(
+        search: search,
+        categoryId: categoryId,
+        filterBy: filterBy,
+        inStock: inStock,
+        minPrice: minPrice,
+        maxPrice: maxPrice,
+        sortBy: sortBy,
+        page: page,
+        perPage: perPage,
+      );
+      return Right(remoteList);
+    } catch (e) {
+      return Left(ServerFailure(errMessage: e.toString()));
+    }
+  }
 
   @override
   Future<Either<Failure, ProductDetailsEntity>> getProductDetails({

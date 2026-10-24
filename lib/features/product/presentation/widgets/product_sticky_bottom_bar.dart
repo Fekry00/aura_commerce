@@ -5,9 +5,16 @@ import 'package:aura/core/utils/functions/custom_snack_bar.dart';
 import 'package:flutter/material.dart';
 
 class ProductStickyBottomBar extends StatefulWidget {
+  final int? productId;
   final double basePrice;
+  final ValueChanged<int>? onAddToBag;
 
-  const ProductStickyBottomBar({super.key, this.basePrice = 1450.00});
+  const ProductStickyBottomBar({
+    super.key,
+    this.productId,
+    this.basePrice = 1450.00,
+    this.onAddToBag,
+  });
 
   @override
   State<ProductStickyBottomBar> createState() => _ProductStickyBottomBarState();
@@ -48,7 +55,7 @@ class _ProductStickyBottomBarState extends State<ProductStickyBottomBar> {
                   ),
                 ),
                 Text(
-                  '\$$totalPrice',
+                  '$totalPrice EGP',
                   style: AppTypography.headlineSm.copyWith(
                     fontWeight: FontWeight.w800,
                     fontSize: 18,
@@ -108,6 +115,9 @@ class _ProductStickyBottomBarState extends State<ProductStickyBottomBar> {
                     elevation: 0,
                   ),
                   onPressed: () {
+                    if (widget.onAddToBag != null) {
+                      widget.onAddToBag!(_quantity);
+                    }
                     showCustomSnackBar(
                       context,
                       message: 'Added $_quantity item(s) to Bag!',
