@@ -4,7 +4,7 @@ publish_to: 'none'
 version: 1.0.0+1
 
 environment:
-  sdk: ^3.12.2
+  sdk: '>=3.0.0 <4.0.0'
 
 dependencies:
   flutter:
@@ -20,7 +20,7 @@ dependencies:
   internet_connection_checker: ^3.0.1
   carousel_slider: ^5.1.2
   country_code_picker: ^3.4.1
-  image_picker: ^1.2.4
+  image_picker: ^1.1.2
 
 dev_dependencies:
   flutter_test:
