@@ -41,14 +41,13 @@ class HomeLocalDataSourceImpl implements HomeLocalDataSource {
       deliveryLocation: 'New York, NY',
       banners: const [
         BannerModel(
-          id: 'banner_1',
-          tag: 'EXCLUSIVE PREVIEW',
-          title: 'The Architectural\nSilhouette',
-          subtitle:
-              'Curated Summer Capsule. Tactile tailoring sculpted for effortless modern...',
-          ctaText: 'Explore Collection',
-          imageUrl:
-              'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=900&q=80',
+          id: 1,
+          title: 'Summer Sale',
+          imageUrl: 'http://127.0.0.1:8000/storage/banners/summer.jpg',
+          linkType: 'CATEGORY',
+          linkTargetId: 2,
+          sortOrder: 0,
+          isActive: true,
         ),
       ],
       curatedDrop: CuratedDropModel(
@@ -59,11 +58,30 @@ class HomeLocalDataSourceImpl implements HomeLocalDataSource {
         ),
       ),
       categories: const [
-        CategoryModel(id: 'cat_1', name: 'Timepieces', iconKey: 'watch'),
-        CategoryModel(id: 'cat_2', name: 'Leather', iconKey: 'bag'),
-        CategoryModel(id: 'cat_3', name: 'Apparel', iconKey: 'apparel'),
-        CategoryModel(id: 'cat_4', name: 'Jewelry', iconKey: 'diamond'),
-        CategoryModel(id: 'cat_5', name: 'Fragrance', iconKey: 'fragrance'),
+        CategoryModel(
+          id: 1,
+          name: 'Electronics',
+          slug: 'electronics',
+          description: 'Electronic Devices',
+          image: null,
+          isActive: true,
+        ),
+        CategoryModel(
+          id: 2,
+          name: 'Clothing',
+          slug: 'clothing',
+          description: 'Fashion and Clothing',
+          image: null,
+          isActive: true,
+        ),
+        CategoryModel(
+          id: 3,
+          name: 'Beauty',
+          slug: 'beauty',
+          description: 'Beauty and Skincare',
+          image: null,
+          isActive: true,
+        ),
       ],
       highlights: const [
         ProductHighlightModel(

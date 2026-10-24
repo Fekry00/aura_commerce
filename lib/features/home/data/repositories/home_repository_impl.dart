@@ -23,8 +23,18 @@ class HomeRepositoryImpl implements HomeRepository {
     if (await networkInfo.isConnected) {
       try {
         final remoteFeed = await remoteDataSource.getHomeFeed();
-        await localDataSource.cacheHomeFeed(remoteFeed);
-        return Right(remoteFeed);
+        final localFeed = await localDataSource.getLastHomeFeed();
+        final combinedFeed = HomeFeedEntity(
+          deliveryLocation: remoteFeed.deliveryLocation,
+          banners: remoteFeed.banners,
+          categories: remoteFeed.categories,
+          highlights: remoteFeed.highlights.isNotEmpty
+              ? remoteFeed.highlights
+              : localFeed.highlights,
+          curatedDrop: remoteFeed.curatedDrop ?? localFeed.curatedDrop,
+          archiveStory: remoteFeed.archiveStory ?? localFeed.archiveStory,
+        );
+        return Right(combinedFeed);
       } catch (e) {
         try {
           final localFeed = await localDataSource.getLastHomeFeed();
@@ -69,11 +79,15 @@ class HomeRepositoryImpl implements HomeRepository {
   @override
   Future<Either<Failure, bool>> toggleFavoriteProduct({
     required String productId,
+    bool isCurrentlyFavorite = false,
   }) async {
     try {
       final isFavorite = await localDataSource.toggleFavoriteLocal(productId);
       if (await networkInfo.isConnected) {
-        await remoteDataSource.toggleFavoriteProduct(productId: productId);
+        await remoteDataSource.toggleFavoriteProduct(
+          productId: productId,
+          isCurrentlyFavorite: isCurrentlyFavorite,
+        );
       }
       return Right(isFavorite);
     } catch (e) {

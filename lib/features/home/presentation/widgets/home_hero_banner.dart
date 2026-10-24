@@ -1,10 +1,13 @@
 import 'package:aura/core/theme/app_typography.dart';
 import 'package:aura/core/utils/functions/custom_snack_bar.dart';
+import 'package:aura/features/home/domain/entities/sub_entities/banner_entity.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 
 class HomeHeroBanner extends StatefulWidget {
-  const HomeHeroBanner({super.key});
+  final List<BannerEntity>? banners;
+
+  const HomeHeroBanner({super.key, this.banners});
 
   @override
   State<HomeHeroBanner> createState() => _HomeHeroBannerState();
@@ -13,52 +16,23 @@ class HomeHeroBanner extends StatefulWidget {
 class _HomeHeroBannerState extends State<HomeHeroBanner> {
   int _currentIndex = 0;
 
-  final List<Map<String, String>> _banners = [
-    {
-      'tag': 'EXCLUSIVE PREVIEW',
-      'title': 'The Architectural\nSilhouette',
-      'subtitle':
-          'Curated Summer Capsule. Tactile\ntailoring sculpted for effortless modern...',
-      'image':
-          'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=800',
-    },
-    {
-      'tag': 'NEW ARRIVAL',
-      'title': 'Monochrome\nMinimalism',
-      'subtitle':
-          'Refined aesthetic essentials crafted\nfor timeless daily elegance...',
-      'image':
-          'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=800',
-    },
-    {
-      'tag': 'LIMITED RUN',
-      'title': 'Urban Tailored\nHorology',
-      'subtitle':
-          'Subtle textures paired with brutalist\nindustrial design integrity...',
-      'image':
-          'https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=800',
-    },
-    {
-      'tag': 'AUTUMN EDIT',
-      'title': 'Pure Form\n& Substance',
-      'subtitle':
-          'Monolithic silhouettes designed\nwith pristine craftsmanship...',
-      'image':
-          'https://images.unsplash.com/photo-1469334031218-e382a71b716b?q=80&w=800',
-    },
-  ];
-
   @override
   Widget build(BuildContext context) {
+    final banners = widget.banners ?? [];
+
+    if (banners.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
     return Column(
       children: [
         CarouselSlider.builder(
-          itemCount: _banners.length,
+          itemCount: banners.length,
           options: CarouselOptions(
             height: 380,
             viewportFraction: 1.0,
-            autoPlay: true,
-            autoPlayInterval: const Duration(seconds: 4),
+            autoPlay: banners.length > 1,
+            autoPlayInterval: const Duration(seconds: 5),
             autoPlayAnimationDuration: const Duration(milliseconds: 700),
             autoPlayCurve: Curves.easeInOutCubic,
             onPageChanged: (index, reason) {
@@ -68,127 +42,174 @@ class _HomeHeroBannerState extends State<HomeHeroBanner> {
             },
           ),
           itemBuilder: (context, index, realIndex) {
-            final item = _banners[index];
+            final banner = banners[index];
+            final title = banner.title;
+            final imageUrl = banner.imageUrl;
+            final linkType = banner.linkType;
+            final linkTargetId = banner.linkTargetId;
+
             return Container(
               width: double.infinity,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(24),
-                image: DecorationImage(
-                  image: NetworkImage(item['image']!),
-                  fit: BoxFit.cover,
-                ),
+                color: const Color(0xFF1E382B).withValues(alpha: 0.1),
               ),
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(24),
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Colors.transparent,
-                      Colors.black.withOpacity(0.85),
-                    ],
-                  ),
-                ),
-                padding: const EdgeInsets.all(AppSpacing.margin),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.end,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(24),
+                child: Stack(
+                  fit: StackFit.expand,
                   children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF1E382B),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Text(
-                        item['tag']!,
-                        style: AppTypography.labelCaps.copyWith(
-                          color: const Color(0xFF4EBE86),
-                          fontSize: 10,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: AppSpacing.spaceSm),
-                    Text(
-                      item['title']!,
-                      style: AppTypography.headlineLg.copyWith(
-                        color: Colors.white,
-                        height: 1.15,
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                    const SizedBox(height: AppSpacing.spaceXs + 2),
-                    Text(
-                      item['subtitle']!,
-                      style: AppTypography.bodySm.copyWith(
-                        color: Colors.white70,
-                        fontSize: 12,
-                      ),
-                    ),
-                    const SizedBox(height: AppSpacing.spaceMd),
-                    Row(
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            showCustomSnackBar(
-                              context,
-                              message: 'Exploring ${item['tag']} Collection...',
-                              type: SnackBarType.info,
-                            );
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 18,
-                              vertical: 10,
-                            ),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFF1E382B),
-                              borderRadius: BorderRadius.circular(30),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  'Explore Collection',
-                                  style: AppTypography.bodySm.copyWith(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                                const SizedBox(width: AppSpacing.spaceSm),
-                                const Icon(
-                                  Icons.arrow_forward_rounded,
-                                  color: Colors.white,
-                                  size: 16,
-                                ),
-                              ],
+                    Image.network(
+                      imageUrl,
+                      fit: BoxFit.cover,
+                      loadingBuilder: (context, child, loadingProgress) {
+                        if (loadingProgress == null) return child;
+                        return Container(
+                          color: const Color(0xFF1E382B),
+                          child: Center(
+                            child: CircularProgressIndicator(
+                              value: loadingProgress.expectedTotalBytes != null
+                                  ? loadingProgress.cumulativeBytesLoaded /
+                                      loadingProgress.expectedTotalBytes!
+                                  : null,
+                              color: const Color(0xFF4EBE86),
+                              strokeWidth: 2,
                             ),
                           ),
+                        );
+                      },
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          color: const Color(0xFF1E382B),
+                          child: const Center(
+                            child: Icon(
+                              Icons.image_not_supported_outlined,
+                              color: Colors.white54,
+                              size: 48,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                    Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            Colors.transparent,
+                            Colors.black.withValues(alpha: 0.85),
+                          ],
                         ),
-                        const Spacer(),
-                        Row(
-                          children: List.generate(
-                            _banners.length,
-                            (dotIndex) => AnimatedContainer(
-                              duration: const Duration(milliseconds: 300),
-                              margin: const EdgeInsets.only(left: 4),
-                              width: _currentIndex == dotIndex ? 20 : 6,
-                              height: 4,
+                      ),
+                      padding: const EdgeInsets.all(AppSpacing.margin),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          if (linkType != null && linkType.isNotEmpty)
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 4,
+                              ),
                               decoration: BoxDecoration(
-                                color: _currentIndex == dotIndex
-                                    ? const Color(0xFF4EBE86)
-                                    : Colors.white38,
-                                borderRadius: BorderRadius.circular(2),
+                                color: const Color(0xFF1E382B),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Text(
+                                linkType.toUpperCase(),
+                                style: AppTypography.labelCaps.copyWith(
+                                  color: const Color(0xFF4EBE86),
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w700,
+                                ),
                               ),
                             ),
+                          const SizedBox(height: AppSpacing.spaceSm),
+                          Text(
+                            title,
+                            style: AppTypography.headlineLg.copyWith(
+                              color: Colors.white,
+                              height: 1.15,
+                              fontWeight: FontWeight.w800,
+                            ),
                           ),
-                        ),
-                      ],
+                          const SizedBox(height: AppSpacing.spaceMd),
+                          Row(
+                            children: [
+                              GestureDetector(
+                                onTap: () {
+                                  if (linkType == 'CATEGORY' &&
+                                      linkTargetId != null) {
+                                    showCustomSnackBar(
+                                      context,
+                                      message:
+                                          'Exploring Category #$linkTargetId...',
+                                      type: SnackBarType.info,
+                                    );
+                                  } else {
+                                    showCustomSnackBar(
+                                      context,
+                                      message: 'Viewing $title',
+                                      type: SnackBarType.info,
+                                    );
+                                  }
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 18,
+                                    vertical: 10,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFF1E382B),
+                                    borderRadius: BorderRadius.circular(30),
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                        'Explore Collection',
+                                        style: AppTypography.bodySm.copyWith(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                      const SizedBox(width: AppSpacing.spaceSm),
+                                      const Icon(
+                                        Icons.arrow_forward_rounded,
+                                        color: Colors.white,
+                                        size: 16,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              if (banners.length > 1) ...[
+                                const Spacer(),
+                                Row(
+                                  children: List.generate(
+                                    banners.length,
+                                    (dotIndex) => AnimatedContainer(
+                                      duration:
+                                          const Duration(milliseconds: 300),
+                                      margin: const EdgeInsets.only(left: 4),
+                                      width: _currentIndex == dotIndex ? 20 : 6,
+                                      height: 4,
+                                      decoration: BoxDecoration(
+                                        color: _currentIndex == dotIndex
+                                            ? const Color(0xFF4EBE86)
+                                            : Colors.white38,
+                                        borderRadius: BorderRadius.circular(2),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),

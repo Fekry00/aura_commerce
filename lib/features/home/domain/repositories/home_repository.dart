@@ -12,5 +12,6 @@ abstract class HomeRepository {
 
   Future<Either<Failure, bool>> toggleFavoriteProduct({
     required String productId,
+    bool isCurrentlyFavorite = false,
   });
 }

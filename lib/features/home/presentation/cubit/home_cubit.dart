@@ -1,3 +1,5 @@
+import 'package:aura/features/home/domain/entities/home_feed_entity.dart';
+import 'package:aura/features/home/domain/entities/sub_entities/product_highlight_entity.dart';
 import 'package:aura/features/home/domain/usecases/get_home_feed_usecase.dart';
 import 'package:aura/features/home/domain/usecases/toggle_favorite_usecase.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -23,16 +25,51 @@ class HomeCubit extends Cubit<HomeState> {
     );
   }
 
-  Future<void> toggleFavorite(String productId) async {
-    final result = await toggleFavoriteUseCase(productId: productId);
+  Future<void> toggleFavorite(String productId, {bool? currentIsFavorite}) async {
+    final currentState = state;
+    if (currentState is HomeSuccessState) {
+      final feed = currentState.homeFeed;
+      final existingIndex = feed.highlights.indexWhere((p) => p.id == productId);
+      final isCurrentlyFav = currentIsFavorite ??
+          (existingIndex != -1 ? feed.highlights[existingIndex].isFavorite : false);
 
-    result.fold(
-      (failure) => null,
-      (isFavorite) {
-        if (state is HomeSuccessState) {
-          fetchHomeFeed();
-        }
-      },
-    );
+      if (existingIndex != -1) {
+        final oldItem = feed.highlights[existingIndex];
+        final updatedHighlights = List<ProductHighlightEntity>.from(feed.highlights);
+        updatedHighlights[existingIndex] = ProductHighlightEntity(
+          id: oldItem.id,
+          title: oldItem.title,
+          price: oldItem.price,
+          imageUrl: oldItem.imageUrl,
+          rating: oldItem.rating,
+          badge: oldItem.badge,
+          isFavorite: !isCurrentlyFav,
+          isPopular: oldItem.isPopular,
+          categoryId: oldItem.categoryId,
+          categoryName: oldItem.categoryName,
+        );
+
+        emit(HomeSuccessState(
+          homeFeed: HomeFeedEntity(
+            deliveryLocation: feed.deliveryLocation,
+            banners: feed.banners,
+            categories: feed.categories,
+            highlights: updatedHighlights,
+            curatedDrop: feed.curatedDrop,
+            archiveStory: feed.archiveStory,
+          ),
+        ));
+      }
+
+      await toggleFavoriteUseCase(
+        productId: productId,
+        isCurrentlyFavorite: isCurrentlyFav,
+      );
+    } else {
+      await toggleFavoriteUseCase(
+        productId: productId,
+        isCurrentlyFavorite: currentIsFavorite ?? false,
+      );
+    }
   }
 }

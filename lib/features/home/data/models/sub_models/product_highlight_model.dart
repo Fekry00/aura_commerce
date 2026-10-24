@@ -12,20 +12,49 @@ class ProductHighlightModel extends ProductHighlightEntity {
     super.badge,
     super.isFavorite,
     super.isPopular,
+    super.categoryId,
+    super.categoryName,
   });
 
   factory ProductHighlightModel.fromJson(Map<String, dynamic> json) {
+    final nameVal = (json['name'] ?? json['title']) as String? ?? '';
+    final priceVal = (json['minPrice'] ?? json['min_price'] ?? json['price']) as num? ?? 0;
+    final img = (json['thumbnailUrl'] ??
+        json['thumbnail_url'] ??
+        json['image_url'] ??
+        json['imageUrl'] ??
+        json['image']) as String? ?? '';
+    final isFeat = json['isFeatured'] as bool? ?? (json['is_featured'] as bool? ?? false);
+    final isBest = json['isBestSeller'] as bool? ?? (json['is_best_seller'] as bool? ?? false);
+    final discount = (json['discountPercent'] ?? json['discount_percent']) as num? ?? 0;
+    final badgeVal = json['badge'] as String? ??
+        (isFeat ? 'FEATURED' : (isBest ? 'BESTSELLER' : (discount > 0 ? '$discount% OFF' : null)));
+
+    final categoryMap = json['category'] is Map<String, dynamic>
+        ? json['category'] as Map<String, dynamic>
+        : null;
+    final catId = categoryMap != null
+        ? (categoryMap['id'] is int
+            ? categoryMap['id'] as int
+            : int.tryParse(categoryMap['id']?.toString() ?? ''))
+        : (json['category_id'] is int
+            ? json['category_id'] as int
+            : int.tryParse(json['category_id']?.toString() ?? ''));
+    final catName = categoryMap?['name'] as String? ?? json['category'] as String?;
+
     return ProductHighlightModel(
       id: json['id']?.toString() ?? '',
-      title: json['title'] as String? ?? '',
-      price: (json['price'] as num?)?.toDouble() ?? 0.0,
-      imageUrl: (json['image_url'] ?? json['imageUrl']) as String? ?? '',
+      title: nameVal,
+      price: priceVal.toDouble(),
+      imageUrl: img,
       rating: json['rating'] is Map<String, dynamic>
           ? ProductRatingModel.fromJson(json['rating'] as Map<String, dynamic>)
-          : const ProductRatingModel(average: 0.0, reviewsCount: 0),
-      badge: json['badge'] as String?,
+          : const ProductRatingModel(average: 4.9, reviewsCount: 120),
+      badge: badgeVal,
       isFavorite: (json['is_favorite'] ?? json['isFavorite']) as bool? ?? false,
-      isPopular: (json['is_popular'] ?? json['isPopular']) as bool? ?? false,
+      isPopular: isFeat || isBest || discount > 0 || (json['is_popular'] as bool? ?? false),
+      categoryId: catId,
+      categoryName: catName,
     );
   }
 
@@ -39,6 +68,8 @@ class ProductHighlightModel extends ProductHighlightEntity {
       'badge': badge,
       'is_favorite': isFavorite,
       'is_popular': isPopular,
+      'category_id': categoryId,
+      'category_name': categoryName,
     };
   }
 }

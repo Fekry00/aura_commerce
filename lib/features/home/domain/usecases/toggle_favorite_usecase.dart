@@ -8,7 +8,13 @@ class ToggleFavoriteUseCase {
 
   final HomeRepository repository;
 
-  Future<Either<Failure, bool>> call({required String productId}) {
-    return repository.toggleFavoriteProduct(productId: productId);
+  Future<Either<Failure, bool>> call({
+    required String productId,
+    bool isCurrentlyFavorite = false,
+  }) {
+    return repository.toggleFavoriteProduct(
+      productId: productId,
+      isCurrentlyFavorite: isCurrentlyFavorite,
+    );
   }
 }

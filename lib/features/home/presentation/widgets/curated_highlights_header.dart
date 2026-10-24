@@ -4,10 +4,12 @@ import 'package:flutter/material.dart';
 
 
 class CuratedHighlightsHeader extends StatefulWidget {
+  final int selectedIndex;
   final ValueChanged<int>? onTabChanged;
 
   const CuratedHighlightsHeader({
     super.key,
+    this.selectedIndex = 0,
     this.onTabChanged,
   });
 
@@ -16,7 +18,21 @@ class CuratedHighlightsHeader extends StatefulWidget {
 }
 
 class _CuratedHighlightsHeaderState extends State<CuratedHighlightsHeader> {
-  int _selectedIndex = 0;
+  late int _selectedIndex;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedIndex = widget.selectedIndex;
+  }
+
+  @override
+  void didUpdateWidget(CuratedHighlightsHeader oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.selectedIndex != widget.selectedIndex) {
+      _selectedIndex = widget.selectedIndex;
+    }
+  }
 
   void _handleTabSelect(int index) {
     if (_selectedIndex == index) return;

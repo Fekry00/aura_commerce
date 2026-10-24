@@ -2,10 +2,18 @@ class CategoryEntity {
   const CategoryEntity({
     required this.id,
     required this.name,
-    required this.iconKey,
+    this.slug,
+    this.description,
+    this.image,
+    this.parentCategoryId,
+    this.isActive = true,
   });
 
-  final String id;
+  final int id;
   final String name;
-  final String iconKey;
-}
+  final String? slug;
+  final String? description;
+  final String? image;
+  final int? parentCategoryId;
+  final bool isActive;
+}
