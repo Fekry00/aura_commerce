@@ -47,16 +47,49 @@ class ProductCard extends StatelessWidget {
                 children: [
                   ClipRRect(
                     borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
-                    child: Image.network(
-                      imageUrl,
-                      width: double.infinity,
-                      height: double.infinity,
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => Container(
-                        color: AppColors.surfaceContainerLow,
-                        child: const Icon(Icons.broken_image_outlined, color: AppColors.outline),
-                      ),
-                    ),
+                    child: imageUrl.isNotEmpty
+                        ? Image.network(
+                            imageUrl,
+                            width: double.infinity,
+                            height: double.infinity,
+                            fit: BoxFit.cover,
+                            loadingBuilder: (context, child, loadingProgress) {
+                              if (loadingProgress == null) return child;
+                              return Container(
+                                color: AppColors.surfaceContainerLow,
+                                child: const Center(
+                                  child: SizedBox(
+                                    width: 22,
+                                    height: 22,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: AppColors.primary,
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                            errorBuilder: (context, error, stackTrace) => Container(
+                              color: AppColors.surfaceContainerLow,
+                              child: const Center(
+                                child: Icon(
+                                  Icons.inventory_2_outlined,
+                                  color: AppColors.outline,
+                                  size: 36,
+                                ),
+                              ),
+                            ),
+                          )
+                        : Container(
+                            color: AppColors.surfaceContainerLow,
+                            child: const Center(
+                              child: Icon(
+                                Icons.inventory_2_outlined,
+                                color: AppColors.outline,
+                                size: 36,
+                              ),
+                            ),
+                          ),
                   ),
                   if (badgeText != null)
                     Positioned(
@@ -73,7 +106,7 @@ class ProductCard extends StatelessWidget {
                         width: 32,
                         height: 32,
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.85),
+                          color: Colors.white.withValues(alpha: 0.85),
                           shape: BoxShape.circle,
                         ),
                         child: Icon(

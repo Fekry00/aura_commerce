@@ -15,7 +15,9 @@ import 'package:aura/features/cart/data/datasources/cart_local_data_source.dart'
 import 'package:aura/features/cart/data/datasources/cart_remote_data_source.dart';
 import 'package:aura/features/cart/data/repositories/cart_repository_impl.dart';
 import 'package:aura/features/cart/domain/repositories/cart_repository.dart';
+import 'package:aura/features/cart/domain/usecases/add_to_cart_usecase.dart';
 import 'package:aura/features/cart/domain/usecases/apply_voucher_usecase.dart';
+import 'package:aura/features/cart/domain/usecases/clear_cart_usecase.dart';
 import 'package:aura/features/cart/domain/usecases/get_cart_usecase.dart';
 import 'package:aura/features/cart/domain/usecases/remove_cart_item_usecase.dart';
 import 'package:aura/features/cart/domain/usecases/remove_voucher_usecase.dart';
@@ -52,6 +54,7 @@ import 'package:aura/features/product/data/repositories/product_repository_impl.
 import 'package:aura/features/product/domain/repositories/product_repository.dart';
 import 'package:aura/features/product/domain/usecases/get_product_details_usecase.dart';
 import 'package:aura/features/product/domain/usecases/get_product_reviews_usecase.dart';
+import 'package:aura/features/product/domain/usecases/get_products_usecase.dart';
 import 'package:aura/features/product/domain/usecases/toggle_product_favorite_usecase.dart';
 import 'package:aura/features/product/presentation/cubit/product_cubit.dart';
 import 'package:aura/features/profile/data/datasources/profile_local_data_source.dart';
@@ -72,6 +75,7 @@ import 'package:aura/features/wishlist/data/datasources/wishlist_local_data_sour
 import 'package:aura/features/wishlist/data/datasources/wishlist_remote_data_source.dart';
 import 'package:aura/features/wishlist/data/repositories/wishlist_repository_impl.dart';
 import 'package:aura/features/wishlist/domain/repositories/wishlist_repository.dart';
+import 'package:aura/features/wishlist/domain/usecases/add_to_wishlist_usecase.dart';
 import 'package:aura/features/wishlist/domain/usecases/get_wishlist_usecase.dart';
 import 'package:aura/features/wishlist/domain/usecases/move_all_to_bag_usecase.dart';
 import 'package:aura/features/wishlist/domain/usecases/remove_from_wishlist_usecase.dart';
@@ -117,15 +121,19 @@ Future<void> initDependencies() async {
   sl.registerFactory(
     () => CartCubit(
       getCartUseCase: sl(),
+      addToCartUseCase: sl(),
       updateCartQuantityUseCase: sl(),
       removeCartItemUseCase: sl(),
+      clearCartUseCase: sl(),
       applyVoucherUseCase: sl(),
       removeVoucherUseCase: sl(),
     ),
   );
   sl.registerLazySingleton(() => GetCartUseCase(sl()));
+  sl.registerLazySingleton(() => AddToCartUseCase(sl()));
   sl.registerLazySingleton(() => UpdateCartQuantityUseCase(sl()));
   sl.registerLazySingleton(() => RemoveCartItemUseCase(sl()));
+  sl.registerLazySingleton(() => ClearCartUseCase(sl()));
   sl.registerLazySingleton(() => ApplyVoucherUseCase(sl()));
   sl.registerLazySingleton(() => RemoveVoucherUseCase(sl()));
   sl.registerLazySingleton<CartRepository>(
@@ -146,11 +154,13 @@ Future<void> initDependencies() async {
   sl.registerFactory(
     () => WishlistCubit(
       getWishlistUseCase: sl(),
+      addToWishlistUseCase: sl(),
       removeFromWishlistUseCase: sl(),
       moveAllToBagUseCase: sl(),
     ),
   );
   sl.registerLazySingleton(() => GetWishlistUseCase(sl()));
+  sl.registerLazySingleton(() => AddToWishlistUseCase(sl()));
   sl.registerLazySingleton(() => RemoveFromWishlistUseCase(sl()));
   sl.registerLazySingleton(() => MoveAllToBagUseCase(sl()));
   sl.registerLazySingleton<WishlistRepository>(
@@ -209,8 +219,10 @@ Future<void> initDependencies() async {
     () => ProductCubit(
       getProductDetailsUseCase: sl(),
       toggleProductFavoriteUseCase: sl(),
+      getProductsUseCase: sl(),
     ),
   );
+  sl.registerLazySingleton(() => GetProductsUseCase(sl()));
   sl.registerLazySingleton(() => GetProductDetailsUseCase(sl()));
   sl.registerLazySingleton(() => GetProductReviewsUseCase(sl()));
   sl.registerLazySingleton(() => ToggleProductFavoriteUseCase(sl()));
