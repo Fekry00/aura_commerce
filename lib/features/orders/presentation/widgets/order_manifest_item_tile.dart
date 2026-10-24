@@ -38,7 +38,7 @@ class OrderManifestItemTile extends StatelessWidget {
                     child: Image.network(
                       imageUrl,
                       fit: BoxFit.cover,
-                      errorBuilder: (_, _, _) => Container(
+                      errorBuilder: (context, error, stackTrace) => Container(
                         color: AppColors.surfaceContainerLow,
                         child: const Icon(
                           Icons.inventory_2_outlined,
