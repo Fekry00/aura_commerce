@@ -146,7 +146,7 @@ class _CategoryDetailsViewState extends State<CategoryDetailsView> {
                         ? Image.network(
                             _currentCategory.image!,
                             fit: BoxFit.cover,
-                            errorBuilder: (_, _, _) => _buildFallbackBg(),
+                            errorBuilder: (context, error, stackTrace) => _buildFallbackBg(),
                           )
                         : _buildFallbackBg(),
                     DecoratedBox(

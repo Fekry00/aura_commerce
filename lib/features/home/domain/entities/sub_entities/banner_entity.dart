@@ -1,17 +1,21 @@
 class BannerEntity {
   const BannerEntity({
     required this.id,
-    required this.tag,
     required this.title,
-    required this.subtitle,
-    required this.ctaText,
     required this.imageUrl,
+    this.linkType,
+    this.linkTargetId,
+    this.externalUrl,
+    this.sortOrder,
+    this.isActive = true,
   });
 
-  final String id;
-  final String tag;
+  final int id;
   final String title;
-  final String subtitle;
-  final String ctaText;
   final String imageUrl;
-}
+  final String? linkType;
+  final int? linkTargetId;
+  final String? externalUrl;
+  final int? sortOrder;
+  final bool isActive;
+}

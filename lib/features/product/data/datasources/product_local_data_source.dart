@@ -39,29 +39,21 @@ class ProductLocalDataSourceImpl implements ProductLocalDataSource {
   }
 
   ProductDetailsModel _buildDefaultProductDetails(String productId) {
+    final idInt = int.tryParse(productId) ?? 1;
     return ProductDetailsModel(
       product: ProductItemModel(
-        id: productId.isEmpty ? '1' : productId,
-        title: 'Aethel Minimalist Chronograph 40mm',
-        price: 1450.00,
-        originalPrice: 1650.00,
-        rating: 4.9,
-        reviewsCount: 128,
-        imageUrl:
-            'https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=600',
-        stockStatus: 'IN STOCK',
-        materialSummary:
-            'Machined from monolithic 316L cold-forged stainless steel with dual-domed anti-reflective sapphire crystal, engineered to 5 ATM water resistance.',
-        calibreDescription:
-            'The Aethel Minimalist Chronograph reconciles classic horology with brutalist purity. Featuring custom counterpoised sub-dials and a high-beat automatic movement tuned to +/- 3 seconds daily variance.',
-        movement: 'Calibre AT-902 Autowind',
-        glass: '9H Sapphire Crystal',
-        strapMaterial: 'Full-grain Horween Leather',
-        powerReserve: '44-Hour Reserve',
-        deliveryDescription:
-            'Dispatched via secure armored courier within 24 hours. Transit time 2-3 business days worldwide with door-to-door full valuation insurance.',
-        guaranteeDescription:
-            'Every AURA timepiece is registered to our global horological registry. Comprehensive servicing, mechanical calibration, and water-resistance seal renewals are guaranteed every 24 months.',
+        id: idInt,
+        name: 'iPhone 15 Pro',
+        slug: 'iphone-15-pro',
+        description: 'Latest iPhone 15 Pro with 256GB storage.',
+        thumbnailUrl: 'http://127.0.0.1:8000/storage/products/iphone.jpg',
+        minPrice: 45000,
+        compareAtPrice: 50000,
+        discountPercent: 10,
+        stock: 98,
+        inStock: true,
+        categoryName: 'Electronics',
+        categoryId: 1,
         isFavorite: true,
       ),
       reviews: const [

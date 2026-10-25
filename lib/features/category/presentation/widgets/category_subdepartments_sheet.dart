@@ -219,7 +219,7 @@ class _CategorySubdepartmentsSheetState
               physics: const BouncingScrollPhysics(),
               padding: const EdgeInsets.all(20),
               itemCount: subDepartments.length,
-              separatorBuilder: (_, _) => const SizedBox(height: 12),
+              separatorBuilder: (context, index) => const SizedBox(height: 12),
               itemBuilder: (context, index) {
                 final sub = subDepartments[index];
                 return GestureDetector(
@@ -259,8 +259,9 @@ class _CategorySubdepartmentsSheetState
                                 ? Image.network(
                                     sub.image!,
                                     fit: BoxFit.cover,
-                                    errorBuilder: (_, _, _) =>
-                                        _buildSubIcon(sub.iconKey),
+                                    errorBuilder:
+                                        (context, error, stackTrace) =>
+                                            _buildSubIcon(sub.iconKey),
                                   )
                                 : _buildSubIcon(sub.iconKey),
                           ),

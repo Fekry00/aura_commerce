@@ -10,6 +10,11 @@ abstract class CartLocalDataSource {
 
   Future<void> cacheCart(CartModel cartToCache);
 
+  Future<bool> addToCartLocal({
+    required int productId,
+    int quantity = 1,
+  });
+
   Future<bool> updateCartItemQuantityLocal({
     required String itemId,
     required int quantity,
@@ -18,6 +23,8 @@ abstract class CartLocalDataSource {
   Future<bool> removeCartItemLocal({
     required String itemId,
   });
+
+  Future<bool> clearCartLocal();
 
   Future<bool> applyVoucherLocal({
     required String promoCode,
@@ -40,6 +47,19 @@ class CartLocalDataSourceImpl implements CartLocalDataSource {
   @override
   Future<void> cacheCart(CartModel cartToCache) async {
     // await cacheHelper.saveData(key: cachedCartKey, value: cartToCache.toJson());
+  }
+
+  @override
+  Future<bool> addToCartLocal({
+    required int productId,
+    int quantity = 1,
+  }) async {
+    return true;
+  }
+
+  @override
+  Future<bool> clearCartLocal() async {
+    return true;
   }
 
   @override

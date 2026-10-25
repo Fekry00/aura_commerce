@@ -11,13 +11,16 @@ class WishlistSanctuarySummaryCard extends StatelessWidget {
 
   const WishlistSanctuarySummaryCard({
     super.key,
-    this.totalAmount = 3659.00,
-    this.itemCount = 4,
+    this.totalAmount = 0.0,
+    this.itemCount = 0,
     this.onAddAllTap,
   });
 
   @override
   Widget build(BuildContext context) {
+    final formattedPrice =
+        '${totalAmount.toStringAsFixed(totalAmount % 1 == 0 ? 0 : 2)} EGP';
+
     return Container(
       decoration: BoxDecoration(
         color: AppColors.primaryContainer,
@@ -54,7 +57,7 @@ class WishlistSanctuarySummaryCard extends StatelessWidget {
                     textBaseline: TextBaseline.alphabetic,
                     children: [
                       Text(
-                        '\$${totalAmount.toStringAsFixed(2)}',
+                        formattedPrice,
                         style: AppTypography.headlineSm.copyWith(
                           color: AppColors.onPrimary,
                           fontWeight: FontWeight.w700,
@@ -62,7 +65,7 @@ class WishlistSanctuarySummaryCard extends StatelessWidget {
                       ),
                       const SizedBox(width: AppSpacing.spaceSm),
                       Text(
-                        '$itemCount curations',
+                        '$itemCount ${itemCount == 1 ? 'curation' : 'curations'}',
                         style: AppTypography.bodySm.copyWith(
                           color: AppColors.onPrimaryContainer,
                         ),

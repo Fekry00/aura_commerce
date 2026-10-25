@@ -6,11 +6,15 @@ import 'package:flutter/material.dart';
 class CustomBottomNavBar extends StatelessWidget {
   final int selectedIndex;
   final ValueChanged<int>? onItemTapped;
+  final int cartBadgeCount;
+  final int wishlistBadgeCount;
 
   const CustomBottomNavBar({
     super.key,
     this.selectedIndex = 0,
     this.onItemTapped,
+    this.cartBadgeCount = 0,
+    this.wishlistBadgeCount = 0,
   });
 
   @override
@@ -40,13 +44,19 @@ class CustomBottomNavBar extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                _buildNavItem(0, Icons.storefront_outlined, 'Home'),
-                _buildNavItem(1, Icons.explore_outlined, 'Explore'),
+                _buildNavItem(0, Icons.home_filled, 'Home'),
+                _buildNavItem(
+                  1,
+                  Icons.favorite_border_rounded,
+                  'Wishlist',
+                  badgeCount:
+                      wishlistBadgeCount > 0 ? wishlistBadgeCount : null,
+                ),
                 _buildNavItem(
                   2,
                   Icons.shopping_bag_outlined,
                   'Cart',
-                  badgeCount: 3,
+                  badgeCount: cartBadgeCount > 0 ? cartBadgeCount : null,
                 ),
                 _buildNavItem(3, Icons.person_outline_rounded, 'Profile'),
               ],
@@ -79,22 +89,31 @@ class CustomBottomNavBar extends StatelessWidget {
               clipBehavior: Clip.none,
               children: [
                 Icon(icon, color: color, size: 22),
-                if (badgeCount != null)
+                if (badgeCount != null && badgeCount > 0)
                   Positioned(
                     top: -4,
                     right: -8,
                     child: Container(
-                      padding: const EdgeInsets.all(3),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 4,
+                        vertical: 2,
+                      ),
+                      constraints: const BoxConstraints(
+                        minWidth: 16,
+                        minHeight: 16,
+                      ),
                       decoration: const BoxDecoration(
                         color: AppColors.primaryContainer,
                         shape: BoxShape.circle,
                       ),
+                      alignment: Alignment.center,
                       child: Text(
-                        '$badgeCount',
+                        badgeCount > 99 ? '99+' : '$badgeCount',
                         style: const TextStyle(
                           color: AppColors.secondaryContainer,
                           fontSize: 9,
                           fontWeight: FontWeight.w700,
+                          height: 1.0,
                         ),
                       ),
                     ),

@@ -55,7 +55,7 @@ class _AtelierHeroSpotlightState extends State<AtelierHeroSpotlight>
                 child: Image.network(
                   'https://lh3.googleusercontent.com/aida-public/AB6AXuAIJnSvsNWnhkmwk1byp6eSllZpFaK5QPliHg7xg7Gt-dBdGn-g6aac8dTG9C2M1OuYPjhnMh2sSkSlF5knPcDlPFTCKHgvnqYq4hk-7S7ATsApyP7Tq1BMRqthiZhtsdSXyeiJZq4on1eOEpGu0u-RvNxJeCbHNFzYmsoX63TdO5DukkgIDNX_GxYf4KeTjQHR6otkotgKDuRkNokfN_Jdb4CqVDSX_zCDjwGNVgSU2c8IEgkKE4S5',
                   fit: BoxFit.cover,
-                  errorBuilder: (_, _, _) => const SizedBox(),
+                  errorBuilder: (context, error, stackTrace) => const SizedBox(),
                 ),
               ),
             ),

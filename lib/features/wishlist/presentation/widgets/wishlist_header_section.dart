@@ -3,7 +3,12 @@ import 'package:aura/core/theme/app_typography.dart';
 import 'package:flutter/material.dart';
 
 class WishlistHeaderSection extends StatelessWidget {
-  const WishlistHeaderSection({super.key});
+  final int totalCount;
+
+  const WishlistHeaderSection({
+    super.key,
+    this.totalCount = 0,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +43,7 @@ class WishlistHeaderSection extends StatelessWidget {
                 ],
               ),
               Text(
-                'Page 1 of 1 • 4 Curations',
+                'Page 1 of 1 • $totalCount ${totalCount == 1 ? 'Curation' : 'Curations'}',
                 style: AppTypography.labelSm.copyWith(
                   color: AppColors.outline,
                 ),
@@ -77,7 +82,7 @@ class WishlistHeaderSection extends StatelessWidget {
                   borderRadius: BorderRadius.circular(AppSpacing.spaceLg),
                 ),
                 child: Text(
-                  '4 items',
+                  '$totalCount ${totalCount == 1 ? 'item' : 'items'}',
                   style: AppTypography.labelSm.copyWith(
                     color: AppColors.onSurface,
                     fontWeight: FontWeight.w600,

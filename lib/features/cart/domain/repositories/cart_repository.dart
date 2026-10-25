@@ -5,6 +5,11 @@ import 'package:dartz/dartz.dart';
 abstract class CartRepository {
   Future<Either<Failure, CartEntity>> getCart();
 
+  Future<Either<Failure, bool>> addToCart({
+    required int productId,
+    int quantity = 1,
+  });
+
   Future<Either<Failure, bool>> updateCartItemQuantity({
     required String itemId,
     required int quantity,
@@ -13,6 +18,8 @@ abstract class CartRepository {
   Future<Either<Failure, bool>> removeCartItem({
     required String itemId,
   });
+
+  Future<Either<Failure, bool>> clearCart();
 
   Future<Either<Failure, bool>> applyVoucher({
     required String promoCode,

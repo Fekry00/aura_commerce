@@ -45,6 +45,28 @@ class CartRepositoryImpl implements CartRepository {
   }
 
   @override
+  Future<Either<Failure, bool>> addToCart({
+    required int productId,
+    int quantity = 1,
+  }) async {
+    try {
+      final isAdded = await localDataSource.addToCartLocal(
+        productId: productId,
+        quantity: quantity,
+      );
+      if (await networkInfo.isConnected) {
+        await remoteDataSource.addToCart(
+          productId: productId,
+          quantity: quantity,
+        );
+      }
+      return Right(isAdded);
+    } catch (e) {
+      return Left(ServerFailure(errMessage: e.toString()));
+    }
+  }
+
+  @override
   Future<Either<Failure, bool>> updateCartItemQuantity({
     required String itemId,
     required int quantity,
@@ -80,6 +102,19 @@ class CartRepositoryImpl implements CartRepository {
       return Right(isRemoved);
     } catch (e) {
       return Left(CacheFailure(errMessage: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, bool>> clearCart() async {
+    try {
+      final isCleared = await localDataSource.clearCartLocal();
+      if (await networkInfo.isConnected) {
+        await remoteDataSource.clearCart();
+      }
+      return Right(isCleared);
+    } catch (e) {
+      return Left(ServerFailure(errMessage: e.toString()));
     }
   }
 

@@ -45,6 +45,21 @@ class WishlistRepositoryImpl implements WishlistRepository {
   }
 
   @override
+  Future<Either<Failure, bool>> addToWishlist({
+    required int productId,
+  }) async {
+    try {
+      final isAdded = await localDataSource.addToWishlistLocal(productId);
+      if (await networkInfo.isConnected) {
+        await remoteDataSource.addToWishlist(productId: productId);
+      }
+      return Right(isAdded);
+    } catch (e) {
+      return Left(ServerFailure(errMessage: e.toString()));
+    }
+  }
+
+  @override
   Future<Either<Failure, bool>> removeFromWishlist({
     required String productId,
   }) async {

@@ -10,6 +10,8 @@ class ProductHighlightEntity {
     this.badge,
     this.isFavorite = false,
     this.isPopular = false,
+    this.categoryId,
+    this.categoryName,
   });
 
   final String id;
@@ -20,4 +22,6 @@ class ProductHighlightEntity {
   final String? badge;
   final bool isFavorite;
   final bool isPopular;
+  final int? categoryId;
+  final String? categoryName;
 }

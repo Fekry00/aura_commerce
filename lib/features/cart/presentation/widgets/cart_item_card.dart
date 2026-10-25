@@ -36,12 +36,7 @@ class CartItemUiModel {
   double get totalPrice => unitPrice * quantity;
 
   String get formattedPrice {
-    final parts = (unitPrice * quantity).toStringAsFixed(2).split('.');
-    final intPart = parts[0].replaceAllMapped(
-      RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
-      (Match m) => '${m[1]},',
-    );
-    return '\$$intPart.${parts[1]}';
+    return '${(unitPrice * quantity).toStringAsFixed(0)} EGP';
   }
 }
 

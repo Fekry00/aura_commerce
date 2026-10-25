@@ -76,8 +76,9 @@ class _CategoryCardState extends State<CategoryCard>
                             ? Image.network(
                                 category.image!,
                                 fit: BoxFit.cover,
-                                errorBuilder: (_, _, _) =>
-                                    _buildFallbackThumb(),
+                                errorBuilder:
+                                    (context, error, stackTrace) =>
+                                        _buildFallbackThumb(),
                               )
                             : _buildFallbackThumb(),
                       ),

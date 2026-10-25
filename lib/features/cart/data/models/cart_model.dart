@@ -15,43 +15,69 @@ class CartModel extends CartEntity {
   });
 
   factory CartModel.fromJson(Map<String, dynamic> json) {
+    final dataMap = json['data'] is Map<String, dynamic>
+        ? json['data'] as Map<String, dynamic>
+        : json;
+
+    final rawItems = (dataMap['items'] ?? json['items'] ?? (json['data'] is List ? json['data'] : [])) as List<dynamic>? ?? [];
+    final itemsList = rawItems
+        .map((e) => CartItemModel.fromJson(e as Map<String, dynamic>))
+        .toList();
+
+    final summaryMap = dataMap['summary'] is Map<String, dynamic>
+        ? dataMap['summary'] as Map<String, dynamic>
+        : (dataMap['order_summary'] is Map<String, dynamic>
+            ? dataMap['order_summary'] as Map<String, dynamic>
+            : (json['order_summary'] is Map<String, dynamic>
+                ? json['order_summary'] as Map<String, dynamic>
+                : null));
+
+    final calculatedSubtotal = itemsList.fold<double>(
+      0.0,
+      (sum, item) => sum + (item.price * item.quantity),
+    );
+
+    final summaryItemsCount = ((summaryMap?['itemsCount'] ?? summaryMap?['items_count']) as num?)?.toInt() ?? itemsList.length;
+    final summarySubtotal = ((summaryMap?['subtotal'] ?? summaryMap?['subTotal']) as num?)?.toDouble() ?? calculatedSubtotal;
+
     return CartModel(
-      curatedBadge: (json['curated_badge'] ?? json['curatedBadge'])
+      curatedBadge: (dataMap['curated_badge'] ?? dataMap['curatedBadge'] ?? json['curated_badge'] ?? json['curatedBadge'])
               as String? ??
-          '3 CURATED ITEMS',
+          '${itemsList.length} CURATED ITEMS',
       shippingMeter: json['shipping_meter'] is Map<String, dynamic>
           ? ShippingMeterModel.fromJson(
               json['shipping_meter'] as Map<String, dynamic>,
             )
           : const ShippingMeterModel(
-              remainingAmount: 50.0,
-              threshold: 2710.0,
-              progressRatio: 0.85,
-              progressPercent: 85,
-              message: 'Add \$50.00 more for Complimentary Express Courier',
-              isComplimentary: false,
+              remainingAmount: 0.0,
+              threshold: 2000.0,
+              progressRatio: 1.0,
+              progressPercent: 100,
+              message: 'Complimentary Express Courier Included',
+              isComplimentary: true,
             ),
-      items: (json['items'] as List<dynamic>? ?? [])
-          .map((e) => CartItemModel.fromJson(e as Map<String, dynamic>))
-          .toList(),
+      items: itemsList,
       voucher: (json['voucher'] ?? json['voucher_privilege']) != null
           ? VoucherModel.fromJson(
               (json['voucher'] ?? json['voucher_privilege'])
                   as Map<String, dynamic>,
             )
           : null,
-      orderSummary: json['order_summary'] is Map<String, dynamic>
-          ? OrderSummaryModel.fromJson(
-              json['order_summary'] as Map<String, dynamic>,
-            )
-          : const OrderSummaryModel(
-              itemsCount: 3,
-              subtotal: 2660.0,
-              discountAmount: 266.0,
+      orderSummary: summaryMap != null
+          ? OrderSummaryModel.fromJson({
+              ...summaryMap,
+              'subtotal': summarySubtotal,
+              'itemsCount': summaryItemsCount,
+              'total': summarySubtotal,
+            })
+          : OrderSummaryModel(
+              itemsCount: itemsList.length,
+              subtotal: calculatedSubtotal,
+              discountAmount: 0.0,
               shippingLabel: 'COMPLIMENTARY',
-              tax: 191.50,
-              taxLocation: 'NY',
-              total: 2585.50,
+              tax: 0.0,
+              taxLocation: 'CA',
+              total: calculatedSubtotal,
             ),
     );
   }

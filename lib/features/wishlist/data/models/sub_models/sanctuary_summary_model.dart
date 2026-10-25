@@ -11,9 +11,9 @@ class SanctuarySummaryModel extends SanctuarySummaryEntity {
     return SanctuarySummaryModel(
       totalAmount: ((json['total_amount'] ?? json['totalAmount']) as num?)
               ?.toDouble() ??
-          3659.00,
+          0.0,
       itemCount:
-          ((json['item_count'] ?? json['itemCount']) as num?)?.toInt() ?? 4,
+          ((json['item_count'] ?? json['itemCount']) as num?)?.toInt() ?? 0,
       description: json['description'] as String? ??
           'Complimentary bespoke packaging, temperature-controlled transit, and signature arrival handling included.',
     );

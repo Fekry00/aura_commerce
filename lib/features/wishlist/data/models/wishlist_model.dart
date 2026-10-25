@@ -10,21 +10,32 @@ class WishlistModel extends WishlistEntity {
   });
 
   factory WishlistModel.fromJson(Map<String, dynamic> json) {
+    final dataMap = json['data'] is Map<String, dynamic>
+        ? json['data'] as Map<String, dynamic>
+        : json;
+
+    final rawItems = (dataMap['items'] ?? json['items'] ?? (json['data'] is List ? json['data'] : [])) as List<dynamic>? ?? [];
+    final itemsList = rawItems
+        .map((e) => WishlistItemModel.fromJson(e as Map<String, dynamic>))
+        .toList();
+
+    final totalAmount = itemsList.fold<double>(0.0, (sum, item) => sum + item.price);
+
+    final summary = (json['sanctuary_summary'] ?? json['sanctuarySummary'] ?? dataMap['summary']) != null
+        ? SanctuarySummaryModel.fromJson(
+            (json['sanctuary_summary'] ?? json['sanctuarySummary'] ?? dataMap['summary'])
+                as Map<String, dynamic>,
+          )
+        : SanctuarySummaryModel(
+            totalAmount: totalAmount,
+            itemCount: itemsList.length,
+            description:
+                'Complimentary bespoke packaging, temperature-controlled transit, and signature arrival handling included.',
+          );
+
     return WishlistModel(
-      sanctuarySummary: (json['sanctuary_summary'] ?? json['sanctuarySummary']) != null
-          ? SanctuarySummaryModel.fromJson(
-              (json['sanctuary_summary'] ?? json['sanctuarySummary'])
-                  as Map<String, dynamic>,
-            )
-          : const SanctuarySummaryModel(
-              totalAmount: 3659.00,
-              itemCount: 4,
-              description:
-                  'Complimentary bespoke packaging, temperature-controlled transit, and signature arrival handling included.',
-            ),
-      items: (json['items'] as List<dynamic>? ?? [])
-          .map((e) => WishlistItemModel.fromJson(e as Map<String, dynamic>))
-          .toList(),
+      sanctuarySummary: summary,
+      items: itemsList,
     );
   }
 

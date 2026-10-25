@@ -23,6 +23,23 @@ class WishlistItemData {
     this.hasComplimentary = false,
   });
 
+  factory WishlistItemData.fromEntity(dynamic entity) {
+    return WishlistItemData(
+      id: entity.id.toString(),
+      title: entity.title.toString(),
+      category: entity.category.toString(),
+      price: (entity.price as num).toDouble(),
+      originalPrice: entity.originalPrice != null
+          ? (entity.originalPrice as num).toDouble()
+          : null,
+      imageUrl: entity.imageUrl.toString(),
+      badge: entity.badge?.toString(),
+      stockStatus: entity.stockStatus.toString(),
+      isLowStock: entity.isLowStock ?? false,
+      hasComplimentary: entity.hasComplimentary ?? false,
+    );
+  }
+
   static const List<WishlistItemData> sampleItems = [
     WishlistItemData(
       id: '5',

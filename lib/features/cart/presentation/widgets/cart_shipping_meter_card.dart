@@ -21,10 +21,13 @@ class CartShippingMeterCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final remaining = remainingAmount ??
         controller?.formattedShippingRemaining ??
-        '\$50.00';
-    final progressValue = progress ?? controller?.shippingProgressRatio ?? 0.85;
+        '0 EGP';
+    final progressValue = progress ?? controller?.shippingProgressRatio ?? 1.0;
     final percent = percentLabel ??
-        (controller != null ? '${controller!.shippingPercent}%' : '85%');
+        (controller != null ? '${controller!.shippingPercent}%' : '100%');
+    final isUnlocked = progressValue >= 1.0 ||
+        remaining == '0 EGP' ||
+        (controller != null && controller!.shippingRemaining <= 0);
 
     return Container(
       padding: const EdgeInsets.all(AppSpacing.spaceMd),
@@ -44,27 +47,51 @@ class CartShippingMeterCard extends StatelessWidget {
               ),
               const SizedBox(width: AppSpacing.spaceSm),
               Expanded(
-                child: RichText(
-                  text: TextSpan(
-                    style: AppTypography.bodySm.copyWith(
-                      color: AppColors.onSurface,
-                      fontWeight: FontWeight.w500,
-                    ),
-                    children: [
-                      const TextSpan(text: 'Add '),
-                      TextSpan(
-                        text: remaining,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.secondary,
+                child: isUnlocked
+                    ? RichText(
+                        text: TextSpan(
+                          style: AppTypography.bodySm.copyWith(
+                            color: AppColors.onSurface,
+                            fontWeight: FontWeight.w500,
+                          ),
+                          children: const [
+                            TextSpan(
+                              text: 'Complimentary Express Courier ',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w700,
+                                color: AppColors.secondary,
+                              ),
+                            ),
+                            TextSpan(
+                              text: 'Unlocked 🎉',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    : RichText(
+                        text: TextSpan(
+                          style: AppTypography.bodySm.copyWith(
+                            color: AppColors.onSurface,
+                            fontWeight: FontWeight.w500,
+                          ),
+                          children: [
+                            const TextSpan(text: 'Add '),
+                            TextSpan(
+                              text: remaining,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w700,
+                                color: AppColors.secondary,
+                              ),
+                            ),
+                            const TextSpan(
+                              text: ' more for Complimentary Express Courier',
+                            ),
+                          ],
                         ),
                       ),
-                      const TextSpan(
-                        text: ' more for Complimentary Express Courier',
-                      ),
-                    ],
-                  ),
-                ),
               ),
               const SizedBox(width: AppSpacing.spaceSm),
               Text(
