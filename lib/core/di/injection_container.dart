@@ -6,10 +6,15 @@ import 'package:aura/features/auth/data/datasources/auth_local_data_source.dart'
 import 'package:aura/features/auth/data/datasources/auth_remote_data_source.dart';
 import 'package:aura/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:aura/features/auth/domain/repositories/auth_repository.dart';
-import 'package:aura/features/auth/domain/usecases/send_reset_otp_usecase.dart';
+import 'package:aura/features/auth/domain/usecases/auth_change_password_usecase.dart';
+import 'package:aura/features/auth/domain/usecases/forgot_password_usecase.dart';
+import 'package:aura/features/auth/domain/usecases/logout_usecase.dart';
+import 'package:aura/features/auth/domain/usecases/refresh_token_usecase.dart';
+import 'package:aura/features/auth/domain/usecases/resend_otp_usecase.dart';
+import 'package:aura/features/auth/domain/usecases/reset_password_usecase.dart';
 import 'package:aura/features/auth/domain/usecases/sign_in_usecase.dart';
 import 'package:aura/features/auth/domain/usecases/sign_up_usecase.dart';
-import 'package:aura/features/auth/domain/usecases/verify_reset_password_usecase.dart';
+import 'package:aura/features/auth/domain/usecases/verify_reset_otp_usecase.dart';
 import 'package:aura/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:aura/features/cart/data/datasources/cart_local_data_source.dart';
 import 'package:aura/features/cart/data/datasources/cart_remote_data_source.dart';
@@ -21,6 +26,13 @@ import 'package:aura/features/cart/domain/usecases/remove_cart_item_usecase.dart
 import 'package:aura/features/cart/domain/usecases/remove_voucher_usecase.dart';
 import 'package:aura/features/cart/domain/usecases/update_cart_quantity_usecase.dart';
 import 'package:aura/features/cart/presentation/cubit/cart_cubit.dart';
+import 'package:aura/features/category/data/datasources/category_local_data_source.dart';
+import 'package:aura/features/category/data/datasources/category_remote_data_source.dart';
+import 'package:aura/features/category/data/repositories/category_repository_impl.dart';
+import 'package:aura/features/category/domain/repositories/category_repository.dart';
+import 'package:aura/features/category/domain/usecases/get_categories_usecase.dart';
+import 'package:aura/features/category/domain/usecases/get_category_details_usecase.dart';
+import 'package:aura/features/category/presentation/cubit/category_cubit.dart';
 import 'package:aura/features/checkout/data/datasources/checkout_local_data_source.dart';
 import 'package:aura/features/checkout/data/datasources/checkout_remote_data_source.dart';
 import 'package:aura/features/checkout/data/repositories/checkout_repository_impl.dart';
@@ -228,6 +240,29 @@ Future<void> initDependencies() async {
     () => ProductLocalDataSourceImpl(cacheHelper: sl()),
   );
 
+  // Category
+  sl.registerFactory(
+    () => CategoryCubit(
+      getCategoriesUseCase: sl(),
+      getCategoryDetailsUseCase: sl(),
+    ),
+  );
+  sl.registerLazySingleton(() => GetCategoriesUseCase(sl()));
+  sl.registerLazySingleton(() => GetCategoryDetailsUseCase(sl()));
+  sl.registerLazySingleton<CategoryRepository>(
+    () => CategoryRepositoryImpl(
+      remoteDataSource: sl(),
+      localDataSource: sl(),
+      networkInfo: sl(),
+    ),
+  );
+  sl.registerLazySingleton<CategoryRemoteDataSource>(
+    () => CategoryRemoteDataSourceImpl(apiConsumer: sl()),
+  );
+  sl.registerLazySingleton<CategoryLocalDataSource>(
+    () => CategoryLocalDataSourceImpl(cacheHelper: sl()),
+  );
+
   // Orders
   sl.registerFactory(
     () => OrdersCubit(
@@ -287,14 +322,24 @@ Future<void> initDependencies() async {
     () => AuthCubit(
       signInUseCase: sl(),
       signUpUseCase: sl(),
-      verifyResetPasswordUseCase: sl(),
-      sendResetOtpUseCase: sl(),
+      forgotPasswordUseCase: sl(),
+      resendOtpUseCase: sl(),
+      verifyResetOtpUseCase: sl(),
+      resetPasswordUseCase: sl(),
+      refreshTokenUseCase: sl(),
+      logoutUseCase: sl(),
+      changePasswordUseCase: sl(),
     ),
   );
   sl.registerLazySingleton(() => SignInUseCase(sl()));
   sl.registerLazySingleton(() => SignUpUseCase(sl()));
-  sl.registerLazySingleton(() => VerifyResetPasswordUseCase(sl()));
-  sl.registerLazySingleton(() => SendResetOtpUseCase(sl()));
+  sl.registerLazySingleton(() => ForgotPasswordUseCase(sl()));
+  sl.registerLazySingleton(() => ResendOtpUseCase(sl()));
+  sl.registerLazySingleton(() => VerifyResetOtpUseCase(sl()));
+  sl.registerLazySingleton(() => ResetPasswordUseCase(sl()));
+  sl.registerLazySingleton(() => RefreshTokenUseCase(sl()));
+  sl.registerLazySingleton(() => LogoutUseCase(sl()));
+  sl.registerLazySingleton(() => AuthChangePasswordUseCase(sl()));
   sl.registerLazySingleton<AuthRepository>(
     () => AuthRepositoryImpl(
       remoteDataSource: sl(),

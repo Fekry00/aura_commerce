@@ -1,5 +1,5 @@
+import 'package:aura/core/routing/main_tab_controller.dart';
 import 'package:aura/core/theme/app_typography.dart';
-import 'package:aura/core/utils/functions/custom_snack_bar.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 
@@ -86,7 +86,7 @@ class _HomeHeroBannerState extends State<HomeHeroBanner> {
                     end: Alignment.bottomCenter,
                     colors: [
                       Colors.transparent,
-                      Colors.black.withOpacity(0.85),
+                      Colors.black.withValues(alpha: 0.85),
                     ],
                   ),
                 ),
@@ -135,11 +135,7 @@ class _HomeHeroBannerState extends State<HomeHeroBanner> {
                       children: [
                         GestureDetector(
                           onTap: () {
-                            showCustomSnackBar(
-                              context,
-                              message: 'Exploring ${item['tag']} Collection...',
-                              type: SnackBarType.info,
-                            );
+                            MainTabController.switchTab(1);
                           },
                           child: Container(
                             padding: const EdgeInsets.symmetric(

@@ -5,11 +5,13 @@ class EndPoint {
 
   static const String login = "auth/login";
   static const String register = "auth/register";
-  static const String refreshToken = "auth/refresh-token";
+  static const String refreshToken = "auth/refresh";
   static const String logout = "auth/logout";
   static const String changePassword = "auth/change-password";
+  static const String forgotPassword = "auth/forgot-password";
+  static const String verifyResetOtp = "auth/verify-reset-otp";
   static const String resetPassword = "auth/reset-password";
-  static const String sendOtp = "auth/send-otp";
+  static const String resendOtp = "auth/resend-otp";
 
   // Other features
   static const String products = "products";
@@ -28,6 +30,7 @@ class EndPoint {
   static const String deleteAccount = "profile";
   static const String orders = "orders";
   static const String checkout = "checkout";
+  static String categoryDetails(dynamic id) => "categories/$id";
 }
 
 class ApiKey {
@@ -49,4 +52,10 @@ class ApiKey {
   static const String profileImage = "profile_image";
   static const String avatar = "avatar";
   static const String otp = "otp";
+  static const String slug = "slug";
+  static const String description = "description";
+  static const String parentCategoryId = "parentCategoryId";
+  static const String isActive = "isActive";
+  static const String image = "image";
+  static const String createdAt = "createdAt";
 }

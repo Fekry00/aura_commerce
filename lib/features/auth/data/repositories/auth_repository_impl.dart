@@ -70,32 +70,54 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<Either<Failure, bool>> verifyResetPassword({
-    required String otp,
-    required String newPassword,
-  }) async {
+  Future<Either<Failure, bool>> forgotPassword({required String email}) async {
     try {
-      if (await networkInfo.isConnected) {
-        final isSuccess = await remoteDataSource.verifyResetPassword(
-          otp: otp,
-          newPassword: newPassword,
-        );
-        return Right(isSuccess);
-      }
-      return const Right(true);
+      final isSent = await remoteDataSource.forgotPassword(email: email);
+      return Right(isSent);
+    } on ServerException catch (e) {
+      return Left(ServerFailure(errMessage: e.errorModel.errorMessage));
     } catch (e) {
       return Left(ServerFailure(errMessage: e.toString()));
     }
   }
 
   @override
-  Future<Either<Failure, bool>> sendResetOtp({required String email}) async {
+  Future<Either<Failure, bool>> resendOtp({required String email}) async {
     try {
-      if (await networkInfo.isConnected) {
-        final isSent = await remoteDataSource.sendResetOtp(email: email);
-        return Right(isSent);
-      }
-      return const Right(true);
+      final isSent = await remoteDataSource.resendOtp(email: email);
+      return Right(isSent);
+    } on ServerException catch (e) {
+      return Left(ServerFailure(errMessage: e.errorModel.errorMessage));
+    } catch (e) {
+      return Left(ServerFailure(errMessage: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, bool>> verifyResetOtp({required String otp}) async {
+    try {
+      final isValid = await remoteDataSource.verifyResetOtp(otp: otp);
+      return Right(isValid);
+    } on ServerException catch (e) {
+      return Left(ServerFailure(errMessage: e.errorModel.errorMessage));
+    } catch (e) {
+      return Left(ServerFailure(errMessage: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, bool>> resetPassword({
+    required String otp,
+    required String newPassword,
+  }) async {
+    try {
+      final isSuccess = await remoteDataSource.resetPassword(
+        otp: otp,
+        newPassword: newPassword,
+      );
+      return Right(isSuccess);
+    } on ServerException catch (e) {
+      return Left(ServerFailure(errMessage: e.errorModel.errorMessage));
     } catch (e) {
       return Left(ServerFailure(errMessage: e.toString()));
     }
@@ -113,11 +135,55 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<Either<Failure, bool>> signOut() async {
+    return logout();
+  }
+
+  @override
+  Future<Either<Failure, AuthEntity>> refreshToken() async {
     try {
+      final remoteAuth = await remoteDataSource.refreshToken();
+      await localDataSource.cacheAuth(remoteAuth);
+      return Right(remoteAuth);
+    } on ServerException catch (e) {
+      return Left(ServerFailure(errMessage: e.errorModel.errorMessage));
+    } catch (e) {
+      return Left(ServerFailure(errMessage: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, bool>> logout() async {
+    try {
+      try {
+        await remoteDataSource.logout();
+      } catch (_) {
+        // Even if remote logout fails or user is offline, proceed to clear local data
+      }
       await localDataSource.clearAuth();
       return const Right(true);
     } catch (e) {
+      await localDataSource.clearAuth();
       return Left(CacheFailure(errMessage: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, bool>> changePassword({
+    required String currentPassword,
+    required String newPassword,
+    required String newPasswordConfirmation,
+  }) async {
+    try {
+      final isChanged = await remoteDataSource.changePassword(
+        currentPassword: currentPassword,
+        newPassword: newPassword,
+        newPasswordConfirmation: newPasswordConfirmation,
+      );
+      return Right(isChanged);
+    } on ServerException catch (e) {
+      return Left(ServerFailure(errMessage: e.errorModel.errorMessage));
+    } catch (e) {
+      return Left(ServerFailure(errMessage: e.toString()));
     }
   }
 }

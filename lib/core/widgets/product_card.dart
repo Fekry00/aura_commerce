@@ -52,7 +52,7 @@ class ProductCard extends StatelessWidget {
                       width: double.infinity,
                       height: double.infinity,
                       fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => Container(
+                      errorBuilder: (_, _, _) => Container(
                         color: AppColors.surfaceContainerLow,
                         child: const Icon(Icons.broken_image_outlined, color: AppColors.outline),
                       ),
@@ -73,7 +73,7 @@ class ProductCard extends StatelessWidget {
                         width: 32,
                         height: 32,
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.85),
+                          color: Colors.white.withValues(alpha: 0.85),
                           shape: BoxShape.circle,
                         ),
                         child: Icon(

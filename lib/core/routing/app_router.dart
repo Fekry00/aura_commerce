@@ -1,7 +1,10 @@
 import 'package:aura/core/di/injection_container.dart';
 import 'package:aura/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:aura/features/auth/presentation/views/create_account_view.dart';
+import 'package:aura/features/auth/presentation/views/forgot_password_view.dart';
+import 'package:aura/features/auth/presentation/views/reset_password_view.dart';
 import 'package:aura/features/auth/presentation/views/sign_in_view.dart';
+import 'package:aura/features/auth/presentation/views/verify_otp_view.dart';
 import 'package:aura/features/auth/presentation/views/verify_reset_password_view.dart';
 import 'package:aura/features/home/presentation/views/home_view.dart';
 import 'package:aura/features/product/presentation/views/product_details_view.dart';
@@ -11,6 +14,10 @@ import 'package:aura/features/profile/presentation/cubit/profile_cubit.dart';
 import 'package:aura/features/profile/presentation/views/edit_profile_view.dart';
 import 'package:aura/features/orders/presentation/views/order_success_receipt_view.dart';
 import 'package:aura/features/orders/presentation/views/order_tracking_details_view.dart';
+import 'package:aura/features/category/domain/entities/category_entity.dart';
+import 'package:aura/features/category/presentation/cubit/category_cubit.dart';
+import 'package:aura/features/category/presentation/views/categories_view.dart';
+import 'package:aura/features/category/presentation/views/category_details_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'routes.dart';
@@ -99,6 +106,73 @@ class AppRouter {
       case Routes.wishlistView:
         return _buildPageRoute(
           const HomeView(initialIndex: 1),
+          settings: settings,
+        );
+
+      case Routes.categoriesView:
+        return _buildPageRoute(
+          BlocProvider(
+            create: (context) => sl<CategoryCubit>()..getCategories(),
+            child: const CategoriesView(),
+          ),
+          settings: settings,
+        );
+
+      case Routes.categoryDetailsView:
+        CategoryEntity category;
+        String? initialSubDepartment;
+        if (arguments is CategoryEntity) {
+          category = arguments;
+        } else if (arguments is Map<String, dynamic>) {
+          category = arguments['category'] as CategoryEntity;
+          initialSubDepartment = arguments['subDepartment'] as String?;
+        } else {
+          category = const CategoryEntity(
+            id: 1,
+            name: 'Haute Parfumerie',
+            slug: 'haute-parfumerie',
+          );
+        }
+        return _buildPageRoute(
+          BlocProvider(
+            create: (context) => sl<CategoryCubit>(),
+            child: CategoryDetailsView(
+              category: category,
+              initialSubDepartment: initialSubDepartment,
+            ),
+          ),
+          settings: settings,
+        );
+
+      // ── Password Reset Flow ──────────────────────────────────────────
+      case Routes.forgotPasswordView:
+        return _buildPageRoute(
+          BlocProvider(
+            create: (context) => sl<AuthCubit>(),
+            child: const ForgotPasswordView(),
+          ),
+          settings: settings,
+        );
+
+      case Routes.verifyOtpView:
+        final otpArgs = arguments as Map<String, dynamic>? ?? {};
+        final email = otpArgs['email'] as String? ?? '';
+        return _buildPageRoute(
+          BlocProvider(
+            create: (context) => sl<AuthCubit>(),
+            child: VerifyOtpView(email: email),
+          ),
+          settings: settings,
+        );
+
+      case Routes.resetPasswordView:
+        final resetArgs = arguments as Map<String, dynamic>? ?? {};
+        final otp = resetArgs['otp'] as String? ?? '';
+        return _buildPageRoute(
+          BlocProvider(
+            create: (context) => sl<AuthCubit>(),
+            child: ResetPasswordView(otp: otp),
+          ),
           settings: settings,
         );
 

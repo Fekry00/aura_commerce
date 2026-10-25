@@ -87,7 +87,7 @@ class _ReviewsListSectionState extends State<ReviewsListSection> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFF2E7D32).withOpacity(0.4)),
+        border: Border.all(color: const Color(0xFF2E7D32).withValues(alpha: 0.4)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

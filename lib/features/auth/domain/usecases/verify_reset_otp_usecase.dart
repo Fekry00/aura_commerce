@@ -2,12 +2,12 @@ import 'package:aura/core/errors/failure.dart';
 import 'package:aura/features/auth/domain/repositories/auth_repository.dart';
 import 'package:dartz/dartz.dart';
 
-class SendResetOtpUseCase {
-  const SendResetOtpUseCase(this.repository);
+class VerifyResetOtpUseCase {
+  const VerifyResetOtpUseCase(this.repository);
 
   final AuthRepository repository;
 
-  Future<Either<Failure, bool>> call({required String email}) {
-    return repository.sendResetOtp(email: email);
+  Future<Either<Failure, bool>> call({required String otp}) {
+    return repository.verifyResetOtp(otp: otp);
   }
 }

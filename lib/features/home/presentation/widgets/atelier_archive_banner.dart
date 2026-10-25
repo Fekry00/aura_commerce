@@ -1,8 +1,7 @@
+import 'package:aura/core/routing/main_tab_controller.dart';
 import 'package:aura/core/theme/app_colors.dart';
 import 'package:aura/core/theme/app_typography.dart';
-import 'package:aura/core/utils/functions/custom_snack_bar.dart';
 import 'package:flutter/material.dart';
-
 
 class AtelierArchiveBanner extends StatelessWidget {
   const AtelierArchiveBanner({super.key});
@@ -11,11 +10,7 @@ class AtelierArchiveBanner extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        showCustomSnackBar(
-          context,
-          message: 'Opening Atelier Archive stories...',
-          type: SnackBarType.info,
-        );
+        MainTabController.switchTab(1);
       },
       child: Container(
         padding: const EdgeInsets.all(12),
@@ -23,7 +18,7 @@ class AtelierArchiveBanner extends StatelessWidget {
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: Colors.grey.withOpacity(0.2),
+            color: Colors.grey.withValues(alpha: 0.2),
             width: 0.8,
           ),
         ),

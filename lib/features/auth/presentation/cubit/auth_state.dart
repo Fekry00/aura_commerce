@@ -18,12 +18,38 @@ class AuthSuccessState extends AuthState {
   final AuthEntity auth;
 }
 
+/// Emitted after forgot-password OTP is sent successfully.
 class AuthOtpSentState extends AuthState {
   const AuthOtpSentState();
 }
 
+/// Emitted after OTP is verified successfully (before setting new password).
+class AuthOtpVerifiedState extends AuthState {
+  const AuthOtpVerifiedState();
+}
+
+/// Emitted after new password is set successfully.
 class AuthPasswordResetSuccessState extends AuthState {
   const AuthPasswordResetSuccessState();
+}
+
+/// Emitted after successful logout.
+class AuthLoggedOutState extends AuthState {
+  const AuthLoggedOutState();
+}
+
+/// Emitted after password is changed successfully.
+class AuthPasswordChangedState extends AuthState {
+  const AuthPasswordChangedState({this.message = 'تم تغيير كلمة المرور بنجاح'});
+
+  final String message;
+}
+
+/// Emitted after token is refreshed successfully.
+class AuthTokenRefreshedState extends AuthState {
+  const AuthTokenRefreshedState({required this.auth});
+
+  final AuthEntity auth;
 }
 
 class AuthErrorState extends AuthState {
@@ -31,3 +57,4 @@ class AuthErrorState extends AuthState {
 
   final String message;
 }
+

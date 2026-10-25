@@ -35,7 +35,7 @@ class ReviewsProductHeaderCard extends StatelessWidget {
               child: Image.network(
                 product['image'] ?? 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=200',
                 fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => const Icon(Icons.watch_outlined, color: AppColors.slateBody),
+                errorBuilder: (_, _, _) => const Icon(Icons.watch_outlined, color: AppColors.slateBody),
               ),
             ),
           ),

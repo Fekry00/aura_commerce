@@ -10,6 +10,15 @@ class Routes {
   static const String checkoutView = '/checkoutView';
   static const String orderSuccessReceiptView = '/orderSuccessReceiptView';
   static const String orderTrackingDetailsView = '/orderTrackingDetailsView';
-  static const String verifyResetPasswordView = '/verifyResetPasswordView';
   static const String wishlistView = '/wishlistView';
+  static const String categoriesView = '/categoriesView';
+  static const String categoryDetailsView = '/categoryDetailsView';
+
+  // Password Reset Flow
+  static const String forgotPasswordView = '/forgotPasswordView';
+  static const String verifyOtpView = '/verifyOtpView';
+  static const String resetPasswordView = '/resetPasswordView';
+
+  /// @deprecated Use [forgotPasswordView] flow instead.
+  static const String verifyResetPasswordView = '/verifyResetPasswordView';
 }

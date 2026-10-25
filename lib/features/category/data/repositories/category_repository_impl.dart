@@ -1,0 +1,72 @@
+import 'package:aura/core/errors/failure.dart';
+import 'package:aura/core/network/connection/network_info.dart';
+import 'package:aura/features/category/data/datasources/category_local_data_source.dart';
+import 'package:aura/features/category/data/datasources/category_remote_data_source.dart';
+import 'package:aura/features/category/domain/entities/category_entity.dart';
+import 'package:aura/features/category/domain/repositories/category_repository.dart';
+import 'package:dartz/dartz.dart';
+
+class CategoryRepositoryImpl implements CategoryRepository {
+  const CategoryRepositoryImpl({
+    required this.remoteDataSource,
+    required this.localDataSource,
+    required this.networkInfo,
+  });
+
+  final CategoryRemoteDataSource remoteDataSource;
+  final CategoryLocalDataSource localDataSource;
+  final NetworkInfo networkInfo;
+
+  @override
+  Future<Either<Failure, List<CategoryEntity>>> getCategories() async {
+    if (await networkInfo.isConnected) {
+      try {
+        final remoteCategories = await remoteDataSource.getCategories();
+        if (remoteCategories.isNotEmpty) {
+          await localDataSource.cacheCategories(remoteCategories);
+        }
+        return Right(remoteCategories);
+      } catch (e) {
+        try {
+          final cached = await localDataSource.getCachedCategories();
+          return Right(cached);
+        } catch (_) {
+          return Left(ServerFailure(errMessage: e.toString()));
+        }
+      }
+    } else {
+      try {
+        final cached = await localDataSource.getCachedCategories();
+        return Right(cached);
+      } catch (e) {
+        return Left(CacheFailure(errMessage: 'No internet connection: ${e.toString()}'));
+      }
+    }
+  }
+
+  @override
+  Future<Either<Failure, CategoryEntity>> getCategoryDetails(int id) async {
+    if (await networkInfo.isConnected) {
+      try {
+        final remoteCategory = await remoteDataSource.getCategoryDetails(id);
+        return Right(remoteCategory);
+      } catch (e) {
+        try {
+          final cached = await localDataSource.getCachedCategoryDetails(id);
+          if (cached != null) return Right(cached);
+          return Left(ServerFailure(errMessage: e.toString()));
+        } catch (_) {
+          return Left(ServerFailure(errMessage: e.toString()));
+        }
+      }
+    } else {
+      try {
+        final cached = await localDataSource.getCachedCategoryDetails(id);
+        if (cached != null) return Right(cached);
+        return const Left(CacheFailure(errMessage: 'Category not found in offline cache'));
+      } catch (e) {
+        return Left(CacheFailure(errMessage: 'No internet connection: ${e.toString()}'));
+      }
+    }
+  }
+}

@@ -15,13 +15,32 @@ abstract class AuthRemoteDataSource {
     required String password,
   });
 
-  Future<bool> verifyResetPassword({
+  /// Step 1: Send OTP to email for password reset.
+  Future<bool> forgotPassword({required String email});
+
+  /// Step 2 (optional): Resend OTP to email.
+  Future<bool> resendOtp({required String email});
+
+  /// Step 3: Verify OTP only — returns true if valid.
+  Future<bool> verifyResetOtp({required String otp});
+
+  /// Step 4: Set new password after OTP is verified.
+  Future<bool> resetPassword({
     required String otp,
     required String newPassword,
   });
 
-  Future<bool> sendResetOtp({
-    required String email,
+  /// Refresh Sanctum Bearer Token
+  Future<AuthModel> refreshToken();
+
+  /// Logout current authenticated session
+  Future<bool> logout();
+
+  /// Change Password for authenticated user
+  Future<bool> changePassword({
+    required String currentPassword,
+    required String newPassword,
+    required String newPasswordConfirmation,
   });
 }
 
@@ -66,7 +85,34 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   }
 
   @override
-  Future<bool> verifyResetPassword({
+  Future<bool> forgotPassword({required String email}) async {
+    final response = await apiConsumer.post(
+      EndPoint.forgotPassword,
+      data: {'email': email},
+    );
+    return response['success'] ?? true;
+  }
+
+  @override
+  Future<bool> resendOtp({required String email}) async {
+    final response = await apiConsumer.post(
+      EndPoint.resendOtp,
+      data: {'email': email},
+    );
+    return response['success'] ?? true;
+  }
+
+  @override
+  Future<bool> verifyResetOtp({required String otp}) async {
+    final response = await apiConsumer.post(
+      EndPoint.verifyResetOtp,
+      data: {'otp': otp},
+    );
+    return response['success'] ?? true;
+  }
+
+  @override
+  Future<bool> resetPassword({
     required String otp,
     required String newPassword,
   }) async {
@@ -75,16 +121,37 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       data: {
         'otp': otp,
         'new_password': newPassword,
+        'new_password_confirmation': newPassword,
       },
     );
     return response['success'] ?? true;
   }
 
   @override
-  Future<bool> sendResetOtp({required String email}) async {
+  Future<AuthModel> refreshToken() async {
+    final response = await apiConsumer.post(EndPoint.refreshToken);
+    return AuthModel.fromJson(response);
+  }
+
+  @override
+  Future<bool> logout() async {
+    final response = await apiConsumer.post(EndPoint.logout);
+    return response['success'] ?? true;
+  }
+
+  @override
+  Future<bool> changePassword({
+    required String currentPassword,
+    required String newPassword,
+    required String newPasswordConfirmation,
+  }) async {
     final response = await apiConsumer.post(
-      EndPoint.sendOtp,
-      data: {'email': email},
+      EndPoint.changePassword,
+      data: {
+        ApiKey.currentPassword: currentPassword,
+        ApiKey.password: newPassword,
+        ApiKey.passwordConfirmation: newPasswordConfirmation,
+      },
     );
     return response['success'] ?? true;
   }

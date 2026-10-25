@@ -48,7 +48,7 @@ class SignInActionsRow extends StatelessWidget {
         ),
         GestureDetector(
           onTap: () {
-            Navigator.pushNamed(context, Routes.verifyResetPasswordView);
+            Navigator.pushNamed(context, Routes.forgotPasswordView);
           },
           child: Text(
             'Forgot Password?',

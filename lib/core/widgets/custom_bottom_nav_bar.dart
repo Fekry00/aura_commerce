@@ -40,8 +40,8 @@ class CustomBottomNavBar extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                _buildNavItem(0, Icons.home_filled, 'Home'),
-                _buildNavItem(1, Icons.favorite_border_rounded, 'Wishlist'),
+                _buildNavItem(0, Icons.storefront_outlined, 'Home'),
+                _buildNavItem(1, Icons.explore_outlined, 'Explore'),
                 _buildNavItem(
                   2,
                   Icons.shopping_bag_outlined,

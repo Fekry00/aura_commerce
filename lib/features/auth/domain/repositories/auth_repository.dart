@@ -16,16 +16,32 @@ abstract class AuthRepository {
     required String password,
   });
 
-  Future<Either<Failure, bool>> verifyResetPassword({
+  /// Step 1: Send OTP to email.
+  Future<Either<Failure, bool>> forgotPassword({required String email});
+
+  /// Step 2 (optional): Resend OTP.
+  Future<Either<Failure, bool>> resendOtp({required String email});
+
+  /// Step 3: Verify OTP — returns true if valid.
+  Future<Either<Failure, bool>> verifyResetOtp({required String otp});
+
+  /// Step 4: Set new password.
+  Future<Either<Failure, bool>> resetPassword({
     required String otp,
     required String newPassword,
-  });
-
-  Future<Either<Failure, bool>> sendResetOtp({
-    required String email,
   });
 
   Future<Either<Failure, AuthEntity?>> getSavedAuthSession();
 
   Future<Either<Failure, bool>> signOut();
+
+  Future<Either<Failure, AuthEntity>> refreshToken();
+
+  Future<Either<Failure, bool>> logout();
+
+  Future<Either<Failure, bool>> changePassword({
+    required String currentPassword,
+    required String newPassword,
+    required String newPasswordConfirmation,
+  });
 }
