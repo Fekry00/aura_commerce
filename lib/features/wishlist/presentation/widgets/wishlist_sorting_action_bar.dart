@@ -3,11 +3,13 @@ import 'package:aura/core/theme/app_typography.dart';
 import 'package:flutter/material.dart';
 
 class WishlistSortingActionBar extends StatelessWidget {
+  final String sortLabel;
   final VoidCallback? onSortTap;
   final VoidCallback? onMoveAllToBagTap;
 
   const WishlistSortingActionBar({
     super.key,
+    this.sortLabel = 'Price: High to Low',
     this.onSortTap,
     this.onMoveAllToBagTap,
   });
@@ -34,7 +36,7 @@ class WishlistSortingActionBar extends StatelessWidget {
                   ),
                   const SizedBox(width: AppSpacing.spaceXs),
                   Text(
-                    'Price: High to Low',
+                    sortLabel,
                     style: AppTypography.labelSm.copyWith(
                       color: AppColors.onSurfaceVariant,
                       fontWeight: FontWeight.w500,

@@ -1,3 +1,4 @@
+import 'package:aura/core/network/api/end_points.dart';
 import 'package:aura/features/wishlist/domain/entities/sub_entities/wishlist_item_entity.dart';
 
 class WishlistItemModel extends WishlistItemEntity {
@@ -24,7 +25,11 @@ class WishlistItemModel extends WishlistItemEntity {
         : (json['category_name'] as String? ?? 'Curated Item');
     final priceVal = ((json['minPrice'] ?? json['min_price'] ?? json['price'] ?? json['unitPrice']) as num?)?.toDouble() ?? 0.0;
     final origPriceVal = ((json['compareAtPrice'] ?? json['compare_at_price'] ?? json['originalPrice'] ?? json['original_price']) as num?)?.toDouble();
-    final imgVal = (json['thumbnailUrl'] ?? json['thumbnail_url'] ?? json['imageUrl'] ?? json['image_url'] ?? json['image']) as String? ?? '';
+    final imgVal = EndPoint.fixImageUrl((json['thumbnailUrl'] ??
+        json['thumbnail_url'] ??
+        json['imageUrl'] ??
+        json['image_url'] ??
+        json['image']) as String?);
     final stockNum = (json['stock'] as num?)?.toInt();
     final inStockVal = stockNum != null
         ? stockNum > 0

@@ -18,6 +18,13 @@ class WishlistCubit extends Cubit<WishlistState> {
   final RemoveFromWishlistUseCase removeFromWishlistUseCase;
   final MoveAllToBagUseCase moveAllToBagUseCase;
 
+  @override
+  void emit(WishlistState state) {
+    if (!isClosed) {
+      super.emit(state);
+    }
+  }
+
   Future<void> fetchWishlist() async {
     emit(const WishlistLoadingState());
 
