@@ -1,13 +1,15 @@
 import 'package:aura/core/theme/app_colors.dart';
 import 'package:aura/core/theme/app_typography.dart';
-import 'package:aura/features/cart/presentation/widgets/cart_controller.dart';
+import 'package:aura/features/cart/presentation/controllers/cart_controller.dart';
 import 'package:flutter/material.dart';
 
+/// Pure declarative UI widget for shipping progress meter and threshold indicator.
 class CartShippingMeterCard extends StatelessWidget {
   final CartController? controller;
   final String? remainingAmount;
   final double? progress;
   final String? percentLabel;
+  final bool? isUnlocked;
 
   const CartShippingMeterCard({
     super.key,
@@ -15,6 +17,7 @@ class CartShippingMeterCard extends StatelessWidget {
     this.remainingAmount,
     this.progress,
     this.percentLabel,
+    this.isUnlocked,
   });
 
   @override
@@ -25,9 +28,8 @@ class CartShippingMeterCard extends StatelessWidget {
     final progressValue = progress ?? controller?.shippingProgressRatio ?? 1.0;
     final percent = percentLabel ??
         (controller != null ? '${controller!.shippingPercent}%' : '100%');
-    final isUnlocked = progressValue >= 1.0 ||
-        remaining == '0 EGP' ||
-        (controller != null && controller!.shippingRemaining <= 0);
+    final effectiveIsUnlocked =
+        isUnlocked ?? controller?.isShippingUnlocked ?? true;
 
     return Container(
       padding: const EdgeInsets.all(AppSpacing.spaceMd),
@@ -47,7 +49,7 @@ class CartShippingMeterCard extends StatelessWidget {
               ),
               const SizedBox(width: AppSpacing.spaceSm),
               Expanded(
-                child: isUnlocked
+                child: effectiveIsUnlocked
                     ? RichText(
                         text: TextSpan(
                           style: AppTypography.bodySm.copyWith(

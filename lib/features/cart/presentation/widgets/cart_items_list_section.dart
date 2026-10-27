@@ -1,19 +1,18 @@
 import 'package:aura/core/theme/app_typography.dart';
-import 'package:aura/features/cart/presentation/widgets/cart_controller.dart';
+import 'package:aura/features/cart/presentation/controllers/cart_controller.dart';
 import 'package:aura/features/cart/presentation/widgets/cart_item_card.dart';
 import 'package:flutter/material.dart';
 
+/// Pure declarative list section rendering cart items and delegating actions to controller.
 class CartItemsListSection extends StatelessWidget {
-  final CartController? controller;
-  final List<CartItemUiModel>? items;
-  final ValueChanged<int>? onIncrement;
-  final ValueChanged<int>? onDecrement;
-  final ValueChanged<int>? onRemove;
+  final CartController controller;
+  final ValueChanged<CartItemUiModel>? onIncrement;
+  final ValueChanged<CartItemUiModel>? onDecrement;
+  final ValueChanged<CartItemUiModel>? onRemove;
 
   const CartItemsListSection({
     super.key,
-    this.controller,
-    this.items,
+    required this.controller,
     this.onIncrement,
     this.onDecrement,
     this.onRemove,
@@ -21,7 +20,7 @@ class CartItemsListSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final list = items ?? controller?.items ?? const [];
+    final list = controller.items;
 
     return Column(
       children: List.generate(list.length, (index) {
@@ -35,14 +34,14 @@ class CartItemsListSection extends StatelessWidget {
           child: CartItemCard(
             item: item,
             onIncrement: () => onIncrement != null
-                ? onIncrement!(index)
-                : controller?.incrementQuantity(index),
+                ? onIncrement!(item)
+                : controller.onIncrement(context, item),
             onDecrement: () => onDecrement != null
-                ? onDecrement!(index)
-                : controller?.decrementQuantity(index),
+                ? onDecrement!(item)
+                : controller.onDecrement(context, item),
             onRemove: () => onRemove != null
-                ? onRemove!(index)
-                : controller?.removeItem(index),
+                ? onRemove!(item)
+                : controller.onRemove(context, item),
           ),
         );
       }),

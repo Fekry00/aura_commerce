@@ -5,10 +5,18 @@ import 'package:aura/core/theme/app_typography.dart';
 import 'package:aura/core/utils/functions/custom_snack_bar.dart';
 import 'package:flutter/material.dart';
 
+/// Pure declarative UI checkout bottom tray.
 class CartBottomCheckoutTray extends StatelessWidget {
   final String totalPayable;
+  final VoidCallback? onCheckoutPressed;
+  final VoidCallback? onExpressCheckoutPressed;
 
-  const CartBottomCheckoutTray({super.key, this.totalPayable = '\$2,585.50'});
+  const CartBottomCheckoutTray({
+    super.key,
+    this.totalPayable = '0 EGP',
+    this.onCheckoutPressed,
+    this.onExpressCheckoutPressed,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -65,9 +73,8 @@ class CartBottomCheckoutTray extends StatelessWidget {
                   width: double.infinity,
                   height: AppSpacing.spaceXl + AppSpacing.spaceSm + 2,
                   child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.of(context).pushNamed(Routes.checkoutView);
-                    },
+                    onPressed: onCheckoutPressed ??
+                        () => Navigator.of(context).pushNamed(Routes.checkoutView),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primaryContainer,
                       foregroundColor: Colors.white,
@@ -104,13 +111,12 @@ class CartBottomCheckoutTray extends StatelessWidget {
                   width: double.infinity,
                   height: AppSpacing.spaceXl + AppSpacing.spaceXs,
                   child: ElevatedButton(
-                    onPressed: () {
-                      showCustomSnackBar(
-                        context,
-                        message: 'Initializing Express Wallet checkout...',
-                        type: SnackBarType.info,
-                      );
-                    },
+                    onPressed: onExpressCheckoutPressed ??
+                        () => showCustomSnackBar(
+                              context,
+                              message: 'Initializing Express Wallet checkout...',
+                              type: SnackBarType.info,
+                            ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF2D3133),
                       foregroundColor: Colors.white,

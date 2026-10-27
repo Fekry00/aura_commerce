@@ -27,6 +27,13 @@ class CartCubit extends Cubit<CartState> {
   final ApplyVoucherUseCase applyVoucherUseCase;
   final RemoveVoucherUseCase removeVoucherUseCase;
 
+  @override
+  void emit(CartState state) {
+    if (!isClosed) {
+      super.emit(state);
+    }
+  }
+
   Future<void> fetchCart() async {
     emit(const CartLoadingState());
 

@@ -1,8 +1,9 @@
 import 'package:aura/core/theme/app_colors.dart';
 import 'package:aura/core/theme/app_typography.dart';
-import 'package:aura/features/cart/presentation/widgets/cart_controller.dart';
+import 'package:aura/features/cart/presentation/controllers/cart_controller.dart';
 import 'package:flutter/material.dart';
 
+/// Pure declarative UI widget presenting order subtotal, discount, shipping, tax, and total.
 class CartOrderSummaryCard extends StatelessWidget {
   final CartController? controller;
   final String? subtotal;
@@ -29,22 +30,17 @@ class CartOrderSummaryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final effectiveCount = itemCount ?? controller?.totalItemCount ?? 3;
+    final effectiveCount = itemCount ?? controller?.totalItemCount ?? 0;
     final effectiveSubtotal =
-        subtotal ?? controller?.formattedSubtotal ?? '\$2,660.00';
+        subtotal ?? controller?.formattedSubtotal ?? '0 EGP';
     final effectiveDiscount =
-        discount ??
-        (controller != null
-            ? '-${controller!.formattedDiscount}'
-            : '-\$266.00');
+        discount ?? controller?.formattedOrderDiscount ?? '-0 EGP';
     final effectiveDiscountPct =
-        discountPercentage ??
-        (controller != null
-            ? '${(controller!.voucherDiscountRate * 100).round()}%'
-            : '10%');
-    final effectiveHasDiscount = hasDiscount ?? controller?.hasDiscount ?? true;
-    final effectiveTax = tax ?? controller?.formattedTax ?? '\$191.50';
-    final effectiveTotal = total ?? controller?.formattedTotal ?? '\$2,585.50';
+        discountPercentage ?? controller?.formattedDiscountPercentage ?? '0%';
+    final effectiveHasDiscount =
+        hasDiscount ?? controller?.hasDiscount ?? false;
+    final effectiveTax = tax ?? controller?.formattedTax ?? '0 EGP';
+    final effectiveTotal = total ?? controller?.formattedTotal ?? '0 EGP';
 
     return Container(
       padding: const EdgeInsets.all(AppSpacing.margin),

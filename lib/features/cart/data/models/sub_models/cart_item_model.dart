@@ -1,3 +1,4 @@
+import 'package:aura/core/network/api/end_points.dart';
 import 'package:aura/features/cart/domain/entities/sub_entities/cart_item_entity.dart';
 
 class CartItemModel extends CartItemEntity {
@@ -22,13 +23,12 @@ class CartItemModel extends CartItemEntity {
             : (productMap?['category'] ?? json['category'])) as String? ??
         '';
     final priceVal = ((productMap?['price'] ?? json['price'] ?? json['unit_price'] ?? json['unitPrice']) as num?)?.toDouble() ?? 0.0;
-    final imgVal = (productMap?['thumbnailUrl'] ??
+    final imgVal = EndPoint.fixImageUrl((productMap?['thumbnailUrl'] ??
             productMap?['thumbnail_url'] ??
             json['image_url'] ??
             json['imageUrl'] ??
             json['thumbnailUrl'] ??
-            json['thumbnail_url']) as String? ??
-        '';
+            json['thumbnail_url']) as String?);
 
     return CartItemModel(
       id: json['id']?.toString() ?? '',

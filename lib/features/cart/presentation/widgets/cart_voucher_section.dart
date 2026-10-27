@@ -1,86 +1,26 @@
 import 'package:aura/core/theme/app_colors.dart';
 import 'package:aura/core/theme/app_typography.dart';
-import 'package:aura/core/utils/functions/custom_snack_bar.dart';
-import 'package:aura/features/cart/presentation/widgets/cart_controller.dart';
+import 'package:aura/features/cart/presentation/controllers/cart_controller.dart';
 import 'package:flutter/material.dart';
 
-class CartVoucherSection extends StatefulWidget {
-  final CartController? controller;
-  final String? activeVoucherCode;
-  final String? activeVoucherLabel;
-  final ValueChanged<String>? onApplyVoucher;
-  final VoidCallback? onRemoveVoucher;
+/// Pure declarative UI widget for voucher code entry and active privilege badge.
+class CartVoucherSection extends StatelessWidget {
+  final CartController controller;
+  final VoidCallback? onApply;
+  final VoidCallback? onRemove;
 
   const CartVoucherSection({
     super.key,
-    this.controller,
-    this.activeVoucherCode,
-    this.activeVoucherLabel,
-    this.onApplyVoucher,
-    this.onRemoveVoucher,
+    required this.controller,
+    this.onApply,
+    this.onRemove,
   });
 
   @override
-  State<CartVoucherSection> createState() => _CartVoucherSectionState();
-}
-
-class _CartVoucherSectionState extends State<CartVoucherSection> {
-  final TextEditingController _textController = TextEditingController();
-
-  @override
-  void dispose() {
-    _textController.dispose();
-    super.dispose();
-  }
-
-  void _handleApply() {
-    final text = _textController.text.trim();
-    if (text.isEmpty) {
-      showCustomSnackBar(
-        context,
-        message: 'Please enter a promo code (e.g. WELCOME10)',
-        type: SnackBarType.error,
-      );
-      return;
-    }
-
-    if (widget.onApplyVoucher != null) {
-      widget.onApplyVoucher!(text);
-    } else {
-      widget.controller?.applyVoucher(text);
-      showCustomSnackBar(
-        context,
-        message: 'Promo code applied successfully!',
-        type: SnackBarType.success,
-      );
-    }
-
-    _textController.clear();
-    FocusScope.of(context).unfocus();
-  }
-
-  void _handleRemove() {
-    if (widget.onRemoveVoucher != null) {
-      widget.onRemoveVoucher!();
-    } else {
-      widget.controller?.removeVoucher();
-      showCustomSnackBar(
-        context,
-        message: 'Promo code removed',
-        type: SnackBarType.info,
-      );
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final code =
-        widget.activeVoucherCode ?? widget.controller?.activeVoucherCode;
-    final label =
-        widget.activeVoucherLabel ??
-        widget.controller?.voucherLabel ??
-        '-10% VIP Privilege';
-    final hasActiveVoucher = code != null && code.isNotEmpty;
+    final code = controller.activeVoucherCode;
+    final label = controller.voucherLabel ?? '-10% VIP Privilege';
+    final hasActiveVoucher = controller.hasDiscount;
 
     return Container(
       padding: const EdgeInsets.all(AppSpacing.spaceMd),
@@ -115,7 +55,7 @@ class _CartVoucherSectionState extends State<CartVoucherSection> {
                     borderRadius: BorderRadius.circular(AppSpacing.spaceLg),
                   ),
                   child: TextField(
-                    controller: _textController,
+                    controller: controller.voucherInputController,
                     textCapitalization: TextCapitalization.characters,
                     style: AppTypography.bodyMd.copyWith(
                       color: AppColors.onSurface,
@@ -138,13 +78,15 @@ class _CartVoucherSectionState extends State<CartVoucherSection> {
                         horizontal: AppSpacing.spaceMd,
                       ),
                     ),
-                    onSubmitted: (_) => _handleApply(),
+                    onSubmitted: (_) =>
+                        onApply != null ? onApply!() : controller.onApplyVoucher(context),
                   ),
                 ),
               ),
               const SizedBox(width: AppSpacing.spaceSm),
               InkWell(
-                onTap: _handleApply,
+                onTap: () =>
+                    onApply != null ? onApply!() : controller.onApplyVoucher(context),
                 borderRadius: BorderRadius.circular(AppSpacing.spaceLg),
                 child: Container(
                   height: AppSpacing.spaceXl + AppSpacing.spaceSm,
@@ -168,7 +110,7 @@ class _CartVoucherSectionState extends State<CartVoucherSection> {
               ),
             ],
           ),
-          if (hasActiveVoucher) ...[
+          if (hasActiveVoucher && code != null) ...[
             const SizedBox(height: AppSpacing.spaceSm + AppSpacing.spaceXs),
             Container(
               padding: const EdgeInsets.symmetric(
@@ -219,7 +161,9 @@ class _CartVoucherSectionState extends State<CartVoucherSection> {
                   ),
                   const Spacer(),
                   InkWell(
-                    onTap: _handleRemove,
+                    onTap: () => onRemove != null
+                        ? onRemove!()
+                        : controller.onRemoveVoucher(context),
                     borderRadius: BorderRadius.circular(
                       AppSpacing.spaceSm + AppSpacing.spaceXs,
                     ),

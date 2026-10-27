@@ -1,7 +1,9 @@
-import 'package:aura/core/routing/routes.dart';
 import 'package:aura/core/theme/app_colors.dart';
 import 'package:aura/core/theme/app_typography.dart';
 import 'package:aura/core/utils/functions/custom_snack_bar.dart';
+import 'package:aura/core/widgets/app_bar_user_avatar.dart';
+import 'package:aura/features/profile/data/services/user_address_manager.dart';
+import 'package:aura/features/profile/presentation/widgets/saved_addresses_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 
 class CartAppBar extends StatelessWidget {
@@ -58,12 +60,22 @@ class CartAppBar extends StatelessWidget {
   }
 
   Widget _buildAddressCapsule(BuildContext context) {
+    final defaultAddress = UserAddressManager.getDefaultAddress();
+    final addressText = defaultAddress != null
+        ? (defaultAddress.address.isNotEmpty
+            ? defaultAddress.address
+            : defaultAddress.label)
+        : 'Manage delivery';
+
     return InkWell(
-      onTap: () => showCustomSnackBar(
-        context,
-        message: 'Selecting delivery address...',
-        type: SnackBarType.info,
-      ),
+      onTap: () {
+        showModalBottomSheet(
+          context: context,
+          isScrollControlled: true,
+          backgroundColor: Colors.transparent,
+          builder: (_) => const SavedAddressesBottomSheet(),
+        );
+      },
       borderRadius: BorderRadius.circular(AppSpacing.margin),
       child: Container(
         padding: const EdgeInsets.symmetric(
@@ -86,7 +98,7 @@ class CartAppBar extends StatelessWidget {
             ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 130),
               child: Text(
-                'Deliver to: New York, 10001',
+                'Deliver: $addressText',
                 style: AppTypography.bodySm.copyWith(
                   fontWeight: FontWeight.w500,
                   color: AppColors.onSurface,
@@ -140,25 +152,9 @@ class CartAppBar extends StatelessWidget {
   }
 
   Widget _buildAvatar(BuildContext context) {
-    return InkWell(
-      onTap: () => Navigator.of(context).pushNamed(Routes.profileView),
-      borderRadius: BorderRadius.circular(AppSpacing.margin),
-      child: Container(
-        padding: const EdgeInsets.all(AppSpacing.spaceXs / 2),
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          border: Border.all(
-            color: AppColors.outlineVariant,
-            width: 1.5,
-          ),
-        ),
-        child: const CircleAvatar(
-          radius: AppSpacing.spaceMd - 2,
-          backgroundImage: NetworkImage(
-            'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=300',
-          ),
-        ),
-      ),
+    return const AppBarUserAvatar(
+      radius: AppSpacing.spaceMd - 2,
+      showBorder: true,
     );
   }
 }
