@@ -1,142 +1,209 @@
-import 'package:aura/core/routing/routes.dart';
 import 'package:aura/core/theme/app_colors.dart';
 import 'package:aura/core/theme/app_typography.dart';
-import 'package:aura/core/utils/functions/custom_snack_bar.dart';
 import 'package:flutter/material.dart';
 
-class ProductStickyBottomBar extends StatefulWidget {
-  final int? productId;
-  final double basePrice;
-  final ValueChanged<int>? onAddToBag;
+class ProductStickyBottomBar extends StatelessWidget {
+  final int quantity;
+  final String formattedTotalPrice;
+  final VoidCallback onIncrement;
+  final VoidCallback onDecrement;
+  final VoidCallback onAddToBag;
 
   const ProductStickyBottomBar({
     super.key,
-    this.productId,
-    this.basePrice = 1450.00,
-    this.onAddToBag,
+    required this.quantity,
+    required this.formattedTotalPrice,
+    required this.onIncrement,
+    required this.onDecrement,
+    required this.onAddToBag,
   });
 
   @override
-  State<ProductStickyBottomBar> createState() => _ProductStickyBottomBarState();
-}
-
-class _ProductStickyBottomBarState extends State<ProductStickyBottomBar> {
-  int _quantity = 1;
-
-  @override
   Widget build(BuildContext context) {
-    final totalPrice = (widget.basePrice * _quantity).toStringAsFixed(2);
-
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
       decoration: BoxDecoration(
         color: Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.06),
-            blurRadius: 10,
+            color: Colors.black.withValues(alpha: 0.08),
+            blurRadius: 16,
             offset: const Offset(0, -4),
           ),
         ],
       ),
       child: SafeArea(
         top: false,
-        child: Row(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
+            // Row 1: Total Price & Quantity Stepper
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Text(
-                  'TOTAL',
-                  style: AppTypography.labelCaps.copyWith(
-                    color: AppColors.slateBody,
-                    fontSize: 9,
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Row(
+                        children: [
+                          Text(
+                            'TOTAL PAYABLE',
+                            style: AppTypography.labelCaps.copyWith(
+                              color: AppColors.slateBody,
+                              fontSize: 9.5,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                          const SizedBox(width: 6),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 1.5,
+                            ),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFE8F5E9),
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: const Text(
+                              'FREE SHIPPING',
+                              style: TextStyle(
+                                fontSize: 8.5,
+                                fontWeight: FontWeight.w800,
+                                color: Color(0xFF2E7D32),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 2),
+                      FittedBox(
+                        alignment: Alignment.centerLeft,
+                        fit: BoxFit.scaleDown,
+                        child: Text(
+                          '$formattedTotalPrice EGP',
+                          style: AppTypography.headlineSm.copyWith(
+                            fontWeight: FontWeight.w900,
+                            fontSize: 20,
+                            color: const Color(0xFF0B3B2C),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                Text(
-                  '$totalPrice EGP',
-                  style: AppTypography.headlineSm.copyWith(
-                    fontWeight: FontWeight.w800,
-                    fontSize: 18,
+                const SizedBox(width: 12),
+                // Stepper Container
+                Container(
+                  height: 38,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF8FAFC),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: const Color(0xFFE2E8F0)),
                   ),
-                ),
-                Text(
-                  'Free Insured Air',
-                  style: AppTypography.bodySm.copyWith(
-                    color: const Color(0xFF2E7D32),
-                    fontSize: 10,
-                    fontWeight: FontWeight.w600,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          borderRadius: const BorderRadius.horizontal(
+                            left: Radius.circular(20),
+                          ),
+                          onTap: onDecrement,
+                          child: const Padding(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 8,
+                            ),
+                            child: Icon(
+                              Icons.remove,
+                              size: 16,
+                              color: Color(0xFF1E293B),
+                            ),
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        child: Text(
+                          '$quantity',
+                          style: AppTypography.bodySm.copyWith(
+                            fontWeight: FontWeight.w800,
+                            fontSize: 14,
+                            color: const Color(0xFF0F172A),
+                          ),
+                        ),
+                      ),
+                      Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          borderRadius: const BorderRadius.horizontal(
+                            right: Radius.circular(20),
+                          ),
+                          onTap: onIncrement,
+                          child: const Padding(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 8,
+                            ),
+                            child: Icon(
+                              Icons.add,
+                              size: 16,
+                              color: Color(0xFF1E293B),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
             ),
-            const SizedBox(width: 14),
-
-            Container(
-              height: 44,
-              padding: const EdgeInsets.symmetric(horizontal: 4),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(24),
-                border: Border.all(color: AppColors.outlineVariant),
-              ),
-              child: Row(
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.remove, size: 14),
-                    onPressed: () {
-                      if (_quantity > 1) setState(() => _quantity--);
-                    },
+            const SizedBox(height: 10),
+            // Row 2: Full Width Add to Bag Button
+            SizedBox(
+              width: double.infinity,
+              height: 48,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF0B3B2C),
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
                   ),
-                  Text(
-                    '$_quantity',
-                    style: AppTypography.bodySm.copyWith(
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.add, size: 14),
-                    onPressed: () => setState(() => _quantity++),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(width: 12),
-
-            Expanded(
-              child: SizedBox(
-                height: 44,
-                child: ElevatedButton.icon(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF1E382B),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(24),
-                    ),
-                    elevation: 0,
-                  ),
-                  onPressed: () {
-                    if (widget.onAddToBag != null) {
-                      widget.onAddToBag!(_quantity);
-                    }
-                    showCustomSnackBar(
-                      context,
-                      message: 'Added $_quantity item(s) to Bag!',
-                      type: SnackBarType.success,
-                    );
-                    Navigator.pushNamed(context, Routes.cartView);
-                  },
-                  icon: const Icon(
-                    Icons.shopping_bag_outlined,
-                    color: Colors.white,
-                    size: 18,
-                  ),
-                  label: Text(
-                    'Add to Bag',
-                    style: AppTypography.bodySm.copyWith(
+                  elevation: 2,
+                ),
+                onPressed: onAddToBag,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      Icons.shopping_bag_outlined,
                       color: Colors.white,
-                      fontWeight: FontWeight.w700,
+                      size: 20,
                     ),
-                  ),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Add to Bag',
+                      style: AppTypography.headlineSm.copyWith(
+                        color: Colors.white,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      '•  $formattedTotalPrice EGP',
+                      style: const TextStyle(
+                        color: Color(0xFF86EFAC),
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),

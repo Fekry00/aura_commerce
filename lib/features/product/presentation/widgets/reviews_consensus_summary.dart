@@ -1,13 +1,33 @@
 import 'package:aura/core/theme/app_colors.dart';
 import 'package:aura/core/theme/app_typography.dart';
+import 'package:aura/features/product/domain/entities/sub_entities/product_review_entity.dart';
+import 'package:aura/features/product/domain/entities/sub_entities/review_consensus_data.dart';
 import 'package:flutter/material.dart';
 
-
 class ReviewsConsensusSummary extends StatelessWidget {
-  const ReviewsConsensusSummary({super.key});
+  final ReviewConsensusData consensusData;
+
+  const ReviewsConsensusSummary({
+    super.key,
+    required this.consensusData,
+  });
+
+  factory ReviewsConsensusSummary.fromReviews({
+    Key? key,
+    List<ProductReviewEntity>? reviews,
+  }) {
+    return ReviewsConsensusSummary(
+      key: key,
+      consensusData: ReviewConsensusData.fromReviews(reviews),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
+    final count = consensusData.totalCount;
+    final avgRating = consensusData.avgRating;
+    final recommendedPct = consensusData.recommendedPercentage;
+
     return Container(
       padding: const EdgeInsets.all(AppSpacing.spaceMd),
       decoration: BoxDecoration(
@@ -23,7 +43,10 @@ class ReviewsConsensusSummary extends StatelessWidget {
             children: [
               Text(
                 'COLLECTOR CONSENSUS',
-                style: AppTypography.labelCaps.copyWith(color: AppColors.slateBody, fontSize: 10),
+                style: AppTypography.labelCaps.copyWith(
+                  color: AppColors.slateBody,
+                  fontSize: 10,
+                ),
               ),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
@@ -33,10 +56,14 @@ class ReviewsConsensusSummary extends StatelessWidget {
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.check_circle_rounded, color: Color(0xFF2E7D32), size: 12),
+                    const Icon(
+                      Icons.check_circle_rounded,
+                      color: Color(0xFF2E7D32),
+                      size: 12,
+                    ),
                     const SizedBox(width: 4),
                     Text(
-                      '98% Recommended',
+                      '$recommendedPct% Recommended',
                       style: AppTypography.labelCaps.copyWith(
                         color: const Color(0xFF2E7D32),
                         fontWeight: FontWeight.w700,
@@ -51,10 +78,12 @@ class ReviewsConsensusSummary extends StatelessWidget {
           const SizedBox(height: 6),
           Text(
             'Overall Satisfaction',
-            style: AppTypography.headlineSm.copyWith(fontWeight: FontWeight.w800, fontSize: 16),
+            style: AppTypography.headlineSm.copyWith(
+              fontWeight: FontWeight.w800,
+              fontSize: 16,
+            ),
           ),
           const SizedBox(height: AppSpacing.spaceMd),
-
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -62,48 +91,66 @@ class ReviewsConsensusSummary extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    '4.9',
-                    style: AppTypography.headlineLg.copyWith(fontSize: 42, fontWeight: FontWeight.w900),
+                    avgRating.toStringAsFixed(1),
+                    style: AppTypography.headlineLg.copyWith(
+                      fontSize: 42,
+                      fontWeight: FontWeight.w900,
+                    ),
                   ),
                   Row(
                     children: List.generate(
                       5,
-                      (index) => const Icon(Icons.star_rounded, color: Colors.amber, size: 16),
+                      (index) => Icon(
+                        index < avgRating.round()
+                            ? Icons.star_rounded
+                            : Icons.star_outline_rounded,
+                        color: Colors.amber,
+                        size: 16,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    '128 Total Reviews',
-                    style: AppTypography.bodySm.copyWith(color: AppColors.slateBody, fontSize: 11),
+                    '$count Total Review${count == 1 ? '' : 's'}',
+                    style: AppTypography.bodySm.copyWith(
+                      color: AppColors.slateBody,
+                      fontSize: 11,
+                    ),
                   ),
                 ],
               ),
               const SizedBox(width: AppSpacing.spaceLg),
               Expanded(
                 child: Column(
-                  children: const [
-                    _RatingBarRow(stars: '5', count: '110', fillRatio: 0.85),
-                    _RatingBarRow(stars: '4', count: '13', fillRatio: 0.12),
-                    _RatingBarRow(stars: '3', count: '3', fillRatio: 0.03),
-                    _RatingBarRow(stars: '2', count: '1', fillRatio: 0.01),
-                    _RatingBarRow(stars: '1', count: '1', fillRatio: 0.01),
+                  children: [
+                    _RatingBarRow(
+                      stars: '5',
+                      count: '${consensusData.stars5Count}',
+                      fillRatio: consensusData.ratio5,
+                    ),
+                    _RatingBarRow(
+                      stars: '4',
+                      count: '${consensusData.stars4Count}',
+                      fillRatio: consensusData.ratio4,
+                    ),
+                    _RatingBarRow(
+                      stars: '3',
+                      count: '${consensusData.stars3Count}',
+                      fillRatio: consensusData.ratio3,
+                    ),
+                    _RatingBarRow(
+                      stars: '2',
+                      count: '${consensusData.stars2Count}',
+                      fillRatio: consensusData.ratio2,
+                    ),
+                    _RatingBarRow(
+                      stars: '1',
+                      count: '${consensusData.stars1Count}',
+                      fillRatio: consensusData.ratio1,
+                    ),
                   ],
                 ),
               ),
-            ],
-          ),
-
-          const SizedBox(height: AppSpacing.spaceMd),
-          const Divider(thickness: 0.5),
-          const SizedBox(height: AppSpacing.spaceSm),
-
-          Row(
-            children: const [
-              Expanded(child: _CriteriaBox(title: 'Luminescence', score: '5.0 / 5.0')),
-              SizedBox(width: AppSpacing.spaceSm),
-              Expanded(child: _CriteriaBox(title: 'Absorption', score: '4.9 / 5.0')),
-              SizedBox(width: AppSpacing.spaceSm),
-              Expanded(child: _CriteriaBox(title: 'Flacon Finish', score: '5.0 / 5.0')),
             ],
           ),
         ],
@@ -129,7 +176,13 @@ class _RatingBarRow extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 2.0),
       child: Row(
         children: [
-          Text(stars, style: AppTypography.bodySm.copyWith(fontSize: 10, color: AppColors.slateBody)),
+          Text(
+            stars,
+            style: AppTypography.bodySm.copyWith(
+              fontSize: 10,
+              color: AppColors.slateBody,
+            ),
+          ),
           const SizedBox(width: 6),
           Expanded(
             child: ClipRRect(
@@ -147,35 +200,13 @@ class _RatingBarRow extends StatelessWidget {
             width: 24,
             child: Text(
               count,
-              style: AppTypography.bodySm.copyWith(fontSize: 10, color: AppColors.slateBody),
+              style: AppTypography.bodySm.copyWith(
+                fontSize: 10,
+                color: AppColors.slateBody,
+              ),
               textAlign: TextAlign.end,
             ),
           ),
-        ],
-      ),
-    );
-  }
-}
-
-class _CriteriaBox extends StatelessWidget {
-  final String title;
-  final String score;
-
-  const _CriteriaBox({required this.title, required this.score});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 6),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF8F9FA),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Column(
-        children: [
-          Text(title, style: AppTypography.bodySm.copyWith(color: AppColors.slateBody, fontSize: 10)),
-          const SizedBox(height: 2),
-          Text(score, style: AppTypography.bodySm.copyWith(fontWeight: FontWeight.w700, fontSize: 11)),
         ],
       ),
     );

@@ -1,10 +1,22 @@
 import 'package:aura/core/routing/routes.dart';
 import 'package:aura/core/theme/app_colors.dart';
 import 'package:aura/core/theme/app_typography.dart';
+import 'package:aura/features/product/domain/entities/sub_entities/product_item_entity.dart';
+import 'package:aura/features/product/domain/entities/sub_entities/product_review_entity.dart';
+import 'package:aura/features/product/presentation/widgets/reviewer_avatar.dart';
 import 'package:flutter/material.dart';
 
 class ProductSpecificationsCard extends StatelessWidget {
-  const ProductSpecificationsCard({super.key});
+  final List<ProductReviewEntity>? reviews;
+  final ProductItemEntity? product;
+  final VoidCallback? onSeeAllReviewsTap;
+
+  const ProductSpecificationsCard({
+    super.key,
+    this.reviews,
+    this.product,
+    this.onSeeAllReviewsTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -146,10 +158,20 @@ class ProductSpecificationsCard extends StatelessWidget {
             ),
             GestureDetector(
               onTap: () {
-                Navigator.pushNamed(context, Routes.productReviewsView);
+                if (onSeeAllReviewsTap != null) {
+                  onSeeAllReviewsTap!();
+                } else if (product != null) {
+                  Navigator.pushNamed(
+                    context,
+                    Routes.productReviewsView,
+                    arguments: product!,
+                  );
+                }
               },
               child: Text(
-                'See all 128',
+                reviews != null && reviews!.isNotEmpty
+                    ? 'See all (${reviews!.length})'
+                    : 'See all',
                 style: AppTypography.labelSm.copyWith(
                   color: const Color(0xFF1E382B),
                   fontWeight: FontWeight.w700,
@@ -162,81 +184,127 @@ class ProductSpecificationsCard extends StatelessWidget {
         const SizedBox(height: AppSpacing.spaceSm),
 
         // Review Card
-        Container(
-          padding: const EdgeInsets.all(AppSpacing.spaceMd),
-          decoration: BoxDecoration(
-            color: const Color(0xFFF8F9FA),
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: const Color(0xFFE9ECEF)),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  const CircleAvatar(
-                    radius: 16,
-                    backgroundColor: Color(0xFF111827),
-                    child: Text(
-                      'JL',
-                      style: TextStyle(
-                        color: Colors.white,
+        if (reviews != null && reviews!.isNotEmpty) ...[
+          Builder(
+            builder: (context) {
+              final review = reviews!.first;
+              return Container(
+                padding: const EdgeInsets.all(AppSpacing.spaceMd),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF8F9FA),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: const Color(0xFFE9ECEF)),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        ReviewerAvatar(review: review, radius: 16),
+                        const SizedBox(width: AppSpacing.spaceSm),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                review.authorName,
+                                style: AppTypography.bodySm.copyWith(
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                              Text(
+                                review.authorStatus,
+                                style: AppTypography.bodySm.copyWith(
+                                  color: AppColors.slateBody,
+                                  fontSize: 10,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Row(
+                          children: List.generate(
+                            review.rating.clamp(1, 5).toInt(),
+                            (index) => const Icon(
+                              Icons.star_rounded,
+                              color: Color(0xFF1E382B),
+                              size: 16,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: AppSpacing.spaceSm),
+                    Text(
+                      '"${review.comment}"',
+                      style: AppTypography.bodySm.copyWith(
+                        fontStyle: FontStyle.italic,
+                        height: 1.4,
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.spaceXs),
+                    Text(
+                      review.purchaseInfo,
+                      style: AppTypography.bodySm.copyWith(
+                        color: AppColors.slateBody,
                         fontSize: 11,
-                        fontWeight: FontWeight.bold,
                       ),
                     ),
-                  ),
-                  const SizedBox(width: AppSpacing.spaceSm),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Julian L.',
-                        style: AppTypography.bodySm.copyWith(
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                      Text(
-                        'Verified Atelier Owner',
-                        style: AppTypography.bodySm.copyWith(
-                          color: AppColors.slateBody,
-                          fontSize: 10,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const Spacer(),
-                  Row(
-                    children: List.generate(
-                      5,
-                      (index) => const Icon(
-                        Icons.star_rounded,
-                        color: Color(0xFF1E382B),
-                        size: 16,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: AppSpacing.spaceSm),
-              Text(
-                '"The brushed titanium finish absorbs light unlike anything else in my collection. Weighs next to nothing on the wrist, yet feels indestructible. Outstanding design restraint."',
-                style: AppTypography.bodySm.copyWith(
-                  fontStyle: FontStyle.italic,
-                  height: 1.4,
+                  ],
                 ),
-              ),
-              const SizedBox(height: AppSpacing.spaceXs),
-              Text(
-                'Purchased: 40mm / Brushed Titanium  •  2 weeks ago',
-                style: AppTypography.bodySm.copyWith(
-                  color: AppColors.slateBody,
-                  fontSize: 11,
-                ),
-              ),
-            ],
+              );
+            },
           ),
-        ),
+        ] else ...[
+          Container(
+            padding: const EdgeInsets.all(AppSpacing.spaceMd),
+            decoration: BoxDecoration(
+              color: const Color(0xFFF8F9FA),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: const Color(0xFFE9ECEF)),
+            ),
+            child: Column(
+              children: [
+                const Icon(
+                  Icons.rate_review_outlined,
+                  size: 28,
+                  color: Color(0xFF1E382B),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'No reviews yet for this product.',
+                  style: AppTypography.bodySm.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.slateBody,
+                    fontSize: 12,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                TextButton(
+                  onPressed: () {
+                    if (onSeeAllReviewsTap != null) {
+                      onSeeAllReviewsTap!();
+                    } else if (product != null) {
+                      Navigator.pushNamed(
+                        context,
+                        Routes.productReviewsView,
+                        arguments: product!,
+                      );
+                    }
+                  },
+                  child: const Text(
+                    'Be the first to review',
+                    style: TextStyle(
+                      color: Color(0xFF1E382B),
+                      fontWeight: FontWeight.w700,
+                      fontSize: 12,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
 
         const SizedBox(height: AppSpacing.spaceSm),
 
@@ -258,11 +326,13 @@ class ProductSpecificationsCard extends StatelessWidget {
                 size: 16,
               ),
               const SizedBox(width: AppSpacing.spaceSm),
-              Text(
-                'Carbon-neutral fabrication and sustainable recycled packaging.',
-                style: AppTypography.bodySm.copyWith(
-                  color: AppColors.slateBody,
-                  fontSize: 11,
+              Expanded(
+                child: Text(
+                  'Carbon-neutral fabrication and sustainable recycled packaging.',
+                  style: AppTypography.bodySm.copyWith(
+                    color: AppColors.slateBody,
+                    fontSize: 11,
+                  ),
                 ),
               ),
             ],

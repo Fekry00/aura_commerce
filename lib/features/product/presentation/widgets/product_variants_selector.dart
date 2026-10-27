@@ -1,27 +1,27 @@
 import 'package:aura/core/theme/app_colors.dart';
 import 'package:aura/core/theme/app_typography.dart';
-import 'package:aura/core/utils/functions/custom_snack_bar.dart';
+import 'package:aura/features/product/presentation/controllers/product_details_controller.dart';
 import 'package:flutter/material.dart';
 
+class ProductVariantsSelector extends StatelessWidget {
+  final int selectedColorIndex;
+  final int selectedSizeIndex;
+  final List<Color> colors;
+  final List<String> sizes;
+  final ValueChanged<int>? onColorSelected;
+  final ValueChanged<int>? onSizeSelected;
+  final VoidCallback? onSizingGuideTap;
 
-class ProductVariantsSelector extends StatefulWidget {
-  const ProductVariantsSelector({super.key});
-
-  @override
-  State<ProductVariantsSelector> createState() => _ProductVariantsSelectorState();
-}
-
-class _ProductVariantsSelectorState extends State<ProductVariantsSelector> {
-  int _selectedColorIndex = 0;
-  int _selectedSizeIndex = 1;
-
-  final List<Color> _colors = const [
-    Color(0xFF333333),
-    Color(0xFFD6D6D6),
-    Color(0xFFC5A07C),
-  ];
-
-  final List<String> _sizes = const ['38mm', '40mm', '42mm'];
+  const ProductVariantsSelector({
+    super.key,
+    this.selectedColorIndex = 0,
+    this.selectedSizeIndex = 1,
+    this.colors = ProductDetailsController.colors,
+    this.sizes = ProductDetailsController.sizes,
+    this.onColorSelected,
+    this.onSizeSelected,
+    this.onSizingGuideTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -34,17 +34,21 @@ class _ProductVariantsSelectorState extends State<ProductVariantsSelector> {
         ),
         const SizedBox(height: AppSpacing.spaceSm),
         Row(
-          children: List.generate(_colors.length, (index) {
-            final isSelected = _selectedColorIndex == index;
+          children: List.generate(colors.length, (index) {
+            final isSelected = selectedColorIndex == index;
             return GestureDetector(
-              onTap: () => setState(() => _selectedColorIndex = index),
+              onTap: () => onColorSelected?.call(index),
               child: Container(
-                margin: const EdgeInsets.only(right: AppSpacing.spaceSm + AppSpacing.spaceXs),
+                margin: const EdgeInsets.only(
+                  right: AppSpacing.spaceSm + AppSpacing.spaceXs,
+                ),
                 padding: const EdgeInsets.all(AppSpacing.spaceXs - 1),
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color: isSelected ? AppColors.primaryContainer : Colors.transparent,
+                    color: isSelected
+                        ? AppColors.primaryContainer
+                        : Colors.transparent,
                     width: 1.5,
                   ),
                 ),
@@ -52,7 +56,7 @@ class _ProductVariantsSelectorState extends State<ProductVariantsSelector> {
                   width: 24,
                   height: 24,
                   decoration: BoxDecoration(
-                    color: _colors[index],
+                    color: colors[index],
                     shape: BoxShape.circle,
                   ),
                 ),
@@ -66,19 +70,18 @@ class _ProductVariantsSelectorState extends State<ProductVariantsSelector> {
           children: [
             Text(
               'CASE DIMENSION',
-              style: AppTypography.labelCaps.copyWith(color: AppColors.slateBody),
+              style:
+                  AppTypography.labelCaps.copyWith(color: AppColors.slateBody),
             ),
             GestureDetector(
-              onTap: () {
-                showCustomSnackBar(
-                  context,
-                  message: 'Opening Wrist Sizing Guide...',
-                  type: SnackBarType.info,
-                );
-              },
+              onTap: onSizingGuideTap,
               child: Row(
                 children: [
-                  const Icon(Icons.straighten_rounded, size: 14, color: AppColors.slateBody),
+                  const Icon(
+                    Icons.straighten_rounded,
+                    size: 14,
+                    color: AppColors.slateBody,
+                  ),
                   const SizedBox(width: AppSpacing.spaceXs),
                   Text(
                     'Wrist Sizing Guide',
@@ -94,29 +97,36 @@ class _ProductVariantsSelectorState extends State<ProductVariantsSelector> {
         ),
         const SizedBox(height: AppSpacing.spaceSm),
         Row(
-          children: List.generate(_sizes.length, (index) {
-            final isSelected = _selectedSizeIndex == index;
+          children: List.generate(sizes.length, (index) {
+            final isSelected = selectedSizeIndex == index;
             return Expanded(
               child: GestureDetector(
-                onTap: () => setState(() => _selectedSizeIndex = index),
+                onTap: () => onSizeSelected?.call(index),
                 child: Container(
                   margin: EdgeInsets.only(
-                    right: index == _sizes.length - 1 ? 0 : AppSpacing.spaceSm,
+                    right:
+                        index == sizes.length - 1 ? 0 : AppSpacing.spaceSm,
                   ),
-                  padding: const EdgeInsets.symmetric(vertical: AppSpacing.spaceSm + AppSpacing.spaceXs),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: AppSpacing.spaceSm + AppSpacing.spaceXs,
+                  ),
                   decoration: BoxDecoration(
-                    color: isSelected ? AppColors.primaryContainer : Colors.white,
+                    color:
+                        isSelected ? AppColors.primaryContainer : Colors.white,
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
-                      color: isSelected ? AppColors.primaryContainer : AppColors.outlineVariant,
+                      color: isSelected
+                          ? AppColors.primaryContainer
+                          : AppColors.outlineVariant,
                     ),
                   ),
                   alignment: Alignment.center,
                   child: Text(
-                    isSelected ? '${_sizes[index]} • Active' : _sizes[index],
+                    isSelected ? '${sizes[index]} • Active' : sizes[index],
                     style: AppTypography.bodySm.copyWith(
                       color: isSelected ? Colors.white : AppColors.onSurface,
-                      fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                      fontWeight:
+                          isSelected ? FontWeight.w700 : FontWeight.w500,
                     ),
                   ),
                 ),

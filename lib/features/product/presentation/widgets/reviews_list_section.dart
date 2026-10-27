@@ -1,22 +1,29 @@
 import 'package:aura/core/theme/app_colors.dart';
 import 'package:aura/core/theme/app_typography.dart';
-import 'package:aura/core/utils/functions/custom_snack_bar.dart';
+import 'package:aura/features/product/domain/entities/sub_entities/product_review_entity.dart';
+import 'package:aura/features/product/presentation/widgets/reviewer_avatar.dart';
 import 'package:flutter/material.dart';
 
+class ReviewsListSection extends StatelessWidget {
+  final List<ProductReviewEntity> reviews;
+  final List<String> filterLabels;
+  final int selectedFilter;
+  final ValueChanged<int>? onFilterSelected;
+  final VoidCallback? onWriteReview;
 
-class ReviewsListSection extends StatefulWidget {
-  const ReviewsListSection({super.key});
-
-  @override
-  State<ReviewsListSection> createState() => _ReviewsListSectionState();
-}
-
-class _ReviewsListSectionState extends State<ReviewsListSection> {
-  int _selectedFilter = 0;
-  final List<String> _filters = ['All (128)', '★ 5 Stars (110)', '★ 4 Stars (13)', 'With Notes (8)'];
+  const ReviewsListSection({
+    super.key,
+    required this.reviews,
+    required this.filterLabels,
+    this.selectedFilter = 0,
+    this.onFilterSelected,
+    this.onWriteReview,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final count = reviews.length;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -24,179 +31,136 @@ class _ReviewsListSectionState extends State<ReviewsListSection> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              'Curated Reviews (128)',
-              style: AppTypography.bodySm.copyWith(fontWeight: FontWeight.w700, fontSize: 13),
+              'Authenticated Reviews ($count)',
+              style: AppTypography.bodySm.copyWith(
+                fontWeight: FontWeight.w700,
+                fontSize: 13,
+              ),
             ),
-            Row(
-              children: [
-                Text('Most Recent', style: AppTypography.bodySm.copyWith(fontSize: 11, color: AppColors.slateBody)),
-                const Icon(Icons.keyboard_arrow_down_rounded, size: 16, color: AppColors.slateBody),
-              ],
-            ),
+            if (onWriteReview != null)
+              GestureDetector(
+                onTap: onWriteReview,
+                child: Text(
+                  '+ Write Review',
+                  style: AppTypography.bodySm.copyWith(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                    color: const Color(0xFF1E382B),
+                  ),
+                ),
+              ),
           ],
         ),
         const SizedBox(height: AppSpacing.spaceSm),
-
-         SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          physics: const BouncingScrollPhysics(),
-          child: Row(
-            children: List.generate(_filters.length, (index) {
-              final isSelected = _selectedFilter == index;
-              return GestureDetector(
-                onTap: () => setState(() => _selectedFilter = index),
-                child: Container(
-                  margin: const EdgeInsets.only(right: 8),
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: isSelected ? const Color(0xFF1E382B) : const Color(0xFFF1F3F5),
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Text(
-                    _filters[index],
-                    style: AppTypography.labelSm.copyWith(
-                      color: isSelected ? Colors.white : AppColors.slateHeadline,
-                      fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                      fontSize: 11,
+        if (filterLabels.isNotEmpty) ...[
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            physics: const BouncingScrollPhysics(),
+            child: Row(
+              children: List.generate(filterLabels.length, (index) {
+                final isSelected = selectedFilter == index;
+                return GestureDetector(
+                  onTap: () => onFilterSelected?.call(index),
+                  child: Container(
+                    margin: const EdgeInsets.only(right: 8),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: isSelected
+                          ? const Color(0xFF1E382B)
+                          : const Color(0xFFF1F3F5),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Text(
+                      filterLabels[index],
+                      style: AppTypography.labelSm.copyWith(
+                        color: isSelected
+                            ? Colors.white
+                            : AppColors.slateHeadline,
+                        fontWeight:
+                            isSelected ? FontWeight.w700 : FontWeight.w500,
+                        fontSize: 11,
+                      ),
                     ),
                   ),
-                ),
-              );
-            }),
+                );
+              }),
+            ),
           ),
-        ),
-        const SizedBox(height: AppSpacing.spaceMd),
-
-         _buildUserReviewCard(context),
-        const SizedBox(height: AppSpacing.spaceSm + 2),
-
-         _buildStandardReviewCard(
-          initials: 'SD',
-          name: 'Sophia Daniels',
-          badge: 'VIP Luminary',
-          date: '2 days ago',
-          content: 'Unrivaled skin tone radiance. After two weeks of evening application, pigmentation softened noticeably. The amber flacon preserves potency with true artisan caliber.',
-        ),
+          const SizedBox(height: AppSpacing.spaceMd),
+        ],
+        if (reviews.isEmpty) ...[
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(vertical: 36, horizontal: 20),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: const Color(0xFFE9ECEF)),
+            ),
+            child: Column(
+              children: [
+                const Icon(
+                  Icons.reviews_outlined,
+                  size: 40,
+                  color: AppColors.slateBody,
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  'No reviews yet',
+                  style: AppTypography.bodySm.copyWith(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 14,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Be the first to share your experience with this item.',
+                  style: AppTypography.bodySm.copyWith(
+                    color: AppColors.slateBody,
+                    fontSize: 12,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                if (onWriteReview != null) ...[
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF1E382B),
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                    ),
+                    onPressed: onWriteReview,
+                    child: const Text('Add Review'),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ] else ...[
+          ...reviews.map(
+            (review) => Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: _ReviewCard(review: review),
+            ),
+          ),
+        ],
       ],
     );
   }
+}
 
-  Widget _buildUserReviewCard(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(AppSpacing.spaceMd),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFF2E7D32).withValues(alpha: 0.4)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              const CircleAvatar(
-                radius: 16,
-                backgroundColor: Color(0xFFE0F2FE),
-                child: Text('AM', style: TextStyle(color: Color(0xFF0369A1), fontSize: 11, fontWeight: FontWeight.bold)),
-              ),
-              const SizedBox(width: AppSpacing.spaceSm),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Text('Ahmed Mohamed', style: AppTypography.bodySm.copyWith(fontWeight: FontWeight.w700)),
-                      const SizedBox(width: 4),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFF1F5F9),
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        child: Text('You', style: AppTypography.labelCaps.copyWith(fontSize: 9, color: AppColors.slateBody)),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      ...List.generate(5, (_) => const Icon(Icons.star_rounded, color: Colors.amber, size: 14)),
-                      const SizedBox(width: 4),
-                      Text('Today', style: AppTypography.bodySm.copyWith(color: AppColors.slateBody, fontSize: 10)),
-                    ],
-                  ),
-                ],
-              ),
-              const Spacer(),
-              Row(
-                children: [
-                  Container(
-                    width: 6,
-                    height: 6,
-                    decoration: const BoxDecoration(color: Color(0xFF2E7D32), shape: BoxShape.circle),
-                  ),
-                  const SizedBox(width: 4),
-                  Text(
-                    'YOUR REVIEW • PUBLISHED',
-                    style: AppTypography.labelCaps.copyWith(
-                      color: const Color(0xFF2E7D32),
-                      fontSize: 9,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-          const SizedBox(height: AppSpacing.spaceSm),
-          Text(
-            'Great product! Exceptional texture, absorbed immediately with zero residue. The armored concierge delivery to Mansoura was impeccably punctual and flawless.',
-            style: AppTypography.bodySm.copyWith(fontSize: 12, height: 1.4),
-          ),
-          const SizedBox(height: AppSpacing.spaceSm),
-          Row(
-            children: [
-              const Icon(Icons.verified_outlined, color: Color(0xFF2E7D32), size: 14),
-              const SizedBox(width: 4),
-              Text(
-                'Verified Acquisition #AL-984218',
-                style: AppTypography.labelSm.copyWith(color: const Color(0xFF2E7D32), fontSize: 10),
-              ),
-              const Spacer(),
-              InkWell(
-                onTap: () => showCustomSnackBar(context, message: 'Editing review...', type: SnackBarType.info),
-                child: Row(
-                  children: [
-                    const Icon(Icons.edit_outlined, size: 12, color: AppColors.slateBody),
-                    const SizedBox(width: 2),
-                    Text('Edit', style: AppTypography.bodySm.copyWith(fontSize: 11, color: AppColors.slateBody)),
-                  ],
-                ),
-              ),
-              const SizedBox(width: AppSpacing.spaceSm),
-              InkWell(
-                onTap: () => showCustomSnackBar(context, message: 'Review deleted', type: SnackBarType.error),
-                child: Row(
-                  children: [
-                    const Icon(Icons.delete_outline, size: 12, color: Color(0xFFDC2626)),
-                    const SizedBox(width: 2),
-                    Text('Delete', style: AppTypography.bodySm.copyWith(fontSize: 11, color: const Color(0xFFDC2626))),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
+class _ReviewCard extends StatelessWidget {
+  final ProductReviewEntity review;
 
-  Widget _buildStandardReviewCard({
-    required String initials,
-    required String name,
-    required String badge,
-    required String date,
-    required String content,
-  }) {
+  const _ReviewCard({required this.review});
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(AppSpacing.spaceMd),
       decoration: BoxDecoration(
@@ -208,34 +172,86 @@ class _ReviewsListSectionState extends State<ReviewsListSection> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              CircleAvatar(
-                radius: 16,
-                backgroundColor: const Color(0xFFFEF3C7),
-                child: Text(initials, style: const TextStyle(color: Color(0xFFB45309), fontSize: 11, fontWeight: FontWeight.bold)),
-              ),
+              ReviewerAvatar(review: review, radius: 16),
               const SizedBox(width: AppSpacing.spaceSm),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Text(name, style: AppTypography.bodySm.copyWith(fontWeight: FontWeight.w700)),
-                      const SizedBox(width: 4),
-                      const Icon(Icons.verified_rounded, color: Color(0xFF1E382B), size: 12),
-                    ],
-                  ),
-                  Text('$badge • $date', style: AppTypography.bodySm.copyWith(color: AppColors.slateBody, fontSize: 10)),
-                ],
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      review.authorName,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppTypography.bodySm.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        ...List.generate(
+                          review.rating.clamp(1, 5).toInt(),
+                          (_) => const Icon(
+                            Icons.star_rounded,
+                            color: Colors.amber,
+                            size: 14,
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        Flexible(
+                          child: Text(
+                            review.purchaseInfo,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: AppTypography.bodySm.copyWith(
+                              color: AppColors.slateBody,
+                              fontSize: 10,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
-              const Spacer(),
-              Row(
-                children: List.generate(5, (_) => const Icon(Icons.star_rounded, color: Colors.amber, size: 14)),
+              const SizedBox(width: 8),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFE8F5E9),
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(
+                      Icons.verified_outlined,
+                      color: Color(0xFF2E7D32),
+                      size: 12,
+                    ),
+                    const SizedBox(width: 3),
+                    Text(
+                      review.authorStatus,
+                      style: AppTypography.labelCaps.copyWith(
+                        color: const Color(0xFF2E7D32),
+                        fontSize: 8.5,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
           const SizedBox(height: AppSpacing.spaceSm),
-          Text(content, style: AppTypography.bodySm.copyWith(fontSize: 12, height: 1.4)),
+          Text(
+            review.comment,
+            style: AppTypography.bodySm.copyWith(fontSize: 12, height: 1.4),
+          ),
         ],
       ),
     );

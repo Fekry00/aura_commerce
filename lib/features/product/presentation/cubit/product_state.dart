@@ -24,6 +24,12 @@ class ProductListSuccessState extends ProductState {
   final ProductPaginationEntity? pagination;
 }
 
+class ProductListEmptyState extends ProductState {
+  const ProductListEmptyState({this.message = 'No products found'});
+
+  final String message;
+}
+
 class ProductSuccessState extends ProductState {
   const ProductSuccessState({required this.productDetails});
 

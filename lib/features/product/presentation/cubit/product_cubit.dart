@@ -42,12 +42,18 @@ class ProductCubit extends Cubit<ProductState> {
 
     result.fold(
       (failure) => emit(ProductErrorState(message: failure.errMessage)),
-      (listModel) => emit(
-        ProductListSuccessState(
-          products: listModel.items,
-          pagination: listModel.pagination,
-        ),
-      ),
+      (listModel) {
+        if (listModel.items.isEmpty) {
+          emit(const ProductListEmptyState());
+        } else {
+          emit(
+            ProductListSuccessState(
+              products: listModel.items,
+              pagination: listModel.pagination,
+            ),
+          );
+        }
+      },
     );
   }
 

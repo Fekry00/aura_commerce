@@ -1,5 +1,6 @@
 import 'package:aura/core/theme/app_colors.dart';
 import 'package:aura/core/theme/app_typography.dart';
+import 'package:aura/core/widgets/shimmer/app_shimmer.dart';
 import 'package:flutter/material.dart';
 
 class ProductImageSection extends StatefulWidget {
@@ -32,6 +33,10 @@ class _ProductImageSectionState extends State<ProductImageSection> {
             child: Image.network(
               widget.imageUrl,
               fit: BoxFit.contain,
+              loadingBuilder: (context, child, loadingProgress) {
+                if (loadingProgress == null) return child;
+                return const ShimmerImageLoading();
+              },
               errorBuilder: (_, __, ___) => const Center(
                 child: Icon(
                   Icons.inventory_2_outlined,

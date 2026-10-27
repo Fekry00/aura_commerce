@@ -58,8 +58,23 @@ class ProductRepositoryImpl implements ProductRepository {
         final remoteDetails = await remoteDataSource.getProductDetails(
           productId: productId,
         );
+        List<ProductReviewEntity> reviews = remoteDetails.reviews;
+        if (reviews.isEmpty) {
+          try {
+            final fetchedReviews = await remoteDataSource.getProductReviews(
+              productId: productId,
+            );
+            if (fetchedReviews.isNotEmpty) {
+              reviews = fetchedReviews;
+            }
+          } catch (_) {}
+        }
+        final combinedDetails = ProductDetailsEntity(
+          product: remoteDetails.product,
+          reviews: reviews,
+        );
         await localDataSource.cacheProductDetails(productId, remoteDetails);
-        return Right(remoteDetails);
+        return Right(combinedDetails);
       } catch (e) {
         try {
           final localDetails = await localDataSource.getLastProductDetails(
@@ -95,11 +110,26 @@ class ProductRepositoryImpl implements ProductRepository {
         );
         return Right(reviews);
       } else {
-        final localDetails = await localDataSource.getLastProductDetails(
-          productId,
-        );
-        return Right(localDetails.reviews);
+        return const Right([]);
       }
+    } catch (e) {
+      return Left(ServerFailure(errMessage: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, ProductReviewEntity>> submitProductReview({
+    required String productId,
+    required double rating,
+    required String comment,
+  }) async {
+    try {
+      final review = await remoteDataSource.submitProductReview(
+        productId: productId,
+        rating: rating,
+        comment: comment,
+      );
+      return Right(review);
     } catch (e) {
       return Left(ServerFailure(errMessage: e.toString()));
     }
@@ -112,7 +142,10 @@ class ProductRepositoryImpl implements ProductRepository {
     try {
       final isFavorite = await localDataSource.toggleFavoriteLocal(productId);
       if (await networkInfo.isConnected) {
-        await remoteDataSource.toggleFavorite(productId: productId);
+        await remoteDataSource.toggleFavorite(
+          productId: productId,
+          isCurrentlyFavorite: !isFavorite,
+        );
       }
       return Right(isFavorite);
     } catch (e) {

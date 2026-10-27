@@ -7,6 +7,7 @@ class ProductReviewEntity {
     required this.rating,
     required this.comment,
     required this.purchaseInfo,
+    this.authorAvatar,
   });
 
   final String id;
@@ -16,4 +17,5 @@ class ProductReviewEntity {
   final double rating;
   final String comment;
   final String purchaseInfo;
+  final String? authorAvatar;
 }

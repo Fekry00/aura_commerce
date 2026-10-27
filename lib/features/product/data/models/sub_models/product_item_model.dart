@@ -1,3 +1,4 @@
+import 'package:aura/core/network/api/end_points.dart';
 import 'package:aura/features/product/domain/entities/sub_entities/product_item_entity.dart';
 
 class ProductItemModel extends ProductItemEntity {
@@ -30,7 +31,7 @@ class ProductItemModel extends ProductItemEntity {
         : null;
 
     final imagesList = (json['images'] as List<dynamic>? ?? [])
-        .map((e) => e.toString())
+        .map((e) => EndPoint.fixImageUrl(e.toString()))
         .toList();
 
     final idVal = json['id'] is int
@@ -40,11 +41,12 @@ class ProductItemModel extends ProductItemEntity {
     final nameVal =
         (json['name'] ?? json['title']) as String? ?? 'Product #$idVal';
 
-    final thumb = (json['thumbnailUrl'] ??
+    final rawThumb = (json['thumbnailUrl'] ??
         json['thumbnail_url'] ??
         json['imageUrl'] ??
         json['image_url'] ??
         json['image']) as String?;
+    final thumb = EndPoint.fixImageUrl(rawThumb);
 
     final minPriceVal = (json['minPrice'] ??
             json['min_price'] ??
@@ -88,7 +90,9 @@ class ProductItemModel extends ProductItemEntity {
           ? (categoryMap['id'] is int
               ? categoryMap['id'] as int
               : int.tryParse(categoryMap['id']?.toString() ?? ''))
-          : null,
+          : (json['category_id'] is int
+              ? json['category_id'] as int
+              : int.tryParse(json['category_id']?.toString() ?? '')),
       categoryName: categoryMap?['name'] as String?,
       rating: (json['rating'] as num?)?.toDouble() ?? 4.9,
       reviewsCount:

@@ -23,7 +23,16 @@ abstract class ProductRemoteDataSource {
     required String productId,
   });
 
-  Future<bool> toggleFavorite({required String productId});
+  Future<ProductReviewModel> submitProductReview({
+    required String productId,
+    required double rating,
+    required String comment,
+  });
+
+  Future<bool> toggleFavorite({
+    required String productId,
+    bool isCurrentlyFavorite = false,
+  });
 }
 
 class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
@@ -80,14 +89,55 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
     final response = await apiConsumer.get(
       '${EndPoint.products}/$productId/reviews',
     );
-    return (response['reviews'] as List<dynamic>? ?? [])
+    final data = response['data'];
+    List<dynamic> items = [];
+    if (data is Map<String, dynamic> && data['items'] is List) {
+      items = data['items'] as List<dynamic>;
+    } else if (data is List) {
+      items = data;
+    } else if (response['reviews'] is List) {
+      items = response['reviews'] as List<dynamic>;
+    }
+    return items
         .map((e) => ProductReviewModel.fromJson(e as Map<String, dynamic>))
         .toList();
   }
 
   @override
-  Future<bool> toggleFavorite({required String productId}) async {
-    final response = await apiConsumer.post('${EndPoint.favorites}/$productId');
-    return response['success'] ?? true;
+  Future<ProductReviewModel> submitProductReview({
+    required String productId,
+    required double rating,
+    required String comment,
+  }) async {
+    final response = await apiConsumer.post(
+      '${EndPoint.products}/$productId/reviews',
+      data: {
+        'rating': rating.toInt(),
+        'comment': comment,
+      },
+    );
+    final data = response['data'] is Map<String, dynamic>
+        ? response['data'] as Map<String, dynamic>
+        : response;
+    return ProductReviewModel.fromJson(data);
+  }
+
+  @override
+  Future<bool> toggleFavorite({
+    required String productId,
+    bool isCurrentlyFavorite = false,
+  }) async {
+    final intId = int.tryParse(productId) ?? 1;
+    if (isCurrentlyFavorite) {
+      final response =
+          await apiConsumer.delete('${EndPoint.favorites}/$productId');
+      return response['success'] ?? true;
+    } else {
+      final response = await apiConsumer.post(
+        EndPoint.favorites,
+        data: {'productId': intId},
+      );
+      return response['success'] ?? true;
+    }
   }
 }

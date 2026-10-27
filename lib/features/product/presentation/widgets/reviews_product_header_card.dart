@@ -1,19 +1,24 @@
 import 'package:aura/core/theme/app_colors.dart';
 import 'package:aura/core/theme/app_typography.dart';
-import 'package:aura/core/utils/functions/custom_snack_bar.dart';
+import 'package:aura/features/product/domain/entities/sub_entities/product_item_entity.dart';
 import 'package:flutter/material.dart';
 
-
 class ReviewsProductHeaderCard extends StatelessWidget {
-  final Map<String, dynamic> product;
+  final ProductItemEntity product;
+  final VoidCallback? onWriteReview;
 
   const ReviewsProductHeaderCard({
     super.key,
     required this.product,
+    this.onWriteReview,
   });
 
   @override
   Widget build(BuildContext context) {
+    final title = product.name;
+    final price = '${product.minPrice.toStringAsFixed(0)} EGP';
+    final imageUrl = product.imageUrl;
+
     return Container(
       padding: const EdgeInsets.all(AppSpacing.spaceMd),
       decoration: BoxDecoration(
@@ -24,19 +29,22 @@ class ReviewsProductHeaderCard extends StatelessWidget {
       child: Row(
         children: [
           Container(
-            width: 50,
-            height: 50,
+            width: 52,
+            height: 52,
             decoration: BoxDecoration(
               color: const Color(0xFFF8F9FA),
               borderRadius: BorderRadius.circular(12),
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(12),
-              child: Image.network(
-                product['image'] ?? 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=200',
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) => const Icon(Icons.watch_outlined, color: AppColors.slateBody),
-              ),
+              child: imageUrl.isNotEmpty
+                  ? Image.network(
+                      imageUrl,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) =>
+                          const Icon(Icons.shopping_bag_outlined, color: AppColors.slateBody),
+                    )
+                  : const Icon(Icons.shopping_bag_outlined, color: AppColors.slateBody),
             ),
           ),
           const SizedBox(width: AppSpacing.spaceSm + 2),
@@ -47,7 +55,7 @@ class ReviewsProductHeaderCard extends StatelessWidget {
                 Row(
                   children: [
                     Text(
-                      'ATELIER FORMULATION',
+                      'VERIFIED PRODUCT',
                       style: AppTypography.labelCaps.copyWith(
                         color: const Color(0xFF1E382B),
                         fontSize: 9,
@@ -60,19 +68,21 @@ class ReviewsProductHeaderCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  product['title'] ?? 'Aethel Minimalist Chronograph',
+                  title,
                   style: AppTypography.bodySm.copyWith(fontWeight: FontWeight.w700),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
-                const SizedBox(height: 2),
-                Text(
-                  product['price'] ?? '\$1,450.00',
-                  style: AppTypography.bodySm.copyWith(
-                    fontWeight: FontWeight.w800,
-                    color: AppColors.onSurface,
+                if (price.isNotEmpty) ...[
+                  const SizedBox(height: 2),
+                  Text(
+                    price.endsWith('EGP') ? price : '$price EGP',
+                    style: AppTypography.bodySm.copyWith(
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.onSurface,
+                    ),
                   ),
-                ),
+                ],
               ],
             ),
           ),
@@ -83,17 +93,15 @@ class ReviewsProductHeaderCard extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
             ),
-            onPressed: () {
-              showCustomSnackBar(
-                context,
-                message: 'Opening review submission modal...',
-                type: SnackBarType.info,
-              );
-            },
+            onPressed: onWriteReview,
             icon: const Icon(Icons.edit_outlined, color: Colors.white, size: 14),
             label: Text(
               'Review',
-              style: AppTypography.bodySm.copyWith(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 12),
+              style: AppTypography.bodySm.copyWith(
+                color: Colors.white,
+                fontWeight: FontWeight.w600,
+                fontSize: 12,
+              ),
             ),
           ),
         ],

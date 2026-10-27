@@ -25,6 +25,12 @@ abstract class ProductRepository {
     required String productId,
   });
 
+  Future<Either<Failure, ProductReviewEntity>> submitProductReview({
+    required String productId,
+    required double rating,
+    required String comment,
+  });
+
   Future<Either<Failure, bool>> toggleFavorite({
     required String productId,
   });
