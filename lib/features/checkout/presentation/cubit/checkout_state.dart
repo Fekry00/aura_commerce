@@ -1,4 +1,5 @@
 import 'package:aura/features/checkout/domain/entities/checkout_entity.dart';
+import 'package:aura/features/orders/domain/entities/order_entity.dart';
 
 abstract class CheckoutState {
   const CheckoutState();
@@ -19,9 +20,9 @@ class CheckoutSuccessState extends CheckoutState {
 }
 
 class CheckoutOrderPlacedState extends CheckoutState {
-  const CheckoutOrderPlacedState({required this.orderId});
+  const CheckoutOrderPlacedState({required this.order});
 
-  final String orderId;
+  final OrderEntity order;
 }
 
 class CheckoutErrorState extends CheckoutState {

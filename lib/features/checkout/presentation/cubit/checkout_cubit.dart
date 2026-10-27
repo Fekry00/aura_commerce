@@ -72,23 +72,25 @@ class CheckoutCubit extends Cubit<CheckoutState> {
   }
 
   Future<void> placeOrder({
-    required String addressId,
-    required String deliveryMethodId,
+    required String shippingAddress,
+    required String phone,
+    String paymentMethod = 'cod',
     String? deliveryNotes,
-    String? passcode,
+    List<Map<String, dynamic>>? items,
   }) async {
     emit(const CheckoutLoadingState());
 
     final result = await placeOrderUseCase(
-      addressId: addressId,
-      deliveryMethodId: deliveryMethodId,
-      deliveryNotes: deliveryNotes,
-      passcode: passcode,
+      shippingAddress: shippingAddress,
+      phone: phone,
+      paymentMethod: paymentMethod,
+      notes: deliveryNotes,
+      items: items,
     );
 
     result.fold(
       (failure) => emit(CheckoutErrorState(message: failure.errMessage)),
-      (orderId) => emit(CheckoutOrderPlacedState(orderId: orderId)),
+      (order) => emit(CheckoutOrderPlacedState(order: order)),
     );
   }
 }

@@ -1,5 +1,3 @@
-import 'package:aura/core/theme/app_colors.dart';
-import 'package:aura/core/theme/app_typography.dart';
 import 'package:flutter/material.dart';
 
 class CheckoutSecurityAssurance extends StatelessWidget {
@@ -7,23 +5,24 @@ class CheckoutSecurityAssurance extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: AppSpacing.spaceXs),
-      child: Row(
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF8FAFC),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFFE2E8F0)),
+      ),
+      child: const Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(
-            Icons.lock_outline_rounded,
-            size: AppSpacing.spaceMd,
-            color: AppColors.secondary,
-          ),
-          const SizedBox(width: AppSpacing.spaceSm),
+          Icon(Icons.shield_outlined, size: 16, color: Color(0xFF0B3B2C)),
+          SizedBox(width: 8),
           Text(
-            '256-Bit Cryptographic Checkout • Vault Escrow Protection',
-            style: AppTypography.labelSm.copyWith(
-              color: AppColors.onSurfaceVariant,
-              fontSize: 11.5,
-              fontWeight: FontWeight.w500,
+            'Encrypted 256-bit Protocol • Insured Vault Transit',
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF475569),
             ),
           ),
         ],

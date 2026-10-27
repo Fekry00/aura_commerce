@@ -3,90 +3,75 @@ import 'package:aura/core/theme/app_typography.dart';
 import 'package:flutter/material.dart';
 
 class CheckoutStepHeader extends StatelessWidget {
-  final String stepText;
-  final String nextStepText;
-  final String title;
-  final String badgeText;
-  final double progress;
-
   const CheckoutStepHeader({
     super.key,
-    this.stepText = 'STEP 1 OF 2',
-    this.nextStepText = 'Next: Payment',
-    this.title = 'Shipping & Delivery',
-    this.badgeText = 'VIP Privilege Active',
-    this.progress = 0.5,
+    this.stepNumber = '1',
+    this.stepTitle = 'SHIPPING & SETTLEMENT',
+    this.stepSubtitle = 'Verify destination and payment protocol',
   });
+
+  final String stepNumber;
+  final String stepTitle;
+  final String stepSubtitle;
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              stepText,
-              style: AppTypography.labelCaps.copyWith(
-                color: AppColors.secondary,
-                fontWeight: FontWeight.w700,
-                letterSpacing: 1.0,
-              ),
-            ),
-            Text(
-              nextStepText,
-              style: AppTypography.labelSm.copyWith(
-                color: AppColors.onSurfaceVariant,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ],
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: const Color(0xFF0B3B2C).withValues(alpha: 0.05),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: const Color(0xFF0B3B2C).withValues(alpha: 0.15),
         ),
-        const SizedBox(height: AppSpacing.spaceXs + 2),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              title,
-              style: AppTypography.headlineSm.copyWith(
-                fontWeight: FontWeight.w700,
-                color: AppColors.onSurface,
-              ),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 28,
+            height: 28,
+            decoration: const BoxDecoration(
+              shape: BoxShape.circle,
+              color: Color(0xFF0B3B2C),
             ),
-            Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.spaceSm + AppSpacing.spaceXs / 2,
-                vertical: AppSpacing.spaceXs / 2,
-              ),
-              decoration: BoxDecoration(
-                color: AppColors.secondaryContainer.withValues(alpha: 0.35),
-                borderRadius: BorderRadius.circular(AppSpacing.margin),
-              ),
+            child: Center(
               child: Text(
-                badgeText,
-                style: AppTypography.labelCaps.copyWith(
-                  color: AppColors.secondary,
+                stepNumber,
+                style: const TextStyle(
+                  color: Colors.white,
                   fontWeight: FontWeight.w700,
-                  fontSize: 10,
+                  fontSize: 13,
                 ),
               ),
             ),
-          ],
-        ),
-        const SizedBox(height: AppSpacing.spaceSm + 2),
-        ClipRRect(
-          borderRadius: BorderRadius.circular(AppSpacing.margin),
-          child: LinearProgressIndicator(
-            value: progress,
-            minHeight: 6,
-            backgroundColor: AppColors.surfaceContainer,
-            valueColor: const AlwaysStoppedAnimation<Color>(
-              AppColors.primaryContainer,
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  stepTitle,
+                  style: AppTypography.labelCaps.copyWith(
+                    color: const Color(0xFF0B3B2C),
+                    fontWeight: FontWeight.w800,
+                    fontSize: 10,
+                    letterSpacing: 1.2,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  stepSubtitle,
+                  style: AppTypography.bodySm.copyWith(
+                    color: AppColors.slateBody,
+                    fontSize: 12,
+                  ),
+                ),
+              ],
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

@@ -1,93 +1,42 @@
 import 'package:aura/core/theme/app_colors.dart';
-import 'package:aura/core/theme/app_typography.dart';
+import 'package:aura/features/checkout/presentation/widgets/checkout_section_card.dart';
 import 'package:flutter/material.dart';
 
-class CheckoutDeliveryNotesSection extends StatefulWidget {
-  const CheckoutDeliveryNotesSection({super.key});
+class CheckoutDeliveryNotesSection extends StatelessWidget {
+  const CheckoutDeliveryNotesSection({
+    super.key,
+    required this.controller,
+  });
 
-  @override
-  State<CheckoutDeliveryNotesSection> createState() =>
-      _CheckoutDeliveryNotesSectionState();
-}
-
-class _CheckoutDeliveryNotesSectionState
-    extends State<CheckoutDeliveryNotesSection> {
-  final TextEditingController _notesController = TextEditingController();
-
-  @override
-  void dispose() {
-    _notesController.dispose();
-    super.dispose();
-  }
+  final TextEditingController controller;
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Icon(
-                  Icons.notes_rounded,
-                  size: AppSpacing.spaceMd + 2,
-                  color: AppColors.primaryContainer,
-                ),
-                const SizedBox(width: AppSpacing.spaceXs + 2),
-                Text(
-                  'Delivery Notes & Access',
-                  style: AppTypography.headlineSm.copyWith(
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.onSurface,
-                  ),
-                ),
-              ],
-            ),
-            Text(
-              'Optional',
-              style: AppTypography.bodySm.copyWith(
-                color: AppColors.onSurfaceVariant,
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: AppSpacing.spaceSm),
-        Container(
-          padding: const EdgeInsets.all(AppSpacing.spaceSm + AppSpacing.spaceXs),
-          decoration: BoxDecoration(
-            color: AppColors.surfaceContainerLowest,
-            borderRadius: BorderRadius.circular(AppSpacing.spaceSm + AppSpacing.spaceXs),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.02),
-                blurRadius: AppSpacing.spaceSm,
-                offset: const Offset(0, 2),
-              ),
-            ],
+    return CheckoutSectionCard(
+      title: 'DELIVERY INSTRUCTIONS (OPTIONAL)',
+      icon: Icons.notes_rounded,
+      child: TextFormField(
+        controller: controller,
+        maxLines: 2,
+        decoration: InputDecoration(
+          hintText: 'e.g. Please ring the doorbell upon arrival',
+          hintStyle: const TextStyle(fontSize: 13, color: Colors.black38),
+          filled: true,
+          fillColor: AppColors.surfaceContainerLowest,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
           ),
-          child: TextField(
-            controller: _notesController,
-            maxLines: 2,
-            style: AppTypography.bodyMd.copyWith(
-              color: AppColors.onSurface,
-            ),
-            decoration: InputDecoration(
-              hintText:
-                  'e.g. Leave with private elevator concierge, call upon arrival...',
-              hintStyle: AppTypography.bodyMd.copyWith(
-                color: AppColors.outline,
-                fontSize: 13,
-              ),
-              border: InputBorder.none,
-              isDense: true,
-              contentPadding: EdgeInsets.zero,
-            ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: const BorderSide(color: Color(0xFF0B3B2C), width: 1.5),
           ),
         ),
-      ],
+      ),
     );
   }
 }

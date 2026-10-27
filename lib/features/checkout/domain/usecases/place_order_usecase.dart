@@ -1,5 +1,6 @@
 import 'package:aura/core/errors/failure.dart';
 import 'package:aura/features/checkout/domain/repositories/checkout_repository.dart';
+import 'package:aura/features/orders/domain/entities/order_entity.dart';
 import 'package:dartz/dartz.dart';
 
 class PlaceOrderUseCase {
@@ -7,17 +8,19 @@ class PlaceOrderUseCase {
 
   final CheckoutRepository repository;
 
-  Future<Either<Failure, String>> call({
-    required String addressId,
-    required String deliveryMethodId,
-    String? deliveryNotes,
-    String? passcode,
+  Future<Either<Failure, OrderEntity>> call({
+    required String shippingAddress,
+    required String phone,
+    String paymentMethod = 'cod',
+    String? notes,
+    List<Map<String, dynamic>>? items,
   }) {
     return repository.placeOrder(
-      addressId: addressId,
-      deliveryMethodId: deliveryMethodId,
-      deliveryNotes: deliveryNotes,
-      passcode: passcode,
+      shippingAddress: shippingAddress,
+      phone: phone,
+      paymentMethod: paymentMethod,
+      notes: notes,
+      items: items,
     );
   }
 }

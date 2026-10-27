@@ -1,5 +1,6 @@
 import 'package:aura/core/errors/failure.dart';
 import 'package:aura/features/checkout/domain/entities/checkout_entity.dart';
+import 'package:aura/features/orders/domain/entities/order_entity.dart';
 import 'package:dartz/dartz.dart';
 
 abstract class CheckoutRepository {
@@ -19,10 +20,11 @@ abstract class CheckoutRepository {
 
   Future<Either<Failure, bool>> removePrivilegePasscode();
 
-  Future<Either<Failure, String>> placeOrder({
-    required String addressId,
-    required String deliveryMethodId,
-    String? deliveryNotes,
-    String? passcode,
+  Future<Either<Failure, OrderEntity>> placeOrder({
+    required String shippingAddress,
+    required String phone,
+    String paymentMethod = 'cod',
+    String? notes,
+    List<Map<String, dynamic>>? items,
   });
 }

@@ -1,6 +1,7 @@
 import 'package:aura/core/network/api/api_consumer.dart';
 import 'package:aura/core/network/api/end_points.dart';
 import 'package:aura/features/checkout/data/models/checkout_model.dart';
+import 'package:aura/features/orders/data/models/order_model.dart';
 
 abstract class CheckoutRemoteDataSource {
   Future<CheckoutModel> getCheckoutDetails();
@@ -13,11 +14,12 @@ abstract class CheckoutRemoteDataSource {
 
   Future<bool> removePrivilegePasscode();
 
-  Future<String> placeOrder({
-    required String addressId,
-    required String deliveryMethodId,
-    String? deliveryNotes,
-    String? passcode,
+  Future<OrderModel> placeOrder({
+    required String shippingAddress,
+    required String phone,
+    String paymentMethod = 'cod',
+    String? notes,
+    List<Map<String, dynamic>>? items,
   });
 }
 
@@ -28,61 +30,71 @@ class CheckoutRemoteDataSourceImpl implements CheckoutRemoteDataSource {
 
   @override
   Future<CheckoutModel> getCheckoutDetails() async {
-    final response = await apiConsumer.get(EndPoint.checkout);
-    return CheckoutModel.fromJson(response);
+    try {
+      final response = await apiConsumer.get(EndPoint.cart);
+      return CheckoutModel.fromJson(response);
+    } catch (_) {
+      return CheckoutModel.fromJson({});
+    }
   }
 
   @override
   Future<bool> selectShippingAddress({required String addressId}) async {
-    final response = await apiConsumer.post(
-      '${EndPoint.checkout}/address',
-      data: {'address_id': addressId},
-    );
-    return response['success'] ?? true;
+    return true;
   }
 
   @override
   Future<bool> selectDeliveryMethod({required String methodId}) async {
-    final response = await apiConsumer.post(
-      '${EndPoint.checkout}/delivery-method',
-      data: {'method_id': methodId},
-    );
-    return response['success'] ?? true;
+    return true;
   }
 
   @override
   Future<bool> applyPrivilegePasscode({required String passcode}) async {
-    final response = await apiConsumer.post(
-      '${EndPoint.checkout}/passcode',
-      data: {'passcode': passcode},
-    );
-    return response['success'] ?? true;
+    try {
+      final response = await apiConsumer.post(
+        'coupons/validate',
+        data: {'code': passcode},
+      );
+      return response['success'] ?? true;
+    } catch (_) {
+      return false;
+    }
   }
 
   @override
   Future<bool> removePrivilegePasscode() async {
-    final response = await apiConsumer.delete('${EndPoint.checkout}/passcode');
-    return response['success'] ?? true;
+    return true;
   }
 
   @override
-  Future<String> placeOrder({
-    required String addressId,
-    required String deliveryMethodId,
-    String? deliveryNotes,
-    String? passcode,
+  Future<OrderModel> placeOrder({
+    required String shippingAddress,
+    required String phone,
+    String paymentMethod = 'cod',
+    String? notes,
+    List<Map<String, dynamic>>? items,
   }) async {
-    final data = <String, dynamic>{
-      'address_id': addressId,
-      'delivery_method_id': deliveryMethodId,
+    final body = <String, dynamic>{
+      'shipping_address': shippingAddress,
+      'phone': phone,
+      'payment_method': paymentMethod,
     };
-    if (deliveryNotes != null) data['delivery_notes'] = deliveryNotes;
-    if (passcode != null) data['passcode'] = passcode;
+    if (notes != null && notes.trim().isNotEmpty) {
+      body['notes'] = notes.trim();
+    }
+    if (items != null && items.isNotEmpty) {
+      body['items'] = items;
+    }
 
     final response = await apiConsumer.post(
       EndPoint.orders,
-      data: data,
+      data: body,
     );
-    return response['order_id']?.toString() ?? 'AL-98421';
+
+    final data = (response['data'] is Map<String, dynamic>)
+        ? response['data'] as Map<String, dynamic>
+        : response;
+
+    return OrderModel.fromJson(data);
   }
 }

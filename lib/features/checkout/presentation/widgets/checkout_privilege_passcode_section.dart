@@ -1,64 +1,25 @@
 import 'package:aura/core/theme/app_colors.dart';
 import 'package:aura/core/theme/app_typography.dart';
-import 'package:aura/core/utils/functions/custom_snack_bar.dart';
 import 'package:flutter/material.dart';
 
-class CheckoutPrivilegePasscodeSection extends StatefulWidget {
-  final String initialCode;
-  final ValueChanged<String>? onCodeApplied;
+class CheckoutPrivilegePasscodeSection extends StatelessWidget {
+  final TextEditingController controller;
+  final String? appliedCode;
+  final ValueChanged<String> onApply;
+  final VoidCallback onRemove;
 
   const CheckoutPrivilegePasscodeSection({
     super.key,
-    this.initialCode = 'WELCOME10',
-    this.onCodeApplied,
+    required this.controller,
+    this.appliedCode,
+    required this.onApply,
+    required this.onRemove,
   });
 
   @override
-  State<CheckoutPrivilegePasscodeSection> createState() =>
-      _CheckoutPrivilegePasscodeSectionState();
-}
-
-class _CheckoutPrivilegePasscodeSectionState
-    extends State<CheckoutPrivilegePasscodeSection> {
-  late final TextEditingController _controller;
-  String? _appliedCode;
-
-  @override
-  void initState() {
-    super.initState();
-    _appliedCode = widget.initialCode;
-    _controller = TextEditingController(text: widget.initialCode);
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  void _apply() {
-    final text = _controller.text.trim().toUpperCase();
-    if (text.isEmpty) {
-      showCustomSnackBar(context, message: 'Enter a passcode', type: SnackBarType.error);
-      return;
-    }
-    setState(() => _appliedCode = text);
-    widget.onCodeApplied?.call(text);
-    showCustomSnackBar(context, message: 'Passcode $text applied!', type: SnackBarType.success);
-    FocusScope.of(context).unfocus();
-  }
-
-  void _remove() {
-    setState(() {
-      _appliedCode = null;
-      _controller.clear();
-    });
-    showCustomSnackBar(context, message: 'Passcode removed', type: SnackBarType.info);
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final isApplied = _appliedCode != null && _controller.text.trim().toUpperCase() == _appliedCode;
+    final isApplied = appliedCode != null &&
+        controller.text.trim().toUpperCase() == appliedCode;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -68,24 +29,42 @@ class _CheckoutPrivilegePasscodeSectionState
           children: [
             Row(
               children: [
-                const Icon(Icons.loyalty_rounded, size: 20, color: AppColors.primaryContainer),
+                const Icon(
+                  Icons.loyalty_rounded,
+                  size: 20,
+                  color: Color(0xFF0B3B2C),
+                ),
                 const SizedBox(width: 6),
-                Text('Privilege Passcode', style: AppTypography.headlineSm.copyWith(fontWeight: FontWeight.w700)),
+                Text(
+                  'Privilege Passcode',
+                  style: AppTypography.headlineSm.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
               ],
             ),
             Text(
-              _appliedCode != null ? '1 Applied' : 'None Applied',
-              style: AppTypography.labelSm.copyWith(color: AppColors.secondary, fontWeight: FontWeight.w700),
+              appliedCode != null ? '1 Applied' : 'None Applied',
+              style: AppTypography.labelSm.copyWith(
+                color: AppColors.secondary,
+                fontWeight: FontWeight.w700,
+              ),
             ),
           ],
         ),
-        const SizedBox(height: AppSpacing.spaceSm),
+        const SizedBox(height: 10),
         Container(
-          padding: const EdgeInsets.all(AppSpacing.spaceMd),
+          padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             color: AppColors.surfaceContainerLowest,
-            borderRadius: BorderRadius.circular(AppSpacing.spaceMd),
-            boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 10, offset: const Offset(0, 2))],
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.03),
+                blurRadius: 10,
+                offset: const Offset(0, 2),
+              ),
+            ],
           ),
           child: Column(
             children: [
@@ -95,60 +74,111 @@ class _CheckoutPrivilegePasscodeSectionState
                     child: Container(
                       height: 46,
                       padding: const EdgeInsets.symmetric(horizontal: 14),
-                      decoration: BoxDecoration(color: AppColors.surfaceContainerLow, borderRadius: BorderRadius.circular(24)),
+                      decoration: BoxDecoration(
+                        color: AppColors.surfaceContainerLow,
+                        borderRadius: BorderRadius.circular(24),
+                      ),
                       child: Row(
                         children: [
-                          Icon(isApplied ? Icons.check_circle_rounded : Icons.sell_outlined, size: 18, color: isApplied ? AppColors.secondary : AppColors.outline),
-                          const SizedBox(width: AppSpacing.spaceSm),
+                          Icon(
+                            isApplied
+                                ? Icons.check_circle_rounded
+                                : Icons.sell_outlined,
+                            size: 18,
+                            color: isApplied
+                                ? AppColors.secondary
+                                : AppColors.outline,
+                          ),
+                          const SizedBox(width: 8),
                           Expanded(
                             child: TextField(
-                              controller: _controller,
+                              controller: controller,
                               textCapitalization: TextCapitalization.characters,
-                              style: AppTypography.labelCaps.copyWith(fontSize: 13, color: AppColors.onSurface),
-                              decoration: const InputDecoration(hintText: 'ENTER PASSCODE', border: InputBorder.none, isDense: true),
-                              onChanged: (_) => setState(() {}),
-                              onSubmitted: (_) => _apply(),
+                              style: AppTypography.labelCaps.copyWith(
+                                fontSize: 13,
+                                color: AppColors.onSurface,
+                              ),
+                              decoration: const InputDecoration(
+                                hintText: 'ENTER PASSCODE',
+                                border: InputBorder.none,
+                                isDense: true,
+                              ),
+                              onSubmitted: (val) => onApply(val.trim()),
                             ),
                           ),
                         ],
                       ),
                     ),
                   ),
-                  const SizedBox(width: AppSpacing.spaceSm),
+                  const SizedBox(width: 10),
                   InkWell(
-                    onTap: isApplied ? null : _apply,
+                    onTap: isApplied ? null : () => onApply(controller.text.trim()),
                     borderRadius: BorderRadius.circular(24),
                     child: Container(
                       height: 46,
                       padding: const EdgeInsets.symmetric(horizontal: 18),
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
-                        color: isApplied ? AppColors.primaryContainer : AppColors.secondaryContainer,
+                        color: isApplied
+                            ? const Color(0xFF0B3B2C)
+                            : AppColors.secondaryContainer,
                         borderRadius: BorderRadius.circular(24),
                       ),
                       child: Text(
                         isApplied ? 'Applied' : 'Apply',
-                        style: AppTypography.labelSm.copyWith(color: isApplied ? Colors.white : AppColors.primary, fontWeight: FontWeight.w700),
+                        style: AppTypography.labelSm.copyWith(
+                          color: isApplied ? Colors.white : const Color(0xFF002419),
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
                     ),
                   ),
                 ],
               ),
-              if (_appliedCode != null) ...[
+              if (appliedCode != null) ...[
                 const SizedBox(height: 10),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                  decoration: BoxDecoration(color: const Color(0xFFBDEDD7).withValues(alpha: 0.35), borderRadius: BorderRadius.circular(8)),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 8,
+                  ),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFBDEDD7).withValues(alpha: 0.35),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
                   child: Row(
                     children: [
-                      const Icon(Icons.verified_user_rounded, size: 16, color: AppColors.secondary),
-                      const SizedBox(width: AppSpacing.spaceSm),
-                      Expanded(
-                        child: Text('$_appliedCode Privilege Active', style: AppTypography.bodySm.copyWith(fontWeight: FontWeight.w600, color: AppColors.onSurface)),
+                      const Icon(
+                        Icons.verified_user_rounded,
+                        size: 16,
+                        color: AppColors.secondary,
                       ),
-                      Text('-10% OFF BAG', style: AppTypography.labelCaps.copyWith(color: AppColors.secondary, fontWeight: FontWeight.w800)),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          '$appliedCode Privilege Active',
+                          style: AppTypography.bodySm.copyWith(
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.onSurface,
+                          ),
+                        ),
+                      ),
+                      Text(
+                        '-10% OFF BAG',
+                        style: AppTypography.labelCaps.copyWith(
+                          color: AppColors.secondary,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
                       const SizedBox(width: 4),
-                      InkWell(onTap: _remove, child: const Icon(Icons.close_rounded, size: 16, color: AppColors.outline)),
+                      InkWell(
+                        onTap: onRemove,
+                        child: const Icon(
+                          Icons.close_rounded,
+                          size: 16,
+                          color: AppColors.outline,
+                        ),
+                      ),
                     ],
                   ),
                 ),

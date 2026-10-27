@@ -2,17 +2,15 @@ import 'package:aura/core/theme/app_colors.dart';
 import 'package:aura/core/theme/app_typography.dart';
 import 'package:flutter/material.dart';
 
-class CheckoutDeliveryMethodSection extends StatefulWidget {
-  const CheckoutDeliveryMethodSection({super.key});
+class CheckoutDeliveryMethodSection extends StatelessWidget {
+  const CheckoutDeliveryMethodSection({
+    super.key,
+    required this.selectedIndex,
+    required this.onMethodSelected,
+  });
 
-  @override
-  State<CheckoutDeliveryMethodSection> createState() =>
-      _CheckoutDeliveryMethodSectionState();
-}
-
-class _CheckoutDeliveryMethodSectionState
-    extends State<CheckoutDeliveryMethodSection> {
-  int _selectedIndex = 0;
+  final int selectedIndex;
+  final ValueChanged<int> onMethodSelected;
 
   static const _methods = [
     (
@@ -45,49 +43,73 @@ class _CheckoutDeliveryMethodSectionState
           children: [
             Row(
               children: [
-                const Icon(Icons.local_shipping_rounded, size: 20, color: AppColors.primaryContainer),
-                const SizedBox(width: AppSpacing.spaceXs + 2),
-                Text('Delivery Method', style: AppTypography.headlineSm.copyWith(fontWeight: FontWeight.w700)),
+                const Icon(
+                  Icons.local_shipping_rounded,
+                  size: 20,
+                  color: Color(0xFF0B3B2C),
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  'Delivery Method',
+                  style: AppTypography.headlineSm.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
               ],
             ),
             Text(
               'INSURED TRANSIT',
-              style: AppTypography.labelCaps.copyWith(color: AppColors.secondary, fontWeight: FontWeight.w800),
+              style: AppTypography.labelCaps.copyWith(
+                color: AppColors.secondary,
+                fontWeight: FontWeight.w800,
+              ),
             ),
           ],
         ),
-        const SizedBox(height: AppSpacing.spaceSm + AppSpacing.spaceXs),
+        const SizedBox(height: 12),
         ...List.generate(_methods.length, (i) {
           final m = _methods[i];
-          final isSelected = _selectedIndex == i;
+          final isSelected = selectedIndex == i;
           return Padding(
-            padding: EdgeInsets.only(bottom: i == _methods.length - 1 ? 0 : AppSpacing.spaceSm + 2),
+            padding: EdgeInsets.only(
+              bottom: i == _methods.length - 1 ? 0 : 10,
+            ),
             child: InkWell(
-              onTap: () => setState(() => _selectedIndex = i),
-              borderRadius: BorderRadius.circular(AppSpacing.spaceMd),
+              onTap: () => onMethodSelected(i),
+              borderRadius: BorderRadius.circular(16),
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 200),
-                padding: const EdgeInsets.all(AppSpacing.spaceMd),
+                padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: AppColors.surfaceContainerLowest,
-                  borderRadius: BorderRadius.circular(AppSpacing.spaceMd),
+                  borderRadius: BorderRadius.circular(16),
                   border: Border.all(
-                    color: isSelected ? AppColors.primaryContainer : AppColors.outlineVariant.withValues(alpha: 0.4),
+                    color: isSelected
+                        ? const Color(0xFF0B3B2C)
+                        : const Color(0xFFE2E8F0),
                     width: isSelected ? 1.5 : 1.0,
                   ),
                   boxShadow: [
-                    BoxShadow(color: Colors.black.withValues(alpha: 0.02), blurRadius: 8, offset: const Offset(0, 2)),
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.02),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
                   ],
                 ),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Icon(
-                      isSelected ? Icons.radio_button_checked_rounded : Icons.radio_button_off_rounded,
+                      isSelected
+                          ? Icons.radio_button_checked_rounded
+                          : Icons.radio_button_off_rounded,
                       size: 18,
-                      color: isSelected ? AppColors.primaryContainer : AppColors.outline,
+                      color: isSelected
+                          ? const Color(0xFF0B3B2C)
+                          : AppColors.outline,
                     ),
-                    const SizedBox(width: AppSpacing.spaceSm),
+                    const SizedBox(width: 12),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -95,32 +117,59 @@ class _CheckoutDeliveryMethodSectionState
                           Row(
                             children: [
                               Flexible(
-                                child: Text(m.title, style: AppTypography.bodyMd.copyWith(fontWeight: FontWeight.w700)),
+                                child: Text(
+                                  m.title,
+                                  style: AppTypography.bodyMd.copyWith(
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
                               ),
                               if (m.vipPill != null) ...[
-                                const SizedBox(width: AppSpacing.spaceSm),
+                                const SizedBox(width: 8),
                                 Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                    vertical: 2,
+                                  ),
                                   decoration: BoxDecoration(
                                     color: AppColors.secondaryContainer,
                                     borderRadius: BorderRadius.circular(10),
                                   ),
                                   child: Text(
                                     m.vipPill!,
-                                    style: AppTypography.labelCaps.copyWith(color: AppColors.primary, fontWeight: FontWeight.w800, fontSize: 9.5),
+                                    style: AppTypography.labelCaps.copyWith(
+                                      color: const Color(0xFF002419),
+                                      fontWeight: FontWeight.w800,
+                                      fontSize: 9.5,
+                                    ),
                                   ),
                                 ),
                               ],
                             ],
                           ),
                           const SizedBox(height: 2),
-                          Text(m.desc, style: AppTypography.bodySm.copyWith(color: AppColors.onSurfaceVariant)),
-                          const SizedBox(height: AppSpacing.spaceSm),
+                          Text(
+                            m.desc,
+                            style: AppTypography.bodySm.copyWith(
+                              color: AppColors.onSurfaceVariant,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
                           Row(
                             children: [
-                              const Icon(Icons.verified_rounded, size: 15, color: AppColors.secondary),
+                              const Icon(
+                                Icons.verified_rounded,
+                                size: 15,
+                                color: AppColors.secondary,
+                              ),
                               const SizedBox(width: 4),
-                              Text(m.eta, style: AppTypography.labelSm.copyWith(color: AppColors.secondary, fontWeight: FontWeight.w600)),
+                              Text(
+                                m.eta,
+                                style: AppTypography.labelSm.copyWith(
+                                  color: AppColors.secondary,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
                             ],
                           ),
                         ],
@@ -129,11 +178,29 @@ class _CheckoutDeliveryMethodSectionState
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        Text(m.price, style: AppTypography.priceCatalog.copyWith(color: AppColors.secondary, fontWeight: FontWeight.w700)),
+                        Text(
+                          m.price,
+                          style: AppTypography.priceCatalog.copyWith(
+                            color: AppColors.secondary,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
                         if (m.originalPrice != null)
-                          Text(m.originalPrice!, style: AppTypography.bodySm.copyWith(color: AppColors.outline, decoration: TextDecoration.lineThrough)),
+                          Text(
+                            m.originalPrice!,
+                            style: AppTypography.bodySm.copyWith(
+                              color: AppColors.outline,
+                              decoration: TextDecoration.lineThrough,
+                            ),
+                          ),
                         if (m.subPrice != null)
-                          Text(m.subPrice!, style: AppTypography.bodySm.copyWith(color: AppColors.onSurfaceVariant, fontSize: 10.5)),
+                          Text(
+                            m.subPrice!,
+                            style: AppTypography.bodySm.copyWith(
+                              color: AppColors.onSurfaceVariant,
+                              fontSize: 10.5,
+                            ),
+                          ),
                       ],
                     ),
                   ],
