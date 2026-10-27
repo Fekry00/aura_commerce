@@ -1,13 +1,18 @@
 import 'package:aura/core/theme/app_typography.dart';
-import 'package:aura/core/utils/functions/custom_snack_bar.dart';
+import 'package:aura/core/widgets/shimmer/app_shimmer.dart';
 import 'package:aura/features/home/domain/entities/sub_entities/banner_entity.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 
 class HomeHeroBanner extends StatefulWidget {
   final List<BannerEntity>? banners;
+  final void Function(BannerEntity banner)? onExploreTap;
 
-  const HomeHeroBanner({super.key, this.banners});
+  const HomeHeroBanner({
+    super.key,
+    this.banners,
+    this.onExploreTap,
+  });
 
   @override
   State<HomeHeroBanner> createState() => _HomeHeroBannerState();
@@ -46,7 +51,6 @@ class _HomeHeroBannerState extends State<HomeHeroBanner> {
             final title = banner.title;
             final imageUrl = banner.imageUrl;
             final linkType = banner.linkType;
-            final linkTargetId = banner.linkTargetId;
 
             return Container(
               width: double.infinity,
@@ -64,19 +68,7 @@ class _HomeHeroBannerState extends State<HomeHeroBanner> {
                       fit: BoxFit.cover,
                       loadingBuilder: (context, child, loadingProgress) {
                         if (loadingProgress == null) return child;
-                        return Container(
-                          color: const Color(0xFF1E382B),
-                          child: Center(
-                            child: CircularProgressIndicator(
-                              value: loadingProgress.expectedTotalBytes != null
-                                  ? loadingProgress.cumulativeBytesLoaded /
-                                      loadingProgress.expectedTotalBytes!
-                                  : null,
-                              color: const Color(0xFF4EBE86),
-                              strokeWidth: 2,
-                            ),
-                          ),
-                        );
+                        return const ShimmerImageLoading();
                       },
                       errorBuilder: (context, error, stackTrace) {
                         return Container(
@@ -139,23 +131,7 @@ class _HomeHeroBannerState extends State<HomeHeroBanner> {
                           Row(
                             children: [
                               GestureDetector(
-                                onTap: () {
-                                  if (linkType == 'CATEGORY' &&
-                                      linkTargetId != null) {
-                                    showCustomSnackBar(
-                                      context,
-                                      message:
-                                          'Exploring Category #$linkTargetId...',
-                                      type: SnackBarType.info,
-                                    );
-                                  } else {
-                                    showCustomSnackBar(
-                                      context,
-                                      message: 'Viewing $title',
-                                      type: SnackBarType.info,
-                                    );
-                                  }
-                                },
+                                onTap: () => widget.onExploreTap?.call(banner),
                                 child: Container(
                                   padding: const EdgeInsets.symmetric(
                                     horizontal: 18,

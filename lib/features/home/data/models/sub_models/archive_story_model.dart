@@ -1,3 +1,4 @@
+import 'package:aura/core/network/api/end_points.dart';
 import 'package:aura/features/home/domain/entities/sub_entities/archive_story_entity.dart';
 
 class ArchiveStoryModel extends ArchiveStoryEntity {
@@ -15,7 +16,8 @@ class ArchiveStoryModel extends ArchiveStoryEntity {
       label: json['label'] as String? ?? '',
       title: json['title'] as String? ?? '',
       subtitle: json['subtitle'] as String? ?? '',
-      imageUrl: (json['image_url'] ?? json['imageUrl']) as String? ?? '',
+      imageUrl: EndPoint.fixImageUrl(
+          (json['image_url'] ?? json['imageUrl']) as String?),
     );
   }
 

@@ -14,6 +14,13 @@ class HomeCubit extends Cubit<HomeState> {
   final GetHomeFeedUseCase getHomeFeedUseCase;
   final ToggleFavoriteUseCase toggleFavoriteUseCase;
 
+  @override
+  void emit(HomeState state) {
+    if (!isClosed) {
+      super.emit(state);
+    }
+  }
+
   Future<void> fetchHomeFeed() async {
     emit(const HomeLoadingState());
 

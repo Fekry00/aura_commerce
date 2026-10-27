@@ -1,61 +1,24 @@
-import 'dart:async';
 import 'package:aura/core/theme/app_typography.dart';
-import 'package:aura/core/utils/functions/custom_snack_bar.dart';
 import 'package:flutter/material.dart';
 
+class HomeCuratedDropTimer extends StatelessWidget {
+  final String hours;
+  final String minutes;
+  final String seconds;
+  final VoidCallback? onTap;
 
-class HomeCuratedDropTimer extends StatefulWidget {
-  const HomeCuratedDropTimer({super.key});
-
-  @override
-  State<HomeCuratedDropTimer> createState() => _HomeCuratedDropTimerState();
-}
-
-class _HomeCuratedDropTimerState extends State<HomeCuratedDropTimer> {
-  late Duration _remainingDuration;
-  Timer? _timer;
-
-  @override
-  void initState() {
-    super.initState();
-    _remainingDuration = const Duration(hours: 8, minutes: 24, seconds: 11);
-    _startCountdown();
-  }
-
-  void _startCountdown() {
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (_remainingDuration.inSeconds <= 0) {
-        timer.cancel();
-      } else {
-        setState(() {
-          _remainingDuration = _remainingDuration - const Duration(seconds: 1);
-        });
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    _timer?.cancel();
-    super.dispose();
-  }
-
-  String _formatNumber(int number) => number.toString().padLeft(2, '0');
+  const HomeCuratedDropTimer({
+    super.key,
+    required this.hours,
+    required this.minutes,
+    required this.seconds,
+    this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final hours = _formatNumber(_remainingDuration.inHours);
-    final minutes = _formatNumber(_remainingDuration.inMinutes.remainder(60));
-    final seconds = _formatNumber(_remainingDuration.inSeconds.remainder(60));
-
     return GestureDetector(
-      onTap: () {
-        showCustomSnackBar(
-          context,
-          message: 'Drop 04 starts in $hours hours and $minutes minutes!',
-          type: SnackBarType.info,
-        );
-      },
+      onTap: onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(
           horizontal: AppSpacing.spaceMd,

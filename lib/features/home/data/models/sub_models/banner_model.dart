@@ -1,3 +1,4 @@
+import 'package:aura/core/network/api/end_points.dart';
 import 'package:aura/features/home/domain/entities/sub_entities/banner_entity.dart';
 
 class BannerModel extends BannerEntity {
@@ -18,7 +19,8 @@ class BannerModel extends BannerEntity {
           ? json['id'] as int
           : int.tryParse(json['id']?.toString() ?? '0') ?? 0,
       title: json['title'] as String? ?? '',
-      imageUrl: (json['imageUrl'] ?? json['image_url'] ?? json['image']) as String? ?? '',
+      imageUrl: EndPoint.fixImageUrl(
+          (json['imageUrl'] ?? json['image_url'] ?? json['image']) as String?),
       linkType: (json['linkType'] ?? json['link_type']) as String?,
       linkTargetId: json['linkTargetId'] is int
           ? json['linkTargetId'] as int

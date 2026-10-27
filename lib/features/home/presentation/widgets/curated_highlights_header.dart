@@ -2,8 +2,7 @@ import 'package:aura/core/theme/app_colors.dart';
 import 'package:aura/core/theme/app_typography.dart';
 import 'package:flutter/material.dart';
 
-
-class CuratedHighlightsHeader extends StatefulWidget {
+class CuratedHighlightsHeader extends StatelessWidget {
   final int selectedIndex;
   final ValueChanged<int>? onTabChanged;
 
@@ -12,33 +11,6 @@ class CuratedHighlightsHeader extends StatefulWidget {
     this.selectedIndex = 0,
     this.onTabChanged,
   });
-
-  @override
-  State<CuratedHighlightsHeader> createState() => _CuratedHighlightsHeaderState();
-}
-
-class _CuratedHighlightsHeaderState extends State<CuratedHighlightsHeader> {
-  late int _selectedIndex;
-
-  @override
-  void initState() {
-    super.initState();
-    _selectedIndex = widget.selectedIndex;
-  }
-
-  @override
-  void didUpdateWidget(CuratedHighlightsHeader oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.selectedIndex != widget.selectedIndex) {
-      _selectedIndex = widget.selectedIndex;
-    }
-  }
-
-  void _handleTabSelect(int index) {
-    if (_selectedIndex == index) return;
-    setState(() => _selectedIndex = index);
-    widget.onTabChanged?.call(index);
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -71,8 +43,16 @@ class _CuratedHighlightsHeaderState extends State<CuratedHighlightsHeader> {
               ),
               child: Row(
                 children: [
-                  _buildTab('All', 0),
-                  _buildTab('Popular', 1),
+                  _HighlightsTabItem(
+                    title: 'All',
+                    isSelected: selectedIndex == 0,
+                    onTap: () => onTabChanged?.call(0),
+                  ),
+                  _HighlightsTabItem(
+                    title: 'Popular',
+                    isSelected: selectedIndex == 1,
+                    onTap: () => onTabChanged?.call(1),
+                  ),
                 ],
               ),
             ),
@@ -81,11 +61,23 @@ class _CuratedHighlightsHeaderState extends State<CuratedHighlightsHeader> {
       ],
     );
   }
+}
 
-  Widget _buildTab(String title, int index) {
-    final isSelected = _selectedIndex == index;
+class _HighlightsTabItem extends StatelessWidget {
+  final String title;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const _HighlightsTabItem({
+    required this.title,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => _handleTabSelect(index),
+      onTap: onTap,
       behavior: HitTestBehavior.opaque,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),

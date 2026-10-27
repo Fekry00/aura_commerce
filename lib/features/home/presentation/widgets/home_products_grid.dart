@@ -1,20 +1,21 @@
-import 'package:aura/core/routing/routes.dart';
 import 'package:aura/core/widgets/product_card.dart';
-import 'package:aura/features/cart/presentation/cubit/cart_cubit.dart';
 import 'package:aura/features/home/domain/entities/sub_entities/product_highlight_entity.dart';
-import 'package:aura/features/home/presentation/cubit/home_cubit.dart';
-import 'package:aura/features/wishlist/presentation/cubit/wishlist_cubit.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 class HomeProductsGrid extends StatelessWidget {
   final List<ProductHighlightEntity>? products;
   final String? emptyMessage;
+  final void Function(ProductHighlightEntity item)? onFavoriteTap;
+  final void Function(ProductHighlightEntity item)? onAddToCart;
+  final void Function(ProductHighlightEntity item)? onProductTap;
 
   const HomeProductsGrid({
     super.key,
     this.products,
     this.emptyMessage,
+    this.onFavoriteTap,
+    this.onAddToCart,
+    this.onProductTap,
   });
 
   @override
@@ -63,56 +64,9 @@ class HomeProductsGrid extends StatelessWidget {
           reviewsCount: item.rating.reviewsCount,
           badgeText: item.badge,
           isFavorite: item.isFavorite,
-          onFavoriteTap: () {
-            final willBeFavorite = !item.isFavorite;
-            context.read<HomeCubit>().toggleFavorite(
-                  item.id,
-                  currentIsFavorite: item.isFavorite,
-                );
-            final intId = int.tryParse(item.id);
-            if (intId != null) {
-              context.read<WishlistCubit>().toggleWishlist(
-                    intId,
-                    isCurrentlyFavorite: item.isFavorite,
-                  );
-            }
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  willBeFavorite
-                      ? 'Added ${item.title} to Wishlist ❤️'
-                      : 'Removed ${item.title} from Wishlist',
-                ),
-                duration: const Duration(seconds: 1),
-              ),
-            );
-          },
-          onAddToCart: () {
-            final intId = int.tryParse(item.id);
-            if (intId != null) {
-              context.read<CartCubit>().addToCart(productId: intId);
-            }
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('Added ${item.title} to bag! 🛒'),
-                duration: const Duration(seconds: 1),
-              ),
-            );
-          },
-          onTap: () {
-            Navigator.pushNamed(
-              context,
-              Routes.productDetailsView,
-              arguments: {
-                'id': item.id,
-                'title': item.title,
-                'price': priceString,
-                'image': item.imageUrl,
-                'rating': item.rating.average,
-                'reviews': item.rating.reviewsCount,
-              },
-            );
-          },
+          onFavoriteTap: () => onFavoriteTap?.call(item),
+          onAddToCart: () => onAddToCart?.call(item),
+          onTap: () => onProductTap?.call(item),
         );
       },
     );

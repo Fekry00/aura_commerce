@@ -20,38 +20,32 @@ class HomeRepositoryImpl implements HomeRepository {
 
   @override
   Future<Either<Failure, HomeFeedEntity>> getHomeFeed() async {
-    if (await networkInfo.isConnected) {
+    try {
+      final remoteFeed = await remoteDataSource.getHomeFeed();
+      // Cache the fresh remote feed for offline availability
+      await localDataSource.cacheHomeFeed(remoteFeed);
+
+      final localFeed = await localDataSource.getLastHomeFeed();
+      final combinedFeed = HomeFeedEntity(
+        deliveryLocation: remoteFeed.deliveryLocation,
+        banners: remoteFeed.banners,
+        categories: remoteFeed.categories,
+        highlights: remoteFeed.highlights,
+        curatedDrop: remoteFeed.curatedDrop ?? localFeed.curatedDrop,
+        archiveStory: remoteFeed.archiveStory ?? localFeed.archiveStory,
+      );
+      return Right(combinedFeed);
+    } catch (e) {
+      // Remote call failed (e.g., adb reverse dropped or server temporarily unreachable)
+      // Fallback gracefully to cached feed so app never opens blank
       try {
-        final remoteFeed = await remoteDataSource.getHomeFeed();
-        final localFeed = await localDataSource.getLastHomeFeed();
-        final combinedFeed = HomeFeedEntity(
-          deliveryLocation: remoteFeed.deliveryLocation,
-          banners: remoteFeed.banners,
-          categories: remoteFeed.categories,
-          highlights: remoteFeed.highlights.isNotEmpty
-              ? remoteFeed.highlights
-              : localFeed.highlights,
-          curatedDrop: remoteFeed.curatedDrop ?? localFeed.curatedDrop,
-          archiveStory: remoteFeed.archiveStory ?? localFeed.archiveStory,
-        );
-        return Right(combinedFeed);
-      } catch (e) {
-        try {
-          final localFeed = await localDataSource.getLastHomeFeed();
-          return Right(localFeed);
-        } catch (_) {
-          return Left(ServerFailure(errMessage: e.toString()));
+        final cachedFeed = await localDataSource.getLastHomeFeed();
+        if (cachedFeed.highlights.isNotEmpty || cachedFeed.categories.isNotEmpty) {
+          return Right(cachedFeed);
         }
-      }
-    } else {
-      try {
-        final localFeed = await localDataSource.getLastHomeFeed();
-        return Right(localFeed);
-      } catch (e) {
-        return Left(
-          CacheFailure(errMessage: 'No internet connection: ${e.toString()}'),
-        );
-      }
+      } catch (_) {}
+
+      return Left(ServerFailure(errMessage: 'Connection failed: ${e.toString()}'));
     }
   }
 
@@ -66,10 +60,7 @@ class HomeRepositoryImpl implements HomeRepository {
         );
         return Right(highlights);
       } else {
-        final feed = await localDataSource.getLastHomeFeed();
-        final highlights = feed.highlights.cast<ProductHighlightEntity>();
-        if (!onlyPopular) return Right(highlights);
-        return Right(highlights.where((item) => item.isPopular).toList());
+        return Left(NetworkFailure(errMessage: 'No internet connection'));
       }
     } catch (e) {
       return Left(ServerFailure(errMessage: e.toString()));

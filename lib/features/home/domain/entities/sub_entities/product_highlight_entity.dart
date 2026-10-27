@@ -1,3 +1,4 @@
+import 'package:aura/features/product/domain/entities/sub_entities/product_item_entity.dart';
 import 'product_rating_entity.dart';
 
 class ProductHighlightEntity {
@@ -24,4 +25,18 @@ class ProductHighlightEntity {
   final bool isPopular;
   final int? categoryId;
   final String? categoryName;
+
+  ProductItemEntity toProductItemEntity() {
+    return ProductItemEntity(
+      id: int.tryParse(id) ?? 0,
+      name: title,
+      thumbnailUrl: imageUrl,
+      minPrice: price,
+      rating: rating.average,
+      reviewsCount: rating.reviewsCount,
+      isFavorite: isFavorite,
+      categoryId: categoryId,
+      categoryName: categoryName,
+    );
+  }
 }

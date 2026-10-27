@@ -4,14 +4,14 @@ import 'package:aura/core/theme/app_typography.dart';
 import 'package:flutter/material.dart';
 
 class AtelierArchiveBanner extends StatelessWidget {
-  const AtelierArchiveBanner({super.key});
+  final VoidCallback? onTap;
+
+  const AtelierArchiveBanner({super.key, this.onTap});
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        MainTabController.switchTab(1);
-      },
+      onTap: onTap ?? () => MainTabController.switchTab(1),
       child: Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
@@ -68,8 +68,8 @@ class AtelierArchiveBanner extends StatelessWidget {
             Container(
               width: 32,
               height: 32,
-              decoration: BoxDecoration(
-                color: const Color(0xFFF1F3F5),
+              decoration: const BoxDecoration(
+                color: Color(0xFFF1F3F5),
                 shape: BoxShape.circle,
               ),
               child: const Icon(

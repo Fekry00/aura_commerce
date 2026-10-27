@@ -1,11 +1,6 @@
+import 'dart:convert';
 import 'package:aura/core/databases/cache/cache_helper.dart';
 import 'package:aura/features/home/data/models/home_feed_model.dart';
-import 'package:aura/features/home/data/models/sub_models/archive_story_model.dart';
-import 'package:aura/features/home/data/models/sub_models/banner_model.dart';
-import 'package:aura/features/home/data/models/sub_models/category_model.dart';
-import 'package:aura/features/home/data/models/sub_models/curated_drop_model.dart';
-import 'package:aura/features/home/data/models/sub_models/product_highlight_model.dart';
-import 'package:aura/features/home/data/models/sub_models/product_rating_model.dart';
 
 abstract class HomeLocalDataSource {
   Future<HomeFeedModel> getLastHomeFeed();
@@ -23,12 +18,22 @@ class HomeLocalDataSourceImpl implements HomeLocalDataSource {
 
   @override
   Future<HomeFeedModel> getLastHomeFeed() async {
+    try {
+      final jsonString = CacheHelper.getDataString(key: cachedHomeFeedKey);
+      if (jsonString != null && jsonString.isNotEmpty) {
+        final Map<String, dynamic> map = jsonDecode(jsonString);
+        return HomeFeedModel.fromJson(map);
+      }
+    } catch (_) {}
     return _buildDefaultHomeFeed();
   }
 
   @override
   Future<void> cacheHomeFeed(HomeFeedModel feedToCache) async {
-    // await cacheHelper.saveData(key: cachedHomeFeedKey, value: feedToCache.toJson());
+    try {
+      final jsonString = jsonEncode(feedToCache.toJson());
+      await CacheHelper.saveData(key: cachedHomeFeedKey, value: jsonString);
+    } catch (_) {}
   }
 
   @override
@@ -37,100 +42,14 @@ class HomeLocalDataSourceImpl implements HomeLocalDataSource {
   }
 
   HomeFeedModel _buildDefaultHomeFeed() {
-    return HomeFeedModel(
-      deliveryLocation: 'New York, NY',
-      banners: const [
-        BannerModel(
-          id: 1,
-          title: 'Summer Sale',
-          imageUrl: 'http://127.0.0.1:8000/storage/banners/summer.jpg',
-          linkType: 'CATEGORY',
-          linkTargetId: 2,
-          sortOrder: 0,
-          isActive: true,
-        ),
-      ],
-      curatedDrop: CuratedDropModel(
-        id: 'drop_04',
-        label: 'CURATED DROP 04',
-        endTime: DateTime.now().add(
-          const Duration(hours: 8, minutes: 24, seconds: 11),
-        ),
-      ),
-      categories: const [
-        CategoryModel(
-          id: 1,
-          name: 'Electronics',
-          slug: 'electronics',
-          description: 'Electronic Devices',
-          image: null,
-          isActive: true,
-        ),
-        CategoryModel(
-          id: 2,
-          name: 'Clothing',
-          slug: 'clothing',
-          description: 'Fashion and Clothing',
-          image: null,
-          isActive: true,
-        ),
-        CategoryModel(
-          id: 3,
-          name: 'Beauty',
-          slug: 'beauty',
-          description: 'Beauty and Skincare',
-          image: null,
-          isActive: true,
-        ),
-      ],
-      highlights: const [
-        ProductHighlightModel(
-          id: 'prod_1',
-          title: 'Aethel Minimalist...',
-          price: 1450,
-          imageUrl:
-              'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=600&q=80',
-          rating: ProductRatingModel(average: 4.9, reviewsCount: 128),
-          badge: 'BESTSELLER',
-          isPopular: true,
-        ),
-        ProductHighlightModel(
-          id: 'prod_2',
-          title: 'Verona Nappa...',
-          price: 890,
-          imageUrl:
-              'https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&w=600&q=80',
-          rating: ProductRatingModel(average: 4.8, reviewsCount: 94),
-          isPopular: true,
-        ),
-        ProductHighlightModel(
-          id: 'prod_3',
-          title: 'Oud & Bergamot...',
-          price: 320,
-          imageUrl:
-              'https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?auto=format&fit=crop&w=600&q=80',
-          rating: ProductRatingModel(average: 5.0, reviewsCount: 210),
-          isPopular: true,
-        ),
-        ProductHighlightModel(
-          id: 'prod_4',
-          title: 'Structured Cashme...',
-          price: 1280,
-          imageUrl:
-              'https://images.unsplash.com/photo-1539533018447-63fcce2678e3?auto=format&fit=crop&w=600&q=80',
-          rating: ProductRatingModel(average: 4.7, reviewsCount: 65),
-          badge: 'NEW',
-          isPopular: false,
-        ),
-      ],
-      archiveStory: const ArchiveStoryModel(
-        id: 'story_1',
-        label: 'ATELIER ARCHIVE',
-        title: 'The Art of Pure Precision',
-        subtitle: 'Meet the master artisans sh...',
-        imageUrl:
-            'https://images.unsplash.com/photo-1509048191080-d2984bad6ae5?auto=format&fit=crop&w=400&q=80',
-      ),
+    return const HomeFeedModel(
+      deliveryLocation: 'Cairo, EG',
+      banners: [],
+      curatedDrop: null,
+      categories: [],
+      highlights: [],
+      archiveStory: null,
     );
   }
 }
+

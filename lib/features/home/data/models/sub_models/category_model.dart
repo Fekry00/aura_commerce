@@ -1,3 +1,4 @@
+import 'package:aura/core/network/api/end_points.dart';
 import 'package:aura/features/home/domain/entities/sub_entities/category_entity.dart';
 
 class CategoryModel extends CategoryEntity {
@@ -19,7 +20,8 @@ class CategoryModel extends CategoryEntity {
       name: json['name'] as String? ?? '',
       slug: json['slug'] as String?,
       description: json['description'] as String?,
-      image: (json['image'] ?? json['imageUrl'] ?? json['image_url']) as String?,
+      image: EndPoint.fixImageUrl(
+          (json['image'] ?? json['imageUrl'] ?? json['image_url']) as String?),
       parentCategoryId: json['parentCategoryId'] is int
           ? json['parentCategoryId'] as int
           : int.tryParse(json['parentCategoryId']?.toString() ?? ''),

@@ -2,6 +2,7 @@ import 'package:aura/core/routing/routes.dart';
 import 'package:aura/core/theme/app_colors.dart';
 import 'package:aura/core/theme/app_typography.dart';
 import 'package:aura/features/home/domain/entities/sub_entities/category_entity.dart';
+import 'package:aura/features/home/presentation/utils/home_category_icon_helper.dart';
 import 'package:flutter/material.dart';
 
 class HomeCategoriesSection extends StatelessWidget {
@@ -24,32 +25,6 @@ class HomeCategoriesSection extends StatelessWidget {
     {'id': 3, 'name': 'Beauty', 'icon': Icons.spa_outlined},
   ];
 
-  IconData _getCategoryIcon(String name, String? slug) {
-    final key = '${name.toLowerCase()} ${(slug ?? '').toLowerCase()}';
-    if (key.contains('electron') ||
-        key.contains('device') ||
-        key.contains('phone')) {
-      return Icons.devices_outlined;
-    } else if (key.contains('cloth') ||
-        key.contains('fashion') ||
-        key.contains('wear')) {
-      return Icons.checkroom_outlined;
-    } else if (key.contains('beaut') ||
-        key.contains('skin') ||
-        key.contains('care')) {
-      return Icons.spa_outlined;
-    } else if (key.contains('watch') || key.contains('time')) {
-      return Icons.watch_outlined;
-    } else if (key.contains('bag') || key.contains('leather')) {
-      return Icons.shopping_bag_outlined;
-    } else if (key.contains('jewel') || key.contains('diamond')) {
-      return Icons.diamond_outlined;
-    } else if (key.contains('perfume') || key.contains('fragrance')) {
-      return Icons.sanitizer_outlined;
-    }
-    return Icons.category_outlined;
-  }
-
   @override
   Widget build(BuildContext context) {
     final hasRemote = categories != null && categories!.isNotEmpty;
@@ -69,8 +44,11 @@ class HomeCategoriesSection extends StatelessWidget {
             ),
             GestureDetector(
               onTap: () {
-                onViewAllTap?.call();
-                Navigator.pushNamed(context, Routes.categoriesView);
+                if (onViewAllTap != null) {
+                  onViewAllTap!.call();
+                } else {
+                  Navigator.pushNamed(context, Routes.categoriesView);
+                }
               },
               child: Text(
                 'View All',
@@ -101,8 +79,10 @@ class HomeCategoriesSection extends StatelessWidget {
               if (hasRemote) {
                 final cat = categories![index];
                 name = cat.name;
-                imageUrl = cat.image;
-                icon = _getCategoryIcon(cat.name, cat.slug);
+                imageUrl = (cat.image != null && cat.image!.trim().isNotEmpty)
+                    ? cat.image!.trim()
+                    : null;
+                icon = HomeCategoryIconHelper.getCategoryIcon(cat.name, cat.slug);
                 catId = cat.id;
               } else {
                 final fallback = _fallbackCategories[index];

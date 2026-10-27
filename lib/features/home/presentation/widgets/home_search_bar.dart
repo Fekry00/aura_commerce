@@ -1,23 +1,20 @@
 import 'package:aura/core/theme/app_colors.dart';
 import 'package:aura/core/theme/app_typography.dart';
-import 'package:aura/core/utils/functions/custom_snack_bar.dart';
 import 'package:flutter/material.dart';
 
-class HomeSearchBar extends StatefulWidget {
-  const HomeSearchBar({super.key});
+class HomeSearchBar extends StatelessWidget {
+  final TextEditingController? controller;
+  final ValueChanged<String>? onSubmitted;
+  final VoidCallback? onVoiceSearchTap;
+  final VoidCallback? onFilterTap;
 
-  @override
-  State<HomeSearchBar> createState() => _HomeSearchBarState();
-}
-
-class _HomeSearchBarState extends State<HomeSearchBar> {
-  final TextEditingController _controller = TextEditingController();
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
+  const HomeSearchBar({
+    super.key,
+    this.controller,
+    this.onSubmitted,
+    this.onVoiceSearchTap,
+    this.onFilterTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +35,8 @@ class _HomeSearchBarState extends State<HomeSearchBar> {
                 const SizedBox(width: 10),
                 Expanded(
                   child: TextField(
-                    controller: _controller,
+                    controller: controller,
+                    onSubmitted: onSubmitted,
                     style: AppTypography.bodySm.copyWith(
                       color: AppColors.onSurface,
                     ),
@@ -60,13 +58,7 @@ class _HomeSearchBarState extends State<HomeSearchBar> {
                     color: AppColors.slateBody,
                     size: 20,
                   ),
-                  onPressed: () {
-                    showCustomSnackBar(
-                      context,
-                      message: 'Voice search is coming soon!',
-                      type: SnackBarType.info,
-                    );
-                  },
+                  onPressed: onVoiceSearchTap,
                 ),
               ],
             ),
@@ -75,13 +67,7 @@ class _HomeSearchBarState extends State<HomeSearchBar> {
         const SizedBox(width: 12),
         InkWell(
           borderRadius: BorderRadius.circular(16),
-          onTap: () {
-            showCustomSnackBar(
-              context,
-              message: 'Opening filter options...',
-              type: SnackBarType.info,
-            );
-          },
+          onTap: onFilterTap,
           child: Container(
             height: 48,
             width: 48,
