@@ -18,6 +18,12 @@ class GetCategoriesSuccessState extends CategoryState {
   final List<CategoryEntity> categories;
 }
 
+class GetCategoriesEmptyState extends CategoryState {
+  const GetCategoriesEmptyState({this.message = 'No categories found'});
+
+  final String message;
+}
+
 class GetCategoriesErrorState extends CategoryState {
   const GetCategoriesErrorState({required this.errMessage});
 

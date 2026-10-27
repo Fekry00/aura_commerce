@@ -25,7 +25,11 @@ class CategoryCubit extends Cubit<CategoryState> {
       (failure) => emit(GetCategoriesErrorState(errMessage: failure.errMessage)),
       (categories) {
         _allCategories = categories;
-        emit(GetCategoriesSuccessState(categories: categories));
+        if (categories.isEmpty) {
+          emit(const GetCategoriesEmptyState());
+        } else {
+          emit(GetCategoriesSuccessState(categories: categories));
+        }
       },
     );
   }
@@ -46,49 +50,54 @@ class CategoryCubit extends Cubit<CategoryState> {
   }
 
   void filterByPill(String pill) {
-    if (pill == 'All Maisons') {
+    if (pill == 'All Maisons' || pill == 'All') {
       emit(GetCategoriesSuccessState(categories: _allCategories));
       return;
     }
 
-    if (pill == 'Vault Exclusives') {
-      final filtered = _allCategories.where((c) {
-        return c.subDepartments.any((s) =>
-            s.badge?.toUpperCase().contains('VAULT') == true ||
-            s.badge?.toUpperCase().contains('EXCLUSIVE') == true ||
-            s.badge?.toUpperCase().contains('UNHEATED') == true);
-      }).toList();
-      emit(GetCategoriesSuccessState(
-          categories: filtered.isNotEmpty ? filtered : _allCategories));
-      return;
-    }
+    final lower = pill.toLowerCase();
+    final filtered = _allCategories.where((c) {
+      final name = c.name.toLowerCase();
+      final slug = c.slug.toLowerCase();
 
-    if (pill == 'Numbered Runs') {
-      final filtered = _allCategories.where((c) {
-        return c.subDepartments.any((s) =>
-            s.badge?.toUpperCase().contains('NUMBERED') == true ||
-            s.badge?.toUpperCase().contains('3 LEFT') == true ||
-            s.badge?.toUpperCase().contains('COMPLICATION') == true);
-      }).toList();
-      emit(GetCategoriesSuccessState(
-          categories: filtered.isNotEmpty ? filtered : _allCategories));
-      return;
-    }
+      if (name.contains(lower) ||
+          slug.contains(lower) ||
+          lower.contains(name) ||
+          lower.contains(slug)) {
+        return true;
+      }
 
-    if (pill == 'Atelier Bespoke') {
-      final filtered = _allCategories.where((c) {
+      if (pill == 'Vault Exclusives') {
         return c.subDepartments.any((s) =>
-            s.badge?.toUpperCase().contains('BESPOKE') == true ||
-            s.badge?.toUpperCase().contains('SIGNATURE') == true ||
-            s.badge?.toUpperCase().contains('HERITAGE') == true ||
-            s.badge?.toUpperCase().contains('HIGH JEWELRY') == true);
-      }).toList();
-      emit(GetCategoriesSuccessState(
-          categories: filtered.isNotEmpty ? filtered : _allCategories));
-      return;
-    }
+                s.badge?.toUpperCase().contains('VAULT') == true ||
+                s.badge?.toUpperCase().contains('EXCLUSIVE') == true ||
+                s.badge?.toUpperCase().contains('UNHEATED') == true) ||
+            name.contains('electron') ||
+            name.contains('watch');
+      }
 
-    emit(GetCategoriesSuccessState(categories: _allCategories));
+      if (pill == 'Numbered Runs') {
+        return c.subDepartments.any((s) =>
+                s.badge?.toUpperCase().contains('NUMBERED') == true ||
+                s.badge?.toUpperCase().contains('3 LEFT') == true ||
+                s.badge?.toUpperCase().contains('COMPLICATION') == true) ||
+            name.contains('cloth');
+      }
+
+      if (pill == 'Atelier Bespoke') {
+        return c.subDepartments.any((s) =>
+                s.badge?.toUpperCase().contains('BESPOKE') == true ||
+                s.badge?.toUpperCase().contains('SIGNATURE') == true ||
+                s.badge?.toUpperCase().contains('HERITAGE') == true ||
+                s.badge?.toUpperCase().contains('HIGH JEWELRY') == true) ||
+            name.contains('beaut');
+      }
+
+      return false;
+    }).toList();
+
+    emit(GetCategoriesSuccessState(
+        categories: filtered.isNotEmpty ? filtered : _allCategories));
   }
 
   Future<void> getCategoryDetails(int id) async {

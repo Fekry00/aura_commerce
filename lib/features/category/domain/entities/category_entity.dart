@@ -58,6 +58,34 @@ class CategoryEntity extends Equatable {
   final String? collectionLabel;
   final List<SubDepartmentEntity> subDepartments;
 
+  CategoryEntity copyWith({
+    int? id,
+    String? name,
+    String? slug,
+    String? description,
+    int? parentCategoryId,
+    bool? isActive,
+    String? image,
+    String? createdAt,
+    String? creationsCount,
+    String? collectionLabel,
+    List<SubDepartmentEntity>? subDepartments,
+  }) {
+    return CategoryEntity(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      slug: slug ?? this.slug,
+      description: description ?? this.description,
+      parentCategoryId: parentCategoryId ?? this.parentCategoryId,
+      isActive: isActive ?? this.isActive,
+      image: image ?? this.image,
+      createdAt: createdAt ?? this.createdAt,
+      creationsCount: creationsCount ?? this.creationsCount,
+      collectionLabel: collectionLabel ?? this.collectionLabel,
+      subDepartments: subDepartments ?? this.subDepartments,
+    );
+  }
+
   @override
   List<Object?> get props => [
         id,

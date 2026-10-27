@@ -2,22 +2,58 @@ import 'package:aura/core/routing/routes.dart';
 import 'package:aura/core/theme/app_colors.dart';
 import 'package:aura/core/theme/app_typography.dart';
 import 'package:aura/features/category/domain/entities/category_entity.dart';
+import 'package:aura/features/category/presentation/utils/category_ui_helper.dart';
 import 'package:flutter/material.dart';
 
 class CategorySubdepartmentsSheet extends StatefulWidget {
   const CategorySubdepartmentsSheet({
     super.key,
     required this.category,
+    required this.onSubDepartmentTap,
+    required this.onViewAllTap,
+    required this.onClose,
   });
 
   final CategoryEntity category;
+  final ValueChanged<SubDepartmentEntity> onSubDepartmentTap;
+  final VoidCallback onViewAllTap;
+  final VoidCallback onClose;
 
-  static void show(BuildContext context, CategoryEntity category) {
+  static void show(
+    BuildContext context,
+    CategoryEntity category, {
+    ValueChanged<SubDepartmentEntity>? onSubDepartmentTap,
+    VoidCallback? onViewAllTap,
+  }) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => CategorySubdepartmentsSheet(category: category),
+      builder: (bottomSheetContext) => CategorySubdepartmentsSheet(
+        category: category,
+        onSubDepartmentTap: onSubDepartmentTap ??
+            (sub) {
+              Navigator.pop(bottomSheetContext);
+              Navigator.pushNamed(
+                context,
+                Routes.categoryDetailsView,
+                arguments: {
+                  'category': category,
+                  'subDepartment': sub.name,
+                },
+              );
+            },
+        onViewAllTap: onViewAllTap ??
+            () {
+              Navigator.pop(bottomSheetContext);
+              Navigator.pushNamed(
+                context,
+                Routes.categoryDetailsView,
+                arguments: category,
+              );
+            },
+        onClose: () => Navigator.pop(bottomSheetContext),
+      ),
     );
   }
 
@@ -39,7 +75,8 @@ class _CategorySubdepartmentsSheetState
 
   @override
   Widget build(BuildContext context) {
-    final subDepartments = widget.category.subDepartments;
+    final subDepartments =
+        CategoryUiHelper.getEffectiveSubDepartments(widget.category);
 
     return Container(
       constraints: BoxConstraints(
@@ -152,7 +189,7 @@ class _CategorySubdepartmentsSheetState
                   ),
                 ),
                 GestureDetector(
-                  onTap: () => Navigator.pop(context),
+                  onTap: widget.onClose,
                   child: Container(
                     width: 36,
                     height: 36,
@@ -223,24 +260,16 @@ class _CategorySubdepartmentsSheetState
               itemBuilder: (context, index) {
                 final sub = subDepartments[index];
                 return GestureDetector(
-                  onTap: () {
-                    Navigator.pop(context);
-                    Navigator.pushNamed(
-                      context,
-                      Routes.categoryDetailsView,
-                      arguments: {
-                        'category': widget.category,
-                        'subDepartment': sub.name,
-                      },
-                    );
-                  },
+                  onTap: () => widget.onSubDepartmentTap(sub),
                   child: Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: AppColors.surfaceContainerLow.withValues(alpha: 0.4),
+                      color:
+                          AppColors.surfaceContainerLow.withValues(alpha: 0.4),
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
-                        color: AppColors.surfaceContainerHigh.withValues(alpha: 0.6),
+                        color: AppColors.surfaceContainerHigh
+                            .withValues(alpha: 0.6),
                       ),
                     ),
                     child: Row(
@@ -380,14 +409,7 @@ class _CategorySubdepartmentsSheetState
               width: double.infinity,
               height: 50,
               child: ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                  Navigator.pushNamed(
-                    context,
-                    Routes.categoryDetailsView,
-                    arguments: widget.category,
-                  );
-                },
+                onPressed: widget.onViewAllTap,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF0B3B2C),
                   foregroundColor: Colors.white,
@@ -434,7 +456,9 @@ class _CategorySubdepartmentsSheetState
   Widget _buildSubIcon(String? iconKey) {
     IconData icon = Icons.interests_outlined;
     if (iconKey == 'water_drop') icon = Icons.water_drop_outlined;
-    if (iconKey == 'auto_awesome_motion') icon = Icons.auto_awesome_motion_outlined;
+    if (iconKey == 'auto_awesome_motion') {
+      icon = Icons.auto_awesome_motion_outlined;
+    }
     if (iconKey == 'diamond') icon = Icons.diamond_outlined;
 
     return Center(
