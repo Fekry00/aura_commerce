@@ -1,12 +1,14 @@
 import 'package:aura/core/network/api/api_consumer.dart';
 import 'package:aura/core/network/api/end_points.dart';
 import 'package:aura/features/orders/data/models/order_model.dart';
-import 'package:aura/features/orders/data/models/sub_models/order_tracking_model.dart';
+import 'package:aura/features/orders/data/models/orders_list_model.dart';
 
 abstract class OrdersRemoteDataSource {
-  Future<OrderModel> getOrderDetails({String? orderId});
+  Future<OrdersListModel> getMyOrders({String? status, int? perPage, int? page});
 
-  Future<OrderTrackingModel> getOrderTracking({String? orderId});
+  Future<OrderModel> getOrderDetails(int orderId);
+
+  Future<OrderModel> cancelOrder(int orderId);
 
   Future<bool> downloadInvoice({required String orderId});
 }
@@ -17,21 +19,33 @@ class OrdersRemoteDataSourceImpl implements OrdersRemoteDataSource {
   final ApiConsumer apiConsumer;
 
   @override
-  Future<OrderModel> getOrderDetails({String? orderId}) async {
-    final path = orderId != null
-        ? '${EndPoint.orders}/$orderId'
-        : EndPoint.orders;
-    final response = await apiConsumer.get(path);
+  Future<OrdersListModel> getMyOrders({
+    String? status,
+    int? perPage,
+    int? page,
+  }) async {
+    final query = <String, dynamic>{};
+    if (status != null && status.isNotEmpty) query['status'] = status;
+    if (perPage != null) query['per_page'] = perPage;
+    if (page != null) query['page'] = page;
+
+    final response = await apiConsumer.get(
+      EndPoint.orders,
+      queryParameters: query,
+    );
+    return OrdersListModel.fromJson(response);
+  }
+
+  @override
+  Future<OrderModel> getOrderDetails(int orderId) async {
+    final response = await apiConsumer.get('${EndPoint.orders}/$orderId');
     return OrderModel.fromJson(response);
   }
 
   @override
-  Future<OrderTrackingModel> getOrderTracking({String? orderId}) async {
-    final path = orderId != null
-        ? '${EndPoint.orders}/$orderId/tracking'
-        : '${EndPoint.orders}/tracking';
-    final response = await apiConsumer.get(path);
-    return OrderTrackingModel.fromJson(response);
+  Future<OrderModel> cancelOrder(int orderId) async {
+    final response = await apiConsumer.post('${EndPoint.orders}/$orderId/cancel');
+    return OrderModel.fromJson(response);
   }
 
   @override

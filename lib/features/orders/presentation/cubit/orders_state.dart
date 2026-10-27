@@ -1,5 +1,4 @@
 import 'package:aura/features/orders/domain/entities/order_entity.dart';
-import 'package:aura/features/orders/domain/entities/sub_entities/order_tracking_entity.dart';
 
 abstract class OrdersState {
   const OrdersState();
@@ -13,16 +12,28 @@ class OrdersLoadingState extends OrdersState {
   const OrdersLoadingState();
 }
 
-class OrdersSuccessState extends OrdersState {
-  const OrdersSuccessState({required this.order});
+class OrdersListSuccessState extends OrdersState {
+  const OrdersListSuccessState({required this.orders});
+
+  final List<OrderEntity> orders;
+}
+
+class OrderDetailsSuccessState extends OrdersState {
+  const OrderDetailsSuccessState({required this.order});
 
   final OrderEntity order;
 }
 
-class OrderTrackingSuccessState extends OrdersState {
-  const OrderTrackingSuccessState({required this.tracking});
+class OrderCancelSuccessState extends OrdersState {
+  const OrderCancelSuccessState({required this.order});
 
-  final OrderTrackingEntity tracking;
+  final OrderEntity order;
+}
+
+class OrdersSuccessState extends OrdersState {
+  const OrdersSuccessState({required this.order});
+
+  final OrderEntity order;
 }
 
 class OrdersErrorState extends OrdersState {

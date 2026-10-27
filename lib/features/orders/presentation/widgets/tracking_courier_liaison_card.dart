@@ -1,6 +1,5 @@
 import 'package:aura/core/theme/app_colors.dart';
 import 'package:aura/core/theme/app_typography.dart';
-import 'package:aura/core/utils/functions/custom_snack_bar.dart';
 import 'package:aura/features/orders/presentation/widgets/tracking_courier_protocol_box.dart';
 import 'package:flutter/material.dart';
 
@@ -8,25 +7,11 @@ class TrackingCourierLiaisonCard extends StatelessWidget {
   final VoidCallback? onCall;
   final VoidCallback? onMessage;
 
-  const TrackingCourierLiaisonCard({super.key, this.onCall, this.onMessage});
-
-  void _call(BuildContext context) {
-    if (onCall != null) return onCall!();
-    showCustomSnackBar(
-      context,
-      message: 'Dialing Marcus Vance direct line (+1 555-0192)...',
-      type: SnackBarType.success,
-    );
-  }
-
-  void _msg(BuildContext context) {
-    if (onMessage != null) return onMessage!();
-    showCustomSnackBar(
-      context,
-      message: 'Opening encrypted thread with Marcus Vance...',
-      type: SnackBarType.success,
-    );
-  }
+  const TrackingCourierLiaisonCard({
+    super.key,
+    this.onCall,
+    this.onMessage,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -117,7 +102,7 @@ class TrackingCourierLiaisonCard extends StatelessWidget {
                 ),
               ),
               InkWell(
-                onTap: () => _call(context),
+                onTap: onCall,
                 borderRadius: BorderRadius.circular(18),
                 child: Container(
                   width: 36,
@@ -135,7 +120,7 @@ class TrackingCourierLiaisonCard extends StatelessWidget {
               ),
               const SizedBox(width: AppSpacing.spaceSm),
               InkWell(
-                onTap: () => _msg(context),
+                onTap: onMessage,
                 borderRadius: BorderRadius.circular(18),
                 child: Container(
                   width: 36,
@@ -144,7 +129,7 @@ class TrackingCourierLiaisonCard extends StatelessWidget {
                     color: AppColors.primaryContainer,
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.chat_bubble_outline_rounded,
                     size: 16,
                     color: Colors.white,

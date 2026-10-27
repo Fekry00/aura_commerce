@@ -1,7 +1,6 @@
 import 'package:aura/core/theme/app_colors.dart';
 import 'package:aura/core/theme/app_typography.dart';
 import 'package:aura/features/orders/presentation/widgets/tracking_dispatch_item_card.dart';
-import 'package:aura/features/orders/presentation/widgets/tracking_nft_certificate_sheet.dart';
 import 'package:flutter/material.dart';
 
 class TrackingCuratedDispatchItems extends StatelessWidget {
@@ -58,13 +57,7 @@ class TrackingCuratedDispatchItems extends StatelessWidget {
         ),
         const SizedBox(height: AppSpacing.spaceSm + 2),
         InkWell(
-          onTap: () {
-            if (onInspectCertificate != null) {
-              onInspectCertificate!();
-            } else {
-              TrackingNftCertificateSheet.show(context);
-            }
-          },
+          onTap: onInspectCertificate,
           borderRadius: BorderRadius.circular(AppSpacing.spaceSm),
           child: Container(
             padding: const EdgeInsets.symmetric(

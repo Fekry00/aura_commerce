@@ -8,7 +8,7 @@ class GetOrderDetailsUseCase {
 
   final OrdersRepository repository;
 
-  Future<Either<Failure, OrderEntity>> call({String? orderId}) {
-    return repository.getOrderDetails(orderId: orderId);
+  Future<Either<Failure, OrderEntity>> call(int orderId) {
+    return repository.getOrderDetails(orderId);
   }
 }

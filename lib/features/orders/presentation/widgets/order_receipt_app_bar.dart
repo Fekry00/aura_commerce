@@ -1,5 +1,6 @@
 import 'package:aura/core/theme/app_colors.dart';
 import 'package:aura/core/theme/app_typography.dart';
+import 'package:aura/core/widgets/app_bar_user_avatar.dart';
 import 'package:flutter/material.dart';
 
 class OrderReceiptAppBar extends StatelessWidget
@@ -67,18 +68,9 @@ class OrderReceiptAppBar extends StatelessWidget
                 fontSize: 16,
               ),
             ),
-            Container(
-              padding: const EdgeInsets.all(AppSpacing.spaceXs / 2),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(color: AppColors.outlineVariant, width: 1.5),
-              ),
-              child: const CircleAvatar(
-                radius: AppSpacing.spaceMd - 2,
-                backgroundImage: NetworkImage(
-                  'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=300',
-                ),
-              ),
+            const AppBarUserAvatar(
+              radius: AppSpacing.spaceMd - 2,
+              showBorder: true,
             ),
           ],
         ),

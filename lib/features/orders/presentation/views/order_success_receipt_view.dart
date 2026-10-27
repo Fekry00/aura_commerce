@@ -1,56 +1,57 @@
-import 'package:aura/core/routing/routes.dart';
 import 'package:aura/core/theme/app_colors.dart';
 import 'package:aura/core/theme/app_typography.dart';
-import 'package:aura/features/orders/presentation/widgets/order_consignment_address_card.dart';
-import 'package:aura/features/orders/presentation/widgets/order_dispatch_schedule_card.dart';
-import 'package:aura/features/orders/presentation/widgets/order_guarantee_badges.dart';
-import 'package:aura/features/orders/presentation/widgets/order_receipt_app_bar.dart';
-import 'package:aura/features/orders/presentation/widgets/order_settlement_summary_card.dart';
-import 'package:aura/features/orders/presentation/widgets/order_success_actions.dart';
-import 'package:aura/features/orders/presentation/widgets/order_success_header.dart';
-import 'package:aura/features/orders/presentation/widgets/order_vault_manifest_section.dart';
+import 'package:aura/features/orders/domain/entities/order_entity.dart';
+import 'package:aura/features/orders/presentation/controllers/order_receipt_controller.dart';
+import 'package:aura/features/orders/presentation/widgets/order_success_receipt_body.dart';
 import 'package:flutter/material.dart';
 
 class OrderSuccessReceiptView extends StatelessWidget {
-  const OrderSuccessReceiptView({super.key});
+  final OrderEntity? order;
+  final OrderReceiptController controller;
+
+  const OrderSuccessReceiptView({
+    super.key,
+    this.order,
+    this.controller = const OrderReceiptController(),
+  });
 
   @override
   Widget build(BuildContext context) {
+    final OrderEntity? effectiveOrder = order ??
+        (ModalRoute.of(context)?.settings.arguments is OrderEntity
+            ? ModalRoute.of(context)!.settings.arguments as OrderEntity
+            : null);
+
     return Scaffold(
       backgroundColor: AppColors.surface,
-      appBar: const OrderReceiptAppBar(),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.gutter,
-          vertical: AppSpacing.spaceSm,
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        centerTitle: true,
+        leading: IconButton(
+          icon: const Icon(
+            Icons.close_rounded,
+            size: 20,
+            color: Color(0xFF002419),
+          ),
+          onPressed: () => controller.onCloseReceipt(context),
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const OrderSuccessHeader(),
-            const SizedBox(height: AppSpacing.spaceMd),
-            const OrderDispatchScheduleCard(),
-            const SizedBox(height: AppSpacing.spaceLg),
-            const OrderVaultManifestSection(),
-            const SizedBox(height: AppSpacing.spaceLg),
-            const OrderConsignmentAddressCard(),
-            const SizedBox(height: AppSpacing.spaceLg),
-            const OrderSettlementSummaryCard(),
-            const SizedBox(height: AppSpacing.spaceLg),
-            const OrderGuaranteeBadges(),
-            const SizedBox(height: AppSpacing.spaceLg),
-            OrderSuccessActions(
-              onTrackCourier: () => Navigator.pushNamed(
-                context,
-                Routes.orderTrackingDetailsView,
-              ),
-              onDownloadInvoice: () {},
-              onContactLiaison: () {},
-            ),
-            const SizedBox(height: AppSpacing.spaceXl),
-          ],
+        title: Text(
+          'ORDER RECEIPT',
+          style: AppTypography.headlineSm.copyWith(
+            fontSize: 15,
+            fontWeight: FontWeight.w800,
+            letterSpacing: 1.5,
+            color: const Color(0xFF002419),
+          ),
         ),
       ),
+      body: effectiveOrder == null
+          ? const Center(child: Text('No order details found.'))
+          : OrderSuccessReceiptBody(
+              order: effectiveOrder,
+              controller: controller,
+            ),
     );
   }
 }
