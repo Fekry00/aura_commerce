@@ -3,8 +3,11 @@ import 'package:aura/core/theme/app_typography.dart';
 import 'package:aura/features/auth/presentation/widgets/auth_text_form_field.dart';
 import 'package:flutter/material.dart';
 
+import 'package:aura/features/profile/presentation/controllers/edit_profile_controller.dart';
+
 class EditProfilePasswordSection extends StatefulWidget {
   final bool isLoading;
+  final EditProfileController? controller;
   final void Function({
     required String currentPassword,
     required String newPassword,
@@ -14,6 +17,7 @@ class EditProfilePasswordSection extends StatefulWidget {
   const EditProfilePasswordSection({
     super.key,
     this.isLoading = false,
+    this.controller,
     required this.onUpdatePassword,
   });
 
@@ -163,12 +167,9 @@ class _EditProfilePasswordSectionState
                       onPressed: () =>
                           setState(() => _obscureCurrent = !_obscureCurrent),
                     ),
-                    validator: (val) {
-                      if (val == null || val.isEmpty) {
-                        return 'Current password is required';
-                      }
-                      return null;
-                    },
+                    validator:
+                        (widget.controller ?? const EditProfileController())
+                            .validateCurrentPassword,
                   ),
                   const SizedBox(height: AppSpacing.spaceMd),
 
@@ -197,15 +198,9 @@ class _EditProfilePasswordSectionState
                       onPressed: () =>
                           setState(() => _obscureNew = !_obscureNew),
                     ),
-                    validator: (val) {
-                      if (val == null || val.isEmpty) {
-                        return 'New password is required';
-                      }
-                      if (val.length < 8) {
-                        return 'Password must be at least 8 characters';
-                      }
-                      return null;
-                    },
+                    validator:
+                        (widget.controller ?? const EditProfileController())
+                            .validateNewPassword,
                   ),
                   const SizedBox(height: AppSpacing.spaceMd),
 
@@ -234,15 +229,12 @@ class _EditProfilePasswordSectionState
                       onPressed: () =>
                           setState(() => _obscureConfirm = !_obscureConfirm),
                     ),
-                    validator: (val) {
-                      if (val == null || val.isEmpty) {
-                        return 'Please confirm your new password';
-                      }
-                      if (val != _newPasswordController.text) {
-                        return 'Passwords do not match';
-                      }
-                      return null;
-                    },
+                    validator: (val) =>
+                        (widget.controller ?? const EditProfileController())
+                            .validateConfirmPassword(
+                      val,
+                      _newPasswordController.text,
+                    ),
                   ),
                   const SizedBox(height: AppSpacing.spaceLg),
 

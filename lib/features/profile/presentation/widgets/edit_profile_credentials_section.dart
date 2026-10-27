@@ -3,10 +3,13 @@ import 'package:aura/core/theme/app_typography.dart';
 import 'package:aura/features/auth/presentation/widgets/auth_text_form_field.dart';
 import 'package:flutter/material.dart';
 
+import 'package:aura/features/profile/presentation/controllers/edit_profile_controller.dart';
+
 class EditProfileCredentialsSection extends StatefulWidget {
   final String initialName;
   final String initialEmail;
   final bool isLoading;
+  final EditProfileController? controller;
   final void Function({required String name, required String email}) onSave;
 
   const EditProfileCredentialsSection({
@@ -14,6 +17,7 @@ class EditProfileCredentialsSection extends StatefulWidget {
     required this.initialName,
     required this.initialEmail,
     this.isLoading = false,
+    this.controller,
     required this.onSave,
   });
 
@@ -38,12 +42,10 @@ class _EditProfileCredentialsSectionState
   @override
   void didUpdateWidget(covariant EditProfileCredentialsSection oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.initialName != widget.initialName &&
-        _nameController.text.isEmpty) {
+    if (oldWidget.initialName != widget.initialName) {
       _nameController.text = widget.initialName;
     }
-    if (oldWidget.initialEmail != widget.initialEmail &&
-        _emailController.text.isEmpty) {
+    if (oldWidget.initialEmail != widget.initialEmail) {
       _emailController.text = widget.initialEmail;
     }
   }
@@ -121,12 +123,8 @@ class _EditProfileCredentialsSectionState
               controller: _nameController,
               hintText: 'Enter your full name',
               prefixIcon: Icons.person_outline_rounded,
-              validator: (val) {
-                if (val == null || val.trim().isEmpty) {
-                  return 'Name cannot be empty';
-                }
-                return null;
-              },
+              validator: (widget.controller ?? const EditProfileController())
+                  .validateName,
             ),
             const SizedBox(height: AppSpacing.spaceMd),
 
@@ -144,17 +142,8 @@ class _EditProfileCredentialsSectionState
               hintText: 'Enter your email address',
               prefixIcon: Icons.mail_outline_rounded,
               keyboardType: TextInputType.emailAddress,
-              validator: (val) {
-                if (val == null || val.trim().isEmpty) {
-                  return 'Email address is required';
-                }
-                final emailRegex =
-                    RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
-                if (!emailRegex.hasMatch(val.trim())) {
-                  return 'Please enter a valid email address';
-                }
-                return null;
-              },
+              validator: (widget.controller ?? const EditProfileController())
+                  .validateEmail,
             ),
             const SizedBox(height: AppSpacing.spaceLg),
 

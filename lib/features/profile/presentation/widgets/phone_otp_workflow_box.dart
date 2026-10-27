@@ -140,7 +140,7 @@ class _PhoneOtpWorkflowBoxState extends State<PhoneOtpWorkflowBox> {
                       fontWeight: FontWeight.w500,
                     ),
                     decoration: const InputDecoration(
-                      hintText: 'e.g. 01012345678',
+                      hintText: 'e.g. 010XXXXXXXX',
                       border: InputBorder.none,
                       isDense: true,
                       contentPadding: EdgeInsets.zero,

@@ -1,3 +1,4 @@
+import 'package:aura/core/network/api/end_points.dart';
 import 'package:aura/features/profile/domain/entities/sub_entities/user_profile_entity.dart';
 
 class UserProfileModel extends UserProfileEntity {
@@ -28,14 +29,8 @@ class UserProfileModel extends UserProfileEntity {
     final String userPhone = (json['phone'] ?? '').toString();
     final String userRole = (json['role'] ?? json['tier']) as String? ?? 'Private Client';
     
-    String avatar = (json['profile_image'] ?? json['avatar_url'] ?? json['avatarUrl']) as String? ?? '';
-    if (avatar.isNotEmpty) {
-      if (!avatar.startsWith('http')) {
-        avatar = 'http://127.0.0.1:8000/${avatar.startsWith('/') ? avatar.substring(1) : avatar}';
-      }
-    } else {
-      avatar = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=300';
-    }
+    final String avatar = EndPoint.fixImageUrl(
+        (json['profile_image'] ?? json['avatar_url'] ?? json['avatarUrl']) as String?);
 
     String memberSince = 'Oct 2026';
     if (json['created_at'] is String && (json['created_at'] as String).length >= 10) {
@@ -61,20 +56,20 @@ class UserProfileModel extends UserProfileEntity {
       avatarUrl: avatar,
       targetTier: (json['target_tier'] ?? json['targetTier']) as String? ??
           'TIER 02 SOVEREIGN',
-      progress: (json['progress'] as num?)?.toDouble() ?? 0.78,
+      progress: (json['progress'] as num?)?.toDouble() ?? 0.0,
       spentAmount: (json['spent_amount'] ?? json['spentAmount']) as String? ??
-          '\$12,450 spent',
+          '0 EGP spent',
       remainingToPrivilege: (json['remaining_to_privilege'] ??
               json['remainingToPrivilege']) as String? ??
-          '\$2,550 to Sovereign Privileges',
+          '5,000 EGP to Sovereign Privileges',
       deliveredCount:
-          (json['delivered_count'] ?? json['deliveredCount']) as String? ??
-              '14',
+          (json['delivered_count'] ?? json['deliveredCount'])?.toString() ??
+              '0',
       curationsCount:
-          (json['curations_count'] ?? json['curationsCount']) as String? ??
-              '28',
+          (json['curations_count'] ?? json['curationsCount'])?.toString() ??
+              '0',
       vaultCredit: (json['vault_credit'] ?? json['vaultCredit']) as String? ??
-          '\$450',
+          '0 EGP',
     );
   }
 

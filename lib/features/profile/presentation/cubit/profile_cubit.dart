@@ -36,6 +36,13 @@ class ProfileCubit extends Cubit<ProfileState> {
 
   ProfileEntity? get currentProfile => state.profile;
 
+  @override
+  void emit(ProfileState state) {
+    if (!isClosed) {
+      super.emit(state);
+    }
+  }
+
   Future<void> fetchProfile() async {
     emit(ProfileLoadingState(profile: currentProfile));
 

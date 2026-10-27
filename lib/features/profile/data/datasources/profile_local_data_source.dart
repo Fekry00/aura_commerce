@@ -73,20 +73,19 @@ class ProfileLocalDataSourceImpl implements ProfileLocalDataSource {
   ProfileModel _buildDefaultProfile() {
     return const ProfileModel(
       user: UserProfileModel(
-        id: '#AL-98421',
-        name: 'Aura Client',
-        tier: 'Tier 01',
-        tierTitle: 'VIP Luminary',
-        patronSince: 'Oct 2026',
-        avatarUrl:
-            'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=300',
-        targetTier: 'TIER 02 SOVEREIGN',
-        progress: 0.78,
-        spentAmount: '\$12,450 spent',
-        remainingToPrivilege: '\$2,550 to Sovereign Privileges',
-        deliveredCount: '14',
-        curationsCount: '28',
-        vaultCredit: '\$450',
+        id: '',
+        name: 'Aura Member',
+        tier: 'Member',
+        tierTitle: 'Client',
+        patronSince: '',
+        avatarUrl: '',
+        targetTier: '',
+        progress: 0.0,
+        spentAmount: '0 EGP spent',
+        remainingToPrivilege: '',
+        deliveredCount: '0',
+        curationsCount: '0',
+        vaultCredit: '0 EGP',
       ),
       liaison: ConciergeLiaisonModel(
         name: 'Marcus Vance',

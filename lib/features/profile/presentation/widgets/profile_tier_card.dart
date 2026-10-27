@@ -6,24 +6,29 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ProfileTierCard extends StatelessWidget {
-  final String userName, userTier, customerId, patronSince, avatarUrl, targetTier;
-  final double progress;
-  final String spentAmount, remainingToPrivilege, deliveredCount, curationsCount, vaultCredit;
+  final String userName;
+  final String userTier;
+  final String customerId;
+  final String patronSince;
+  final String avatarUrl;
+  final String email;
+  final String phone;
+  final String deliveredCount;
+  final String curationsCount;
+  final String totalOrdersCount;
 
   const ProfileTierCard({
     super.key,
     this.userName = 'Aura Client',
-    this.userTier = 'Tier 01',
-    this.customerId = '#AL-98421',
+    this.userTier = 'Member',
+    this.customerId = '#AL-000',
     this.patronSince = 'Oct 2026',
-    this.avatarUrl = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=300',
-    this.targetTier = 'TIER 02 SOVEREIGN',
-    this.progress = 0.78,
-    this.spentAmount = '\$12,450 spent',
-    this.remainingToPrivilege = '\$2,550 to Sovereign Privileges',
-    this.deliveredCount = '14',
-    this.curationsCount = '28',
-    this.vaultCredit = '\$450',
+    this.avatarUrl = '',
+    this.email = '',
+    this.phone = '',
+    this.deliveredCount = '0',
+    this.curationsCount = '0',
+    this.totalOrdersCount = '0',
   });
 
   @override
@@ -39,8 +44,10 @@ class ProfileTierCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildUserInfoHeader(context),
-          const SizedBox(height: AppSpacing.spaceLg),
-          _buildProgressSection(),
+          if (email.isNotEmpty || phone.isNotEmpty) ...[
+            const SizedBox(height: AppSpacing.spaceSm),
+            _buildContactInfoRow(),
+          ],
           const SizedBox(height: AppSpacing.spaceMd),
           _buildStatsRow(),
         ],
@@ -54,7 +61,7 @@ class ProfileTierCard extends StatelessWidget {
         InkWell(
           onTap: () {
             Navigator.of(context).pushNamed(Routes.editProfileView).then((_) {
-              if (context.mounted) {
+              if (context.mounted && ModalRoute.of(context)?.isCurrent == true) {
                 context.read<ProfileCubit>().fetchProfile();
               }
             });
@@ -71,7 +78,20 @@ class ProfileTierCard extends StatelessWidget {
                 ),
                 child: CircleAvatar(
                   radius: AppSpacing.spaceLg + AppSpacing.spaceXs,
-                  backgroundImage: NetworkImage(avatarUrl),
+                  backgroundColor: const Color(0xFF0B3B2C),
+                  backgroundImage: avatarUrl.isNotEmpty
+                      ? NetworkImage(avatarUrl)
+                      : null,
+                  child: avatarUrl.isEmpty
+                      ? Text(
+                          userName.isNotEmpty ? userName[0].toUpperCase() : 'A',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w700,
+                            fontSize: 18,
+                          ),
+                        )
+                      : null,
                 ),
               ),
               Positioned(
@@ -132,11 +152,11 @@ class ProfileTierCard extends StatelessWidget {
               ),
               const SizedBox(height: AppSpacing.spaceXs / 2),
               Text(
-                'VIP Luminary • $customerId',
+                'Aura Member • $customerId',
                 style: AppTypography.bodySm.copyWith(color: AppColors.slateBody),
               ),
               Text(
-                'Patron since $patronSince',
+                'Member since $patronSince',
                 style: AppTypography.bodySm.copyWith(color: AppColors.slateBody),
               ),
             ],
@@ -145,7 +165,7 @@ class ProfileTierCard extends StatelessWidget {
         InkWell(
           onTap: () {
             Navigator.of(context).pushNamed(Routes.editProfileView).then((_) {
-              if (context.mounted) {
+              if (context.mounted && ModalRoute.of(context)?.isCurrent == true) {
                 context.read<ProfileCubit>().fetchProfile();
               }
             });
@@ -168,60 +188,55 @@ class ProfileTierCard extends StatelessWidget {
     );
   }
 
-  Widget _buildProgressSection() {
-    final int percent = (progress * 100).round();
-    return Column(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'PATH TO $targetTier',
-              style: AppTypography.labelCaps.copyWith(
-                fontWeight: FontWeight.w700,
-                letterSpacing: 0.5,
-              ),
+  Widget _buildContactInfoRow() {
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.spaceSm + 2,
+        vertical: AppSpacing.spaceXs,
+      ),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceContainerLow.withValues(alpha: 0.7),
+        borderRadius: BorderRadius.circular(AppSpacing.spaceSm),
+      ),
+      child: Row(
+        children: [
+          if (email.isNotEmpty) ...[
+            const Icon(
+              Icons.mail_outline_rounded,
+              size: 14,
+              color: AppColors.slateBody,
             ),
-            Text(
-              '$percent%',
-              style: AppTypography.labelCaps.copyWith(
-                color: AppColors.secondary,
-                fontWeight: FontWeight.w700,
+            const SizedBox(width: 4),
+            Expanded(
+              child: Text(
+                email,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: AppTypography.bodySm.copyWith(
+                  fontSize: 11,
+                  color: AppColors.slateBody,
+                ),
               ),
             ),
           ],
-        ),
-        const SizedBox(height: AppSpacing.spaceSm),
-        ClipRRect(
-          borderRadius: BorderRadius.circular(AppSpacing.spaceXs),
-          child: LinearProgressIndicator(
-            value: progress,
-            minHeight: AppSpacing.spaceSm - 2,
-            backgroundColor: AppColors.surfaceContainer,
-            color: AppColors.primaryContainer,
-          ),
-        ),
-        const SizedBox(height: AppSpacing.spaceSm),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              spentAmount,
-              style: AppTypography.bodySm.copyWith(
-                fontSize: 11,
-                color: AppColors.slateBody,
-              ),
+          if (phone.isNotEmpty) ...[
+            if (email.isNotEmpty) const SizedBox(width: AppSpacing.spaceSm),
+            const Icon(
+              Icons.phone_outlined,
+              size: 14,
+              color: AppColors.slateBody,
             ),
+            const SizedBox(width: 4),
             Text(
-              remainingToPrivilege,
+              phone,
               style: AppTypography.bodySm.copyWith(
                 fontSize: 11,
                 color: AppColors.slateBody,
               ),
             ),
           ],
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -246,7 +261,7 @@ class ProfileTierCard extends StatelessWidget {
             height: AppSpacing.spaceLg,
             color: AppColors.outlineVariant,
           ),
-          _buildStatItem(vaultCredit, 'VAULT CREDIT', AppColors.secondary),
+          _buildStatItem(totalOrdersCount, 'TOTAL ORDERS', const Color(0xFF0B3B2C)),
         ],
       ),
     );

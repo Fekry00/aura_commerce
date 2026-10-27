@@ -1,18 +1,17 @@
 import 'package:aura/core/theme/app_colors.dart';
 import 'package:aura/core/theme/app_typography.dart';
-import 'package:aura/features/profile/presentation/cubit/profile_cubit.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
+/// Pure declarative UI button for signing out of Atelier.
 class ProfileSignOutButton extends StatelessWidget {
-  const ProfileSignOutButton({super.key});
+  final VoidCallback? onTap;
+
+  const ProfileSignOutButton({super.key, this.onTap});
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () {
-        context.read<ProfileCubit>().signOut();
-      },
+      onTap: onTap,
       borderRadius: BorderRadius.circular(AppSpacing.margin),
       child: Container(
         width: double.infinity,

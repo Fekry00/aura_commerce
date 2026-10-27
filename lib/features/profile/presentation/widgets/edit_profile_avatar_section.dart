@@ -34,9 +34,11 @@ class EditProfileAvatarSection extends StatelessWidget {
               horizontal: AppSpacing.margin,
               vertical: AppSpacing.spaceLg,
             ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
+            child: Material(
+              color: Colors.transparent,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
                 Text(
                   'CHANGE PROFILE PICTURE',
                   style: AppTypography.labelCaps.copyWith(
@@ -109,7 +111,8 @@ class EditProfileAvatarSection extends StatelessWidget {
               ],
             ),
           ),
-        );
+        ),
+      );
       },
     );
   }

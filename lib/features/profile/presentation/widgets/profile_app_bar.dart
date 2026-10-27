@@ -2,14 +2,16 @@ import 'package:aura/core/routing/routes.dart';
 import 'package:aura/core/theme/app_colors.dart';
 import 'package:aura/core/theme/app_typography.dart';
 import 'package:aura/core/utils/functions/custom_snack_bar.dart';
+import 'package:aura/core/widgets/app_bar_user_avatar.dart';
 import 'package:aura/features/profile/presentation/cubit/profile_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ProfileAppBar extends StatelessWidget {
   final String? avatarUrl;
+  final String? deliveryAddress;
 
-  const ProfileAppBar({super.key, this.avatarUrl});
+  const ProfileAppBar({super.key, this.avatarUrl, this.deliveryAddress});
 
   @override
   Widget build(BuildContext context) {
@@ -88,7 +90,11 @@ class ProfileAppBar extends StatelessWidget {
             ),
             const SizedBox(width: AppSpacing.spaceXs),
             Text(
-              'Deliver to: New York...',
+              deliveryAddress != null &&
+                      deliveryAddress!.isNotEmpty &&
+                      deliveryAddress != 'Add delivery address'
+                  ? 'Deliver: ${deliveryAddress!.length > 14 ? deliveryAddress!.substring(0, 14) : deliveryAddress}...'
+                  : 'Deliver: Cairo, EG',
               style: AppTypography.bodySm.copyWith(
                 fontWeight: FontWeight.w500,
                 color: AppColors.onSurface,
@@ -141,30 +147,16 @@ class ProfileAppBar extends StatelessWidget {
   }
 
   Widget _buildAvatar(BuildContext context) {
-    final effectiveAvatar = (avatarUrl != null && avatarUrl!.isNotEmpty)
-        ? avatarUrl!
-        : 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=300';
-
-    return InkWell(
+    return AppBarUserAvatar(
+      radius: AppSpacing.spaceMd - 2,
+      showBorder: true,
       onTap: () {
         Navigator.of(context).pushNamed(Routes.editProfileView).then((_) {
-          if (context.mounted) {
+          if (context.mounted && ModalRoute.of(context)?.isCurrent == true) {
             context.read<ProfileCubit>().fetchProfile();
           }
         });
       },
-      borderRadius: BorderRadius.circular(AppSpacing.margin),
-      child: Container(
-        padding: const EdgeInsets.all(AppSpacing.spaceXs / 2),
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          border: Border.all(color: AppColors.outlineVariant, width: 1.5),
-        ),
-        child: CircleAvatar(
-          radius: AppSpacing.spaceMd - 2,
-          backgroundImage: NetworkImage(effectiveAvatar),
-        ),
-      ),
     );
   }
 }
