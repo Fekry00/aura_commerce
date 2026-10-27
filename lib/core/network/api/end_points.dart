@@ -1,7 +1,22 @@
 
 class EndPoint {
   // Connected via adb reverse tcp:8000 tcp:8000 or Desktop/Web
-  static const String baseUrl = "http://127.0.0.1:8000/api/v1/";
+  static const String serverUrl = "http://127.0.0.1:8000";
+  static const String baseUrl = "$serverUrl/api/v1/";
+  static const String fallbackLanBaseUrl = "http://192.168.100.120:8000/api/v1/";
+
+  static String fixImageUrl(String? url) {
+    if (url == null || url.trim().isEmpty) return '';
+    String result = url.trim();
+    result = result
+        .replaceAll('http://127.0.0.1:8000', 'http://192.168.100.120:8000')
+        .replaceAll('http://localhost:8000', 'http://192.168.100.120:8000');
+    if (!result.startsWith('http://') && !result.startsWith('https://')) {
+      final cleanPath = result.startsWith('/') ? result.substring(1) : result;
+      result = 'http://192.168.100.120:8000/$cleanPath';
+    }
+    return result;
+  }
 
   static const String login = "auth/login";
   static const String register = "auth/register";

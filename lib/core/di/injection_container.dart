@@ -56,9 +56,10 @@ import 'package:aura/features/orders/data/datasources/orders_local_data_source.d
 import 'package:aura/features/orders/data/datasources/orders_remote_data_source.dart';
 import 'package:aura/features/orders/data/repositories/orders_repository_impl.dart';
 import 'package:aura/features/orders/domain/repositories/orders_repository.dart';
+import 'package:aura/features/orders/domain/usecases/cancel_order_usecase.dart';
 import 'package:aura/features/orders/domain/usecases/download_order_invoice_usecase.dart';
+import 'package:aura/features/orders/domain/usecases/get_my_orders_usecase.dart';
 import 'package:aura/features/orders/domain/usecases/get_order_details_usecase.dart';
-import 'package:aura/features/orders/domain/usecases/get_order_tracking_usecase.dart';
 import 'package:aura/features/orders/presentation/cubit/orders_cubit.dart';
 import 'package:aura/features/product/data/datasources/product_local_data_source.dart';
 import 'package:aura/features/product/data/datasources/product_remote_data_source.dart';
@@ -67,8 +68,10 @@ import 'package:aura/features/product/domain/repositories/product_repository.dar
 import 'package:aura/features/product/domain/usecases/get_product_details_usecase.dart';
 import 'package:aura/features/product/domain/usecases/get_product_reviews_usecase.dart';
 import 'package:aura/features/product/domain/usecases/get_products_usecase.dart';
+import 'package:aura/features/product/domain/usecases/submit_product_review_usecase.dart';
 import 'package:aura/features/product/domain/usecases/toggle_product_favorite_usecase.dart';
 import 'package:aura/features/product/presentation/cubit/product_cubit.dart';
+import 'package:aura/features/product/presentation/cubit/review_cubit.dart';
 import 'package:aura/features/profile/data/datasources/profile_local_data_source.dart';
 import 'package:aura/features/profile/data/datasources/profile_remote_data_source.dart';
 import 'package:aura/features/profile/data/repositories/profile_repository_impl.dart';
@@ -130,7 +133,7 @@ Future<void> initDependencies() async {
   );
 
   // Cart
-  sl.registerFactory(
+  sl.registerLazySingleton(
     () => CartCubit(
       getCartUseCase: sl(),
       addToCartUseCase: sl(),
@@ -163,7 +166,7 @@ Future<void> initDependencies() async {
   );
 
   // Wishlist
-  sl.registerFactory(
+  sl.registerLazySingleton(
     () => WishlistCubit(
       getWishlistUseCase: sl(),
       addToWishlistUseCase: sl(),
@@ -190,7 +193,7 @@ Future<void> initDependencies() async {
   );
 
   // Profile
-  sl.registerFactory(
+  sl.registerLazySingleton(
     () => ProfileCubit(
       getProfileUseCase: sl(),
       updateProfileUseCase: sl(),
@@ -234,9 +237,16 @@ Future<void> initDependencies() async {
       getProductsUseCase: sl(),
     ),
   );
+  sl.registerFactory(
+    () => ReviewCubit(
+      getProductReviewsUseCase: sl(),
+      submitProductReviewUseCase: sl(),
+    ),
+  );
   sl.registerLazySingleton(() => GetProductsUseCase(sl()));
   sl.registerLazySingleton(() => GetProductDetailsUseCase(sl()));
   sl.registerLazySingleton(() => GetProductReviewsUseCase(sl()));
+  sl.registerLazySingleton(() => SubmitProductReviewUseCase(sl()));
   sl.registerLazySingleton(() => ToggleProductFavoriteUseCase(sl()));
   sl.registerLazySingleton<ProductRepository>(
     () => ProductRepositoryImpl(
@@ -278,13 +288,15 @@ Future<void> initDependencies() async {
   // Orders
   sl.registerFactory(
     () => OrdersCubit(
+      getMyOrdersUseCase: sl(),
       getOrderDetailsUseCase: sl(),
-      getOrderTrackingUseCase: sl(),
+      cancelOrderUseCase: sl(),
       downloadOrderInvoiceUseCase: sl(),
     ),
   );
+  sl.registerLazySingleton(() => GetMyOrdersUseCase(sl()));
   sl.registerLazySingleton(() => GetOrderDetailsUseCase(sl()));
-  sl.registerLazySingleton(() => GetOrderTrackingUseCase(sl()));
+  sl.registerLazySingleton(() => CancelOrderUseCase(sl()));
   sl.registerLazySingleton(() => DownloadOrderInvoiceUseCase(sl()));
   sl.registerLazySingleton<OrdersRepository>(
     () => OrdersRepositoryImpl(

@@ -1,4 +1,5 @@
 class Routes {
+  static const String splashView = '/';
   static const String homeView = '/homeView';
   static const String productDetailsView = '/productDetailsView';
   static const String productReviewsView = '/productReviewsView';
@@ -13,6 +14,7 @@ class Routes {
   static const String wishlistView = '/wishlistView';
   static const String categoriesView = '/categoriesView';
   static const String categoryDetailsView = '/categoryDetailsView';
+  static const String ordersView = '/ordersView';
 
   // Password Reset Flow
   static const String forgotPasswordView = '/forgotPasswordView';

@@ -8,19 +8,26 @@ import 'package:aura/features/auth/presentation/views/verify_otp_view.dart';
 import 'package:aura/features/auth/presentation/views/verify_reset_password_view.dart';
 import 'package:aura/features/home/presentation/cubit/home_cubit.dart';
 import 'package:aura/features/home/presentation/views/home_view.dart';
+import 'package:aura/features/product/data/models/sub_models/product_item_model.dart';
+import 'package:aura/features/product/domain/entities/sub_entities/product_item_entity.dart';
 import 'package:aura/features/product/presentation/views/product_details_view.dart';
 import 'package:aura/features/product/presentation/views/product_reviews_view.dart';
+import 'package:aura/features/checkout/presentation/cubit/checkout_cubit.dart';
 import 'package:aura/features/checkout/presentation/views/checkout_view.dart';
-import 'package:aura/features/profile/presentation/cubit/profile_cubit.dart';
-import 'package:aura/features/profile/presentation/views/edit_profile_view.dart';
+import 'package:aura/features/orders/domain/entities/order_entity.dart';
+import 'package:aura/features/orders/presentation/cubit/orders_cubit.dart';
+import 'package:aura/features/orders/presentation/views/orders_view.dart';
 import 'package:aura/features/orders/presentation/views/order_success_receipt_view.dart';
 import 'package:aura/features/orders/presentation/views/order_tracking_details_view.dart';
-import 'package:aura/features/cart/presentation/cubit/cart_cubit.dart';
+import 'package:aura/features/profile/presentation/cubit/profile_cubit.dart';
+import 'package:aura/features/profile/presentation/views/edit_profile_view.dart';
 import 'package:aura/features/category/domain/entities/category_entity.dart';
 import 'package:aura/features/category/presentation/cubit/category_cubit.dart';
 import 'package:aura/features/category/presentation/views/categories_view.dart';
 import 'package:aura/features/category/presentation/views/category_details_view.dart';
-import 'package:aura/features/wishlist/presentation/cubit/wishlist_cubit.dart';
+import 'package:aura/features/product/presentation/cubit/product_cubit.dart';
+import 'package:aura/features/product/presentation/cubit/review_cubit.dart';
+import 'package:aura/features/splash/presentation/views/splash_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'routes.dart';
@@ -30,44 +37,46 @@ class AppRouter {
     final arguments = settings.arguments;
 
     switch (settings.name) {
-      case Routes.homeView:
-        final initialIndex = (arguments is int) ? arguments : 0;
+      case Routes.splashView:
         return _buildPageRoute(
-          MultiBlocProvider(
-            providers: [
-              BlocProvider(
-                create: (context) => sl<HomeCubit>()..fetchHomeFeed(),
-              ),
-              BlocProvider(
-                create: (context) => sl<WishlistCubit>()..fetchWishlist(),
-              ),
-              BlocProvider(
-                create: (context) => sl<CartCubit>()..fetchCart(),
-              ),
-              BlocProvider(
-                create: (context) => sl<ProfileCubit>()..fetchProfile(),
-              ),
-            ],
-            child: HomeView(initialIndex: initialIndex),
-          ),
+          const SplashView(),
           settings: settings,
         );
 
+      case Routes.homeView:
+        final initialIndex = (arguments is int) ? arguments : 0;
+        return _buildHomeRoute(initialIndex, settings);
+
       case Routes.productDetailsView:
-        final product = arguments as Map<String, dynamic>;
+        final ProductItemEntity product = (arguments is ProductItemEntity)
+            ? arguments
+            : (arguments is Map<String, dynamic>
+                ? ProductItemModel.fromJson(arguments)
+                : const ProductItemEntity(
+                    id: 1,
+                    name: 'Product Details',
+                    minPrice: 0,
+                  ));
         return _buildPageRoute(
-          BlocProvider(
-            create: (context) => sl<CartCubit>(),
-            child: ProductDetailsView(product: product),
-          ),
+          ProductDetailsView(product: product),
           settings: settings,
         );
       case Routes.productReviewsView:
-        final product = (arguments is Map<String, dynamic>)
+        final ProductItemEntity product = (arguments is ProductItemEntity)
             ? arguments
-            : <String, dynamic>{};
+            : (arguments is Map<String, dynamic>
+                ? ProductItemModel.fromJson(arguments)
+                : const ProductItemEntity(
+                    id: 1,
+                    name: 'Product Reviews',
+                    minPrice: 0,
+                  ));
         return _buildPageRoute(
-          ProductReviewsView(product: product),
+          BlocProvider(
+            create: (context) =>
+                sl<ReviewCubit>()..fetchReviews(product.id.toString()),
+            child: ProductReviewsView(product: product),
+          ),
           settings: settings,
         );
       case Routes.createAccountView:
@@ -79,37 +88,53 @@ class AppRouter {
           settings: settings,
         );
       case Routes.signInView:
+        final initialEmail = (arguments is String) ? arguments : null;
         return _buildPageRoute(
           BlocProvider(
             create: (context) => sl<AuthCubit>(),
-            child: const SignInView(),
+            child: SignInView(initialEmail: initialEmail),
           ),
           settings: settings,
         );
       case Routes.profileView:
-        return _buildPageRoute(
-          const HomeView(initialIndex: 3),
-          settings: settings,
-        );
+        return _buildHomeRoute(3, settings);
       case Routes.editProfileView:
         return _buildPageRoute(
-          BlocProvider(
-            create: (context) => sl<ProfileCubit>()..fetchProfile(),
+          BlocProvider.value(
+            value: sl<ProfileCubit>()..fetchProfile(),
             child: const EditProfileView(),
           ),
           settings: settings,
         );
       case Routes.cartView:
+        return _buildHomeRoute(2, settings);
+      case Routes.checkoutView:
         return _buildPageRoute(
-          const HomeView(initialIndex: 2),
+          MultiBlocProvider(
+            providers: [
+              BlocProvider(create: (context) => sl<CheckoutCubit>()),
+              BlocProvider.value(
+                value: sl<ProfileCubit>(),
+              ),
+            ],
+            child: const CheckoutView(),
+          ),
           settings: settings,
         );
-      case Routes.checkoutView:
-        return _buildPageRoute(const CheckoutView(), settings: settings);
 
       case Routes.orderSuccessReceiptView:
+        final order = arguments is OrderEntity ? arguments : null;
         return _buildPageRoute(
-          const OrderSuccessReceiptView(),
+          OrderSuccessReceiptView(order: order),
+          settings: settings,
+        );
+
+      case Routes.ordersView:
+        return _buildPageRoute(
+          BlocProvider(
+            create: (context) => sl<OrdersCubit>(),
+            child: const OrdersView(),
+          ),
           settings: settings,
         );
 
@@ -121,15 +146,15 @@ class AppRouter {
 
       case Routes.verifyResetPasswordView:
         return _buildPageRoute(
-          const VerifyResetPasswordView(),
+          BlocProvider(
+            create: (context) => sl<AuthCubit>(),
+            child: const VerifyResetPasswordView(),
+          ),
           settings: settings,
         );
 
       case Routes.wishlistView:
-        return _buildPageRoute(
-          const HomeView(initialIndex: 1),
-          settings: settings,
-        );
+        return _buildHomeRoute(1, settings);
 
       case Routes.categoriesView:
         return _buildPageRoute(
@@ -151,13 +176,19 @@ class AppRouter {
         } else {
           category = const CategoryEntity(
             id: 1,
-            name: 'Haute Parfumerie',
-            slug: 'haute-parfumerie',
+            name: 'Electronics',
+            slug: 'electronics',
           );
         }
         return _buildPageRoute(
-          BlocProvider(
-            create: (context) => sl<CategoryCubit>(),
+          MultiBlocProvider(
+            providers: [
+              BlocProvider(create: (context) => sl<CategoryCubit>()),
+              BlocProvider(
+                create: (context) => sl<ProductCubit>()
+                  ..fetchProducts(categoryId: category.id),
+              ),
+            ],
             child: CategoryDetailsView(
               category: category,
               initialSubDepartment: initialSubDepartment,
@@ -205,6 +236,19 @@ class AppRouter {
           ),
         );
     }
+  }
+
+  PageRouteBuilder _buildHomeRoute(int initialIndex, RouteSettings settings) {
+    return _buildPageRoute(
+      MultiBlocProvider(
+        providers: [
+          BlocProvider(create: (context) => sl<HomeCubit>()..fetchHomeFeed()),
+          BlocProvider.value(value: sl<ProfileCubit>()..fetchProfile()),
+        ],
+        child: HomeView(initialIndex: initialIndex),
+      ),
+      settings: settings,
+    );
   }
 
   PageRouteBuilder _buildPageRoute(

@@ -8,7 +8,9 @@ void showCustomSnackBar(
   BuildContext context, {
   required String message,
   SnackBarType type = SnackBarType.info,
-  Duration duration = const Duration(milliseconds: 2500),
+  Duration duration = const Duration(milliseconds: 3000),
+  String? actionLabel,
+  VoidCallback? onAction,
 }) {
   Color getBgColor() {
     switch (type) {
@@ -78,6 +80,37 @@ void showCustomSnackBar(
                   ),
                 ),
               ),
+              if (actionLabel != null && onAction != null) ...[
+                const SizedBox(width: 8),
+                GestureDetector(
+                  onTap: () {
+                    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                    onAction();
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.4),
+                        width: 1,
+                      ),
+                    ),
+                    child: Text(
+                      actionLabel,
+                      style: AppTypography.labelSm.copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ],
           ),
         ),
