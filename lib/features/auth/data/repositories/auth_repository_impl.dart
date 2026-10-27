@@ -60,7 +60,7 @@ class AuthRepositoryImpl implements AuthRepository {
         phone: phone,
         password: password,
       );
-      await localDataSource.cacheAuth(remoteAuth);
+      // Do not auto-cache on sign up so user authenticates explicitly from SignInView
       return Right(remoteAuth);
     } on ServerException catch (e) {
       return Left(ServerFailure(errMessage: e.errorModel.errorMessage));

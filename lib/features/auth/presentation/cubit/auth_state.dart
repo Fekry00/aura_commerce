@@ -30,7 +30,16 @@ class AuthOtpVerifiedState extends AuthState {
 
 /// Emitted after new password is set successfully.
 class AuthPasswordResetSuccessState extends AuthState {
-  const AuthPasswordResetSuccessState();
+  final String message;
+  const AuthPasswordResetSuccessState({
+    this.message = 'Password reset successfully. Please sign in.',
+  });
+}
+
+/// Emitted for informational messages (e.g. Concierge connecting, Face ID).
+class AuthInfoMessageState extends AuthState {
+  final String message;
+  const AuthInfoMessageState({required this.message});
 }
 
 /// Emitted after successful logout.

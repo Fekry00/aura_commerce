@@ -1,6 +1,7 @@
 import 'package:aura/core/routing/routes.dart';
 import 'package:aura/core/theme/app_typography.dart';
 import 'package:aura/core/utils/functions/custom_snack_bar.dart';
+import 'package:aura/features/auth/presentation/controllers/reset_password_form_controller.dart';
 import 'package:aura/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:aura/features/auth/presentation/cubit/auth_state.dart';
 import 'package:flutter/material.dart';
@@ -11,52 +12,42 @@ import 'reset_password_requirements.dart';
 import 'reset_password_strength_meter.dart';
 import 'reset_password_submit_button.dart';
 
+/// Pure declarative UI widget for Reset Password form.
 class ResetPasswordForm extends StatefulWidget {
   final String otp;
+  final ResetPasswordFormController? controller;
 
-  const ResetPasswordForm({super.key, required this.otp});
+  const ResetPasswordForm({
+    super.key,
+    required this.otp,
+    this.controller,
+  });
 
   @override
   State<ResetPasswordForm> createState() => _ResetPasswordFormState();
 }
 
 class _ResetPasswordFormState extends State<ResetPasswordForm> {
-  final _formKey = GlobalKey<FormState>();
-  final _passwordController = TextEditingController();
-  final _confirmPasswordController = TextEditingController();
+  late final ResetPasswordFormController _controller;
+  late final bool _internalController;
 
-  bool _obscurePassword = true;
-  bool _obscureConfirm = true;
+  @override
+  void initState() {
+    super.initState();
+    _internalController = widget.controller == null;
+    _controller = widget.controller ?? ResetPasswordFormController();
+  }
 
   @override
   void dispose() {
-    _passwordController.dispose();
-    _confirmPasswordController.dispose();
-    super.dispose();
-  }
-
-  int _calculateStrength(String password) {
-    int score = 0;
-    if (password.length >= 8) score++;
-    if (password.contains(RegExp(r'[A-Z]'))) score++;
-    if (password.contains(RegExp(r'[0-9]'))) score++;
-    if (password.contains(RegExp(r'[!@#\$&*~%^()]'))) score++;
-    return score;
-  }
-
-  void _onSubmit() {
-    if (_formKey.currentState!.validate()) {
-      context.read<AuthCubit>().resetPassword(
-            otp: widget.otp,
-            newPassword: _passwordController.text,
-          );
+    if (_internalController) {
+      _controller.dispose();
     }
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final strength = _calculateStrength(_passwordController.text);
-
     return BlocConsumer<AuthCubit, AuthState>(
       listener: (context, state) {
         if (state is AuthErrorState) {
@@ -82,7 +73,7 @@ class _ResetPasswordFormState extends State<ResetPasswordForm> {
         final isLoading = state is AuthLoadingState;
 
         return Form(
-          key: _formKey,
+          key: _controller.formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -93,28 +84,27 @@ class _ResetPasswordFormState extends State<ResetPasswordForm> {
               ),
               const SizedBox(height: AppSpacing.spaceXs),
               AuthTextFormField(
-                controller: _passwordController,
-                obscureText: _obscurePassword,
+                controller: _controller.passwordController,
+                obscureText: _controller.obscurePassword,
                 hintText: 'Enter new password',
                 prefixIcon: Icons.lock_outline_rounded,
                 onChanged: (_) => setState(() {}),
-                validator: (val) {
-                  if (val == null || val.isEmpty) return 'Password is required';
-                  if (val.length < 8) return 'Password must be at least 8 characters';
-                  return null;
-                },
+                validator: _controller.validatePassword,
                 suffixWidget: IconButton(
                   icon: Icon(
-                    _obscurePassword ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                    _controller.obscurePassword
+                        ? Icons.visibility_off_outlined
+                        : Icons.visibility_outlined,
                     size: 18,
                     color: const Color(0xFF9CA3AF),
                   ),
-                  onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                  onPressed: () =>
+                      setState(() => _controller.toggleObscurePassword()),
                 ),
               ),
-              if (_passwordController.text.isNotEmpty) ...[
+              if (_controller.passwordController.text.isNotEmpty) ...[
                 const SizedBox(height: AppSpacing.spaceSm),
-                ResetPasswordStrengthMeter(strength: strength),
+                ResetPasswordStrengthMeter(strength: _controller.strength),
               ],
               const SizedBox(height: AppSpacing.spaceMd),
 
@@ -125,33 +115,34 @@ class _ResetPasswordFormState extends State<ResetPasswordForm> {
               ),
               const SizedBox(height: AppSpacing.spaceXs),
               AuthTextFormField(
-                controller: _confirmPasswordController,
-                obscureText: _obscureConfirm,
+                controller: _controller.confirmPasswordController,
+                obscureText: _controller.obscureConfirm,
                 hintText: 'Re-enter new password',
                 prefixIcon: Icons.lock_outline_rounded,
                 onChanged: (_) => setState(() {}),
-                validator: (val) {
-                  if (val == null || val.isEmpty) return 'Please confirm your password';
-                  if (val != _passwordController.text) return 'Passwords do not match';
-                  return null;
-                },
+                validator: _controller.validateConfirmPassword,
                 suffixWidget: IconButton(
                   icon: Icon(
-                    _obscureConfirm ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                    _controller.obscureConfirm
+                        ? Icons.visibility_off_outlined
+                        : Icons.visibility_outlined,
                     size: 18,
                     color: const Color(0xFF9CA3AF),
                   ),
-                  onPressed: () => setState(() => _obscureConfirm = !_obscureConfirm),
+                  onPressed: () =>
+                      setState(() => _controller.toggleObscureConfirm()),
                 ),
               ),
               const SizedBox(height: AppSpacing.spaceLg),
 
-              ResetPasswordRequirements(password: _passwordController.text),
+              ResetPasswordRequirements(
+                password: _controller.passwordController.text,
+              ),
               const SizedBox(height: AppSpacing.spaceXl),
 
               ResetPasswordSubmitButton(
                 isLoading: isLoading,
-                onPressed: _onSubmit,
+                onPressed: () => _controller.onSubmit(context, otp: widget.otp),
               ),
             ],
           ),

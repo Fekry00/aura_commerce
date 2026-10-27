@@ -1,20 +1,17 @@
 import 'package:aura/core/theme/app_typography.dart';
-import 'package:aura/core/utils/functions/custom_snack_bar.dart';
+import 'package:aura/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class FastSignInButton extends StatelessWidget {
-  const FastSignInButton({super.key});
+  final VoidCallback? onTap;
+
+  const FastSignInButton({super.key, this.onTap});
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        showCustomSnackBar(
-          context,
-          message: 'Authenticating Face ID...',
-          type: SnackBarType.info,
-        );
-      },
+      onTap: onTap ?? () => context.read<AuthCubit>().authenticateBiometric(),
       child: Container(
         width: double.infinity,
         height: 44,

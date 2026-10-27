@@ -46,6 +46,8 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
     await CacheHelper.removeData(key: ApiKey.token);
     await CacheHelper.removeData(key: cachedTokenKey);
     await CacheHelper.removeData(key: cachedUserKey);
+    await CacheHelper.removeData(key: 'CACHED_CART');
+    await CacheHelper.removeData(key: 'CACHED_WISHLIST');
   }
 
   @override

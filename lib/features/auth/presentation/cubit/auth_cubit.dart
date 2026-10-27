@@ -33,11 +33,24 @@ class AuthCubit extends Cubit<AuthState> {
   final LogoutUseCase logoutUseCase;
   final AuthChangePasswordUseCase changePasswordUseCase;
 
+  @override
+  void emit(AuthState state) {
+    if (!isClosed) {
+      super.emit(state);
+    }
+  }
+
   Future<void> signIn({
     required String email,
     required String password,
     bool rememberDevice = true,
+    bool isFormValid = true,
   }) async {
+    if (!isFormValid || email.trim().isEmpty || password.isEmpty) {
+      emit(const AuthErrorState(message: 'Email and password are required'));
+      return;
+    }
+
     emit(const AuthLoadingState());
 
     final result = await signInUseCase(
@@ -57,7 +70,19 @@ class AuthCubit extends Cubit<AuthState> {
     required String email,
     required String phone,
     required String password,
+    String? confirmPassword,
+    bool isFormValid = true,
   }) async {
+    if (!isFormValid || name.trim().isEmpty || email.trim().isEmpty || phone.trim().isEmpty || password.isEmpty) {
+      emit(const AuthErrorState(message: 'Please fill in all required fields properly.'));
+      return;
+    }
+
+    if (confirmPassword != null && password != confirmPassword) {
+      emit(const AuthErrorState(message: 'Passwords do not match.'));
+      return;
+    }
+
     emit(const AuthLoadingState());
 
     final result = await signUpUseCase(
@@ -74,7 +99,15 @@ class AuthCubit extends Cubit<AuthState> {
   }
 
   /// Step 1: Send OTP to the given email.
-  Future<void> forgotPassword({required String email}) async {
+  Future<void> forgotPassword({
+    required String email,
+    bool isFormValid = true,
+  }) async {
+    if (!isFormValid || email.trim().isEmpty) {
+      emit(const AuthErrorState(message: 'Email address is required'));
+      return;
+    }
+
     emit(const AuthLoadingState());
 
     final result = await forgotPasswordUseCase(email: email);
@@ -99,6 +132,11 @@ class AuthCubit extends Cubit<AuthState> {
 
   /// Step 3: Verify OTP.
   Future<void> verifyResetOtp({required String otp}) async {
+    if (otp.length < 6) {
+      emit(const AuthErrorState(message: 'Please enter all 6 digits.'));
+      return;
+    }
+
     emit(const AuthLoadingState());
 
     final result = await verifyResetOtpUseCase(otp: otp);
@@ -113,7 +151,26 @@ class AuthCubit extends Cubit<AuthState> {
   Future<void> resetPassword({
     required String otp,
     required String newPassword,
+    String? confirmPassword,
+    bool isFormValid = true,
   }) async {
+    if (!isFormValid) {
+      emit(const AuthErrorState(message: 'Please check your inputs.'));
+      return;
+    }
+    if (otp.length < 6) {
+      emit(const AuthErrorState(message: 'Please enter all 6 digits of the keycode.'));
+      return;
+    }
+    if (newPassword.length < 8) {
+      emit(const AuthErrorState(message: 'Password must be at least 8 characters.'));
+      return;
+    }
+    if (confirmPassword != null && newPassword != confirmPassword) {
+      emit(const AuthErrorState(message: 'Passwords do not match.'));
+      return;
+    }
+
     emit(const AuthLoadingState());
 
     final result = await resetPasswordUseCase(
@@ -123,8 +180,35 @@ class AuthCubit extends Cubit<AuthState> {
 
     result.fold(
       (failure) => emit(AuthErrorState(message: failure.errMessage)),
-      (_) => emit(const AuthPasswordResetSuccessState()),
+      (_) => emit(const AuthPasswordResetSuccessState(
+        message: 'Password reset successfully! Welcome to Atelier Vault.',
+      )),
     );
+  }
+
+  /// Trigger biometric Face ID authentication
+  void authenticateBiometric() {
+    emit(const AuthInfoMessageState(message: 'Authenticating Face ID...'));
+  }
+
+  /// Connect to Atelier Concierge
+  void connectConcierge() {
+    emit(const AuthInfoMessageState(message: 'Connecting to Concierge...'));
+  }
+
+  /// Lock account for security
+  void lockAccount() {
+    emit(const AuthErrorState(message: 'Account locked for security.'));
+  }
+
+  /// Dispatches keycode resend notification
+  void dispatchKeycode() {
+    emit(const AuthInfoMessageState(message: 'New keycode dispatched.'));
+  }
+
+  /// Dispatches keycode via SMS notification
+  void dispatchKeycodeSms() {
+    emit(const AuthInfoMessageState(message: 'Authorization keycode dispatched via SMS.'));
   }
 
   /// Refresh token

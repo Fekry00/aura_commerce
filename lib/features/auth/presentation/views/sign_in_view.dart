@@ -5,30 +5,32 @@ import 'package:aura/features/auth/presentation/widgets/sign_in_header.dart';
 import 'package:flutter/material.dart';
 
 class SignInView extends StatelessWidget {
-  const SignInView({super.key});
+  const SignInView({super.key, this.initialEmail});
+
+  final String? initialEmail;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
-      child: const Scaffold(
+      child: Scaffold(
         backgroundColor: Colors.white,
         body: SafeArea(
           child: SingleChildScrollView(
-            physics: BouncingScrollPhysics(),
-            padding: EdgeInsets.symmetric(
+            physics: const BouncingScrollPhysics(),
+            padding: const EdgeInsets.symmetric(
               horizontal: AppSpacing.margin,
               vertical: 16,
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SignInHeader(),
-                SizedBox(height: AppSpacing.spaceLg),
-                SignInForm(),
-                SizedBox(height: AppSpacing.spaceXl),
-                SignInFooter(),
-                SizedBox(height: AppSpacing.spaceMd),
+                const SignInHeader(),
+                const SizedBox(height: AppSpacing.spaceLg),
+                SignInForm(initialEmail: initialEmail),
+                const SizedBox(height: AppSpacing.spaceXl),
+                const SignInFooter(),
+                const SizedBox(height: AppSpacing.spaceMd),
               ],
             ),
           ),

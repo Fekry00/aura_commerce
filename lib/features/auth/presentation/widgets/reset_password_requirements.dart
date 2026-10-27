@@ -1,5 +1,6 @@
 import 'package:aura/core/theme/app_colors.dart';
 import 'package:aura/core/theme/app_typography.dart';
+import 'package:aura/features/auth/presentation/utils/auth_validation_helper.dart';
 import 'package:flutter/material.dart';
 
 class ResetPasswordRequirements extends StatelessWidget {
@@ -10,10 +11,10 @@ class ResetPasswordRequirements extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final checks = [
-      (label: 'At least 8 characters', met: password.length >= 8),
-      (label: 'One uppercase letter', met: password.contains(RegExp(r'[A-Z]'))),
-      (label: 'One number', met: password.contains(RegExp(r'[0-9]'))),
-      (label: 'One special character', met: password.contains(RegExp(r'[!@#\$&*~%^()]'))),
+      (label: 'At least 8 characters', met: AuthValidationHelper.hasMinChars(password)),
+      (label: 'One uppercase letter', met: AuthValidationHelper.hasUppercase(password)),
+      (label: 'One number', met: AuthValidationHelper.hasNumber(password)),
+      (label: 'One special character', met: AuthValidationHelper.hasSymbol(password)),
     ];
 
     return Column(
