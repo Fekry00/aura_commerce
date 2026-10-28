@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 
 abstract class NetworkInfo {
@@ -12,10 +13,21 @@ class NetworkInfoImpl implements NetworkInfo {
   @override
   Future<bool> get isConnected async {
     try {
-      final hasConnection = await connectionChecker.hasConnection;
-      if (hasConnection) return true;
+      final hasNet = await connectionChecker.hasConnection;
+      if (hasNet) return true;
     } catch (_) {}
-    // Fallback to true to let Dio attempt local network/localhost connections
-    return true;
+
+    // Fallback: Check if local backend is reachable (via adb reverse / localhost:8000)
+    try {
+      final socket = await Socket.connect(
+        '127.0.0.1',
+        8000,
+        timeout: const Duration(seconds: 2),
+      );
+      socket.destroy();
+      return true;
+    } catch (_) {
+      return false;
+    }
   }
 }

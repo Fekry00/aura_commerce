@@ -2,6 +2,7 @@ import 'package:aura/core/errors/exceptions.dart';
 import 'package:aura/core/network/api/api_consumer.dart';
 import 'package:aura/core/network/api/api_interceptors.dart';
 import 'package:aura/core/network/api/end_points.dart';
+import 'package:aura/core/utils/app_constants.dart';
 import 'package:dio/dio.dart';
 
 class DioConsumer extends ApiConsumer {
@@ -9,8 +10,8 @@ class DioConsumer extends ApiConsumer {
 
   DioConsumer({required this.dio}) {
     dio.options.baseUrl = EndPoint.baseUrl;
-    dio.options.connectTimeout = const Duration(seconds: 4);
-    dio.options.receiveTimeout = const Duration(seconds: 4);
+    dio.options.connectTimeout = AppConstants.connectTimeout;
+    dio.options.receiveTimeout = AppConstants.receiveTimeout;
     dio.interceptors.add(ApiInterceptor());
     dio.interceptors.add(
       LogInterceptor(

@@ -8,7 +8,7 @@ class ErrorModel {
     String msg = json['message'] ??
         json['Message'] ??
         json['error'] ??
-        'حدث خطأ غير متوقع';
+        'An unexpected error occurred';
 
     // If Laravel returned validation errors map
     if (json['errors'] is Map && (json['errors'] as Map).isNotEmpty) {

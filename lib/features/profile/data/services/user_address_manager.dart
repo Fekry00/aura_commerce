@@ -15,7 +15,7 @@ class UserAddressManager {
       final List<dynamic> decoded = jsonDecode(jsonStr);
       return decoded
           .map((item) => ShippingAddressModel.fromJson(Map<String, dynamic>.from(item)))
-          .where((a) => a.address.trim().isNotEmpty && a.address != 'Nasr City, Cairo, Egypt')
+          .where((a) => a.address.trim().isNotEmpty)
           .toList();
     } catch (_) {
       return [];

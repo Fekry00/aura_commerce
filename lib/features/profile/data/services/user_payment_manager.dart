@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:aura/core/databases/cache/cache_helper.dart';
 
 class SavedCardModel {
@@ -61,7 +60,33 @@ class SavedCardModel {
 
 class UserPaymentManager {
   static const String _preferredMethodKey = 'AURA_PREFERRED_PAYMENT_METHOD';
-  static const String _savedCardsKey = 'AURA_SAVED_PAYMENT_CARDS';
+  static const String _legacySavedCardsKey = 'AURA_SAVED_PAYMENT_CARDS';
+  static bool _legacyWiped = false;
+
+  /// In-memory mock storage for payment cards (Gateway Tokens).
+  /// PCI-DSS Compliance: Sensitive card details or plain JSON arrays are never
+  /// persisted to SharedPreferences / plain local storage. In production,
+  /// card data is tokenized by the payment gateway (e.g., Stripe / Paymob) and
+  /// only non-sensitive gateway customer IDs / tokens are retained.
+  static final List<SavedCardModel> _inMemoryCards = [
+    const SavedCardModel(
+      id: 'tok_aura_default_4242',
+      last4: '4242',
+      holderName: 'Aura Client',
+      expiry: '12/28',
+      cardBrand: 'visa',
+      isDefault: true,
+    ),
+  ];
+
+  static void _wipeLegacyPlainStorageIfNeeded() {
+    if (!_legacyWiped) {
+      _legacyWiped = true;
+      try {
+        CacheHelper.removeData(key: _legacySavedCardsKey);
+      } catch (_) {}
+    }
+  }
 
   /// Get preferred payment method: 'cod', 'card', or 'wallet'
   static String getPreferredPaymentMethod() {
@@ -94,20 +119,10 @@ class UserPaymentManager {
     }
   }
 
-  /// Get all saved cards
+  /// Get all saved cards from in-memory token store (PCI-DSS compliant)
   static List<SavedCardModel> getSavedCards() {
-    try {
-      final jsonStr = CacheHelper.getDataString(key: _savedCardsKey);
-      if (jsonStr == null || jsonStr.trim().isEmpty) {
-        return [];
-      }
-      final List<dynamic> decoded = jsonDecode(jsonStr);
-      return decoded
-          .map((item) => SavedCardModel.fromJson(Map<String, dynamic>.from(item)))
-          .toList();
-    } catch (_) {
-      return [];
-    }
+    _wipeLegacyPlainStorageIfNeeded();
+    return List<SavedCardModel>.from(_inMemoryCards);
   }
 
   /// Get default card
@@ -117,48 +132,42 @@ class UserPaymentManager {
     return list.firstWhere((c) => c.isDefault, orElse: () => list.first);
   }
 
-  /// Save or update a card
+  /// Save or update a card in memory
   static Future<void> saveCard(SavedCardModel newCard) async {
-    final list = getSavedCards();
-    final index = list.indexWhere((c) => c.id == newCard.id);
+    _wipeLegacyPlainStorageIfNeeded();
+    final index = _inMemoryCards.indexWhere((c) => c.id == newCard.id);
 
-    List<SavedCardModel> updated;
     if (newCard.isDefault) {
-      updated = list.map((c) => c.copyWith(isDefault: false)).toList();
-    } else {
-      updated = List.from(list);
+      for (int i = 0; i < _inMemoryCards.length; i++) {
+        _inMemoryCards[i] = _inMemoryCards[i].copyWith(isDefault: false);
+      }
     }
 
     if (index >= 0) {
-      updated[index] = newCard;
+      _inMemoryCards[index] = newCard;
     } else {
-      final cardToAdd =
-          updated.isEmpty ? newCard.copyWith(isDefault: true) : newCard;
-      updated.add(cardToAdd);
+      final cardToAdd = _inMemoryCards.isEmpty
+          ? newCard.copyWith(isDefault: true)
+          : newCard;
+      _inMemoryCards.add(cardToAdd);
     }
-
-    await _persistCards(updated);
   }
 
   /// Delete card
   static Future<void> deleteCard(String id) async {
-    final list = getSavedCards();
-    final updated = list.where((c) => c.id != id).toList();
-    if (updated.isNotEmpty && !updated.any((c) => c.isDefault)) {
-      updated[0] = updated[0].copyWith(isDefault: true);
+    _wipeLegacyPlainStorageIfNeeded();
+    _inMemoryCards.removeWhere((c) => c.id == id);
+    if (_inMemoryCards.isNotEmpty && !_inMemoryCards.any((c) => c.isDefault)) {
+      _inMemoryCards[0] = _inMemoryCards[0].copyWith(isDefault: true);
     }
-    await _persistCards(updated);
   }
 
   /// Set card as default
   static Future<void> setDefaultCard(String id) async {
-    final list = getSavedCards();
-    final updated = list.map((c) => c.copyWith(isDefault: c.id == id)).toList();
-    await _persistCards(updated);
-  }
-
-  static Future<void> _persistCards(List<SavedCardModel> cards) async {
-    final jsonStr = jsonEncode(cards.map((c) => c.toJson()).toList());
-    await CacheHelper.saveData(key: _savedCardsKey, value: jsonStr);
+    _wipeLegacyPlainStorageIfNeeded();
+    for (int i = 0; i < _inMemoryCards.length; i++) {
+      _inMemoryCards[i] =
+          _inMemoryCards[i].copyWith(isDefault: _inMemoryCards[i].id == id);
+    }
   }
 }

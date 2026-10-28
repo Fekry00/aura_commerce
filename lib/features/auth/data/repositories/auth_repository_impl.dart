@@ -24,6 +24,14 @@ class AuthRepositoryImpl implements AuthRepository {
     required String password,
     bool rememberDevice = true,
   }) async {
+    if (!await networkInfo.isConnected) {
+      return const Left(
+        NetworkFailure(
+          errMessage:
+              'No internet connection. Please check your network and try again.',
+        ),
+      );
+    }
     try {
       final remoteAuth = await remoteDataSource.signIn(
         email: email,
@@ -36,12 +44,6 @@ class AuthRepositoryImpl implements AuthRepository {
     } on ServerException catch (e) {
       return Left(ServerFailure(errMessage: e.errorModel.errorMessage));
     } catch (e) {
-      try {
-        final localAuth = await localDataSource.getLastAuth();
-        if (localAuth != null) {
-          return Right(localAuth);
-        }
-      } catch (_) {}
       return Left(ServerFailure(errMessage: e.toString()));
     }
   }

@@ -60,10 +60,10 @@ class UnknownException extends ServerException {
 }
 
 Never handleDioException(DioException e) {
-  // دالة مساعدة لاستخراج الموديل بأمان دون Null Exception
+  // Helper to safely extract ErrorModel without Null Exceptions
   ErrorModel extractErrorModel(
     DioException error, [
-    String defaultMsg = 'حدث خطأ في الاتصال',
+    String defaultMsg = 'Connection error occurred',
   ]) {
     final data = error.response?.data;
     final statusCode = error.response?.statusCode ?? 500;
@@ -82,31 +82,31 @@ Never handleDioException(DioException e) {
   switch (e.type) {
     case DioExceptionType.connectionTimeout:
       throw ConnectionTimeoutException(
-        extractErrorModel(e, 'انتهت مهلة الاتصال بالخادم'),
+        extractErrorModel(e, 'Connection timeout with the server'),
       );
 
     case DioExceptionType.sendTimeout:
       throw SendTimeoutException(
-        extractErrorModel(e, 'انتهت مهلة إرسال البيانات'),
+        extractErrorModel(e, 'Send timeout with the server'),
       );
 
     case DioExceptionType.receiveTimeout:
       throw ReceiveTimeoutException(
-        extractErrorModel(e, 'انتهت مهلة استقبال البيانات من الخادم'),
+        extractErrorModel(e, 'Receive timeout with the server'),
       );
 
     case DioExceptionType.badCertificate:
       throw BadCertificateException(
-        extractErrorModel(e, 'شهادة الأمان غير صالحة'),
+        extractErrorModel(e, 'Bad SSL security certificate'),
       );
 
     case DioExceptionType.connectionError:
       throw ConnectionErrorException(
-        extractErrorModel(e, 'لا يوجد اتصال بالإنترنت أو الخادم غير متاح'),
+        extractErrorModel(e, 'No internet connection or server unavailable'),
       );
 
     case DioExceptionType.cancel:
-      throw CancelException(extractErrorModel(e, 'تم إلغاء الطلب'));
+      throw CancelException(extractErrorModel(e, 'Request was cancelled'));
 
     case DioExceptionType.badResponse:
       final model = extractErrorModel(e);
@@ -126,6 +126,6 @@ Never handleDioException(DioException e) {
       }
 
     default:
-      throw UnknownException(extractErrorModel(e, 'حدث خطأ غير معروف'));
+      throw UnknownException(extractErrorModel(e, 'An unexpected error occurred'));
   }
 }

@@ -9,11 +9,11 @@ class EndPoint {
     if (url == null || url.trim().isEmpty) return '';
     String result = url.trim();
     result = result
-        .replaceAll('http://127.0.0.1:8000', 'http://192.168.100.120:8000')
-        .replaceAll('http://localhost:8000', 'http://192.168.100.120:8000');
+        .replaceAll('http://192.168.100.120:8000', serverUrl)
+        .replaceAll('http://localhost:8000', serverUrl);
     if (!result.startsWith('http://') && !result.startsWith('https://')) {
       final cleanPath = result.startsWith('/') ? result.substring(1) : result;
-      result = 'http://192.168.100.120:8000/$cleanPath';
+      result = '$serverUrl/$cleanPath';
     }
     return result;
   }
