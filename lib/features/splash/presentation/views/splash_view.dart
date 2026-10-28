@@ -3,6 +3,7 @@ import 'package:aura/core/databases/cache/cache_helper.dart';
 import 'package:aura/core/di/injection_container.dart' as di;
 import 'package:aura/core/network/api/end_points.dart';
 import 'package:aura/core/routing/routes.dart';
+import 'package:aura/core/utils/app_constants.dart';
 import 'package:aura/features/cart/presentation/cubit/cart_cubit.dart';
 import 'package:aura/features/profile/presentation/cubit/profile_cubit.dart';
 import 'package:aura/features/splash/presentation/widgets/splash_gold_particles_painter.dart';
@@ -36,10 +37,10 @@ class _SplashViewState extends State<SplashView>
   void initState() {
     super.initState();
 
-    // 1. Entrance animation (1.5 seconds with Curve.easeOutCubic)
+    // 1. Entrance animation (1.2 seconds with Curve.easeOutCubic)
     _introController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1500),
+      duration: const Duration(milliseconds: 1200),
     );
 
     // 2. Continuous ambient floating stardust rotation & pulse
@@ -89,13 +90,10 @@ class _SplashViewState extends State<SplashView>
   }
 
   void _startSplashSequence() {
-    _introController.forward().then((_) {
+    _introController.forward();
+    _navigationTimer = Timer(AppConstants.splashDelay, () {
       if (!mounted) return;
-      // Wait 2.8 seconds after animation completion before navigating
-      _navigationTimer = Timer(const Duration(milliseconds: 2800), () {
-        if (!mounted) return;
-        _navigateToNextScreen();
-      });
+      _navigateToNextScreen();
     });
   }
 

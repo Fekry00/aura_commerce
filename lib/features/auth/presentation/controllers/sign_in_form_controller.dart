@@ -1,4 +1,5 @@
 import 'package:aura/features/auth/presentation/cubit/auth_cubit.dart';
+import 'package:aura/features/auth/presentation/utils/auth_validation_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -42,6 +43,9 @@ class SignInFormController {
   String? validateEmail(String? val) {
     if (val == null || val.trim().isEmpty) {
       return 'Email address is required';
+    }
+    if (!AuthValidationHelper.isValidEmail(val)) {
+      return 'Please enter a valid email address';
     }
     return null;
   }

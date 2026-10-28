@@ -1,4 +1,3 @@
-import 'package:aura/core/databases/cache/cache_helper.dart';
 import 'package:aura/core/network/api/api_consumer.dart';
 import 'package:aura/core/network/api/dio_consumer.dart';
 import 'package:aura/core/network/connection/network_info.dart';
@@ -60,6 +59,7 @@ import 'package:aura/features/orders/domain/usecases/cancel_order_usecase.dart';
 import 'package:aura/features/orders/domain/usecases/download_order_invoice_usecase.dart';
 import 'package:aura/features/orders/domain/usecases/get_my_orders_usecase.dart';
 import 'package:aura/features/orders/domain/usecases/get_order_details_usecase.dart';
+import 'package:aura/features/orders/domain/usecases/get_order_tracking_usecase.dart';
 import 'package:aura/features/orders/presentation/cubit/orders_cubit.dart';
 import 'package:aura/features/product/data/datasources/product_local_data_source.dart';
 import 'package:aura/features/product/data/datasources/product_remote_data_source.dart';
@@ -107,7 +107,6 @@ Future<void> initDependencies() async {
   sl.registerLazySingleton<ApiConsumer>(() => DioConsumer(dio: sl()));
   sl.registerLazySingleton(() => Dio());
   sl.registerLazySingleton(() => InternetConnectionChecker.createInstance());
-  sl.registerLazySingleton(() => CacheHelper());
 
   // Home
   sl.registerFactory(
@@ -129,7 +128,7 @@ Future<void> initDependencies() async {
     () => HomeRemoteDataSourceImpl(apiConsumer: sl()),
   );
   sl.registerLazySingleton<HomeLocalDataSource>(
-    () => HomeLocalDataSourceImpl(cacheHelper: sl()),
+    () => const HomeLocalDataSourceImpl(),
   );
 
   // Cart
@@ -162,7 +161,7 @@ Future<void> initDependencies() async {
     () => CartRemoteDataSourceImpl(apiConsumer: sl()),
   );
   sl.registerLazySingleton<CartLocalDataSource>(
-    () => CartLocalDataSourceImpl(cacheHelper: sl()),
+    () => const CartLocalDataSourceImpl(),
   );
 
   // Wishlist
@@ -189,7 +188,7 @@ Future<void> initDependencies() async {
     () => WishlistRemoteDataSourceImpl(apiConsumer: sl()),
   );
   sl.registerLazySingleton<WishlistLocalDataSource>(
-    () => WishlistLocalDataSourceImpl(cacheHelper: sl()),
+    () => const WishlistLocalDataSourceImpl(),
   );
 
   // Profile
@@ -226,7 +225,7 @@ Future<void> initDependencies() async {
     () => ProfileRemoteDataSourceImpl(apiConsumer: sl()),
   );
   sl.registerLazySingleton<ProfileLocalDataSource>(
-    () => ProfileLocalDataSourceImpl(cacheHelper: sl()),
+    () => const ProfileLocalDataSourceImpl(),
   );
 
   // Product
@@ -259,7 +258,7 @@ Future<void> initDependencies() async {
     () => ProductRemoteDataSourceImpl(apiConsumer: sl()),
   );
   sl.registerLazySingleton<ProductLocalDataSource>(
-    () => ProductLocalDataSourceImpl(cacheHelper: sl()),
+    () => const ProductLocalDataSourceImpl(),
   );
 
   // Category
@@ -282,7 +281,7 @@ Future<void> initDependencies() async {
     () => CategoryRemoteDataSourceImpl(apiConsumer: sl()),
   );
   sl.registerLazySingleton<CategoryLocalDataSource>(
-    () => CategoryLocalDataSourceImpl(cacheHelper: sl()),
+    () => const CategoryLocalDataSourceImpl(),
   );
 
   // Orders
@@ -296,6 +295,7 @@ Future<void> initDependencies() async {
   );
   sl.registerLazySingleton(() => GetMyOrdersUseCase(sl()));
   sl.registerLazySingleton(() => GetOrderDetailsUseCase(sl()));
+  sl.registerLazySingleton(() => GetOrderTrackingUseCase(sl()));
   sl.registerLazySingleton(() => CancelOrderUseCase(sl()));
   sl.registerLazySingleton(() => DownloadOrderInvoiceUseCase(sl()));
   sl.registerLazySingleton<OrdersRepository>(
@@ -309,7 +309,7 @@ Future<void> initDependencies() async {
     () => OrdersRemoteDataSourceImpl(apiConsumer: sl()),
   );
   sl.registerLazySingleton<OrdersLocalDataSource>(
-    () => OrdersLocalDataSourceImpl(cacheHelper: sl()),
+    () => const OrdersLocalDataSourceImpl(),
   );
 
   // Checkout
@@ -338,7 +338,7 @@ Future<void> initDependencies() async {
     () => CheckoutRemoteDataSourceImpl(apiConsumer: sl()),
   );
   sl.registerLazySingleton<CheckoutLocalDataSource>(
-    () => CheckoutLocalDataSourceImpl(cacheHelper: sl()),
+    () => const CheckoutLocalDataSourceImpl(),
   );
 
   // Auth
@@ -375,6 +375,6 @@ Future<void> initDependencies() async {
     () => AuthRemoteDataSourceImpl(apiConsumer: sl()),
   );
   sl.registerLazySingleton<AuthLocalDataSource>(
-    () => AuthLocalDataSourceImpl(cacheHelper: sl()),
+    () => const AuthLocalDataSourceImpl(),
   );
 }

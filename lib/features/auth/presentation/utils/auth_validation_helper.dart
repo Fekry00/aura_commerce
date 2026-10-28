@@ -1,3 +1,5 @@
+import 'package:aura/core/utils/app_constants.dart';
+
 /// Pure calculation and validation logic helper for Auth feature
 class AuthValidationHelper {
   const AuthValidationHelper._();
@@ -12,7 +14,7 @@ class AuthValidationHelper {
     return score;
   }
 
-  /// Calculate security password strength score (0-4) for VerifyNewPasswordSection
+  /// Calculate security score (0-4) for VerifyNewPasswordSection
   static int calculateSecurityScore(String password) {
     if (password.isEmpty) return 0;
     return (password.length >= 6 ? 1 : 0) +
@@ -51,8 +53,10 @@ class AuthValidationHelper {
       confirmPassword.isNotEmpty && confirmPassword == password;
 
   /// Valid email format pattern
-  static bool isValidEmail(String email) {
-    final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
-    return emailRegex.hasMatch(email.trim());
-  }
+  static bool isValidEmail(String email) =>
+      AppConstants.emailRegex.hasMatch(email.trim());
+
+  /// Valid phone format pattern
+  static bool isValidPhone(String phone) =>
+      AppConstants.phoneRegex.hasMatch(phone.trim());
 }

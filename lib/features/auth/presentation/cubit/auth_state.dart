@@ -49,7 +49,7 @@ class AuthLoggedOutState extends AuthState {
 
 /// Emitted after password is changed successfully.
 class AuthPasswordChangedState extends AuthState {
-  const AuthPasswordChangedState({this.message = 'تم تغيير كلمة المرور بنجاح'});
+  const AuthPasswordChangedState({this.message = 'Password changed successfully'});
 
   final String message;
 }

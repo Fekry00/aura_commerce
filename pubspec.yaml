@@ -24,6 +24,7 @@ dependencies:
 
   http_parser: any
   shimmer: ^4.0.0
+  cached_network_image: ^4.0.3
 dev_dependencies:
   flutter_test:
     sdk: flutter

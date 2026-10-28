@@ -14,9 +14,8 @@ abstract class AuthLocalDataSource {
 }
 
 class AuthLocalDataSourceImpl implements AuthLocalDataSource {
-  const AuthLocalDataSourceImpl({required this.cacheHelper});
+  const AuthLocalDataSourceImpl();
 
-  final CacheHelper cacheHelper;
   static const String cachedTokenKey = 'CACHED_AUTH_TOKEN';
   static const String cachedUserKey = 'CACHED_AUTH_USER';
 

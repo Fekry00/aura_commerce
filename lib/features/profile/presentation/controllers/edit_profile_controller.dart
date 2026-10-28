@@ -1,3 +1,4 @@
+import 'package:aura/core/utils/app_constants.dart';
 import 'package:aura/features/profile/presentation/cubit/profile_cubit.dart';
 import 'package:aura/features/profile/presentation/widgets/edit_profile_delete_dialog.dart';
 import 'package:flutter/material.dart';
@@ -66,7 +67,7 @@ class EditProfileController {
 
   String? validateEmail(String? val) {
     if (val == null || val.trim().isEmpty) return 'Email cannot be empty';
-    if (!val.contains('@') || !val.contains('.')) return 'Invalid email address';
+    if (!AppConstants.emailRegex.hasMatch(val.trim())) return 'Invalid email address';
     return null;
   }
 
@@ -89,6 +90,7 @@ class EditProfileController {
 
   String? validatePhone(String? val) {
     if (val == null || val.trim().isEmpty) return 'Phone number is required';
+    if (!AppConstants.phoneRegex.hasMatch(val.trim())) return 'Invalid phone number';
     return null;
   }
 }

@@ -1,5 +1,6 @@
 import 'package:aura/core/theme/app_colors.dart';
 import 'package:aura/core/theme/app_typography.dart';
+import 'package:aura/core/utils/app_constants.dart';
 import 'package:aura/core/utils/functions/custom_snack_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -44,10 +45,10 @@ class _PhoneOtpWorkflowBoxState extends State<PhoneOtpWorkflowBox> {
 
   Future<void> _sendOtp() async {
     final phone = _phoneController.text.trim();
-    if (phone.isEmpty) {
+    if (phone.isEmpty || !AppConstants.phoneRegex.hasMatch(phone)) {
       showCustomSnackBar(
         context,
-        message: 'يرجى إدخال رقم هاتف صحيح',
+        message: 'Please enter a valid phone number',
         type: SnackBarType.error,
       );
       return;
@@ -77,7 +78,7 @@ class _PhoneOtpWorkflowBoxState extends State<PhoneOtpWorkflowBox> {
     if (otp.length != 6) {
       showCustomSnackBar(
         context,
-        message: 'يرجى إدخال رمز التحقق المكون من 6 أرقام',
+        message: 'Please enter the 6-digit verification code',
         type: SnackBarType.error,
       );
       return;

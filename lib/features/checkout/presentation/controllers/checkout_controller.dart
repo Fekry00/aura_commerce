@@ -1,3 +1,4 @@
+import 'package:aura/core/utils/app_constants.dart';
 import 'package:aura/features/checkout/data/models/sub_models/shipping_address_model.dart';
 import 'package:aura/features/checkout/presentation/cubit/checkout_cubit.dart';
 import 'package:aura/features/profile/data/services/user_address_manager.dart';
@@ -85,6 +86,9 @@ class CheckoutController {
   String? validatePhone(String? value) {
     if (value == null || value.trim().isEmpty) {
       return 'Please enter a contact phone number';
+    }
+    if (!AppConstants.phoneRegex.hasMatch(value.trim())) {
+      return 'Please enter a valid contact phone number';
     }
     return null;
   }
