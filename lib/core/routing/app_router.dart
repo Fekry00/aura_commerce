@@ -15,11 +15,11 @@ import 'package:aura/features/product/presentation/views/product_reviews_view.da
 import 'package:aura/features/checkout/presentation/cubit/checkout_cubit.dart';
 import 'package:aura/features/checkout/presentation/views/checkout_view.dart';
 import 'package:aura/features/orders/domain/entities/order_entity.dart';
+import 'package:aura/features/orders/domain/usecases/get_order_tracking_usecase.dart';
 import 'package:aura/features/orders/presentation/cubit/orders_cubit.dart';
 import 'package:aura/features/orders/presentation/views/orders_view.dart';
 import 'package:aura/features/orders/presentation/views/order_success_receipt_view.dart';
 import 'package:aura/features/orders/presentation/views/order_tracking_details_view.dart';
-import 'package:aura/features/profile/presentation/cubit/profile_cubit.dart';
 import 'package:aura/features/profile/presentation/views/edit_profile_view.dart';
 import 'package:aura/features/category/domain/entities/category_entity.dart';
 import 'package:aura/features/category/presentation/cubit/category_cubit.dart';
@@ -58,7 +58,16 @@ class AppRouter {
                     minPrice: 0,
                   ));
         return _buildPageRoute(
-          ProductDetailsView(product: product),
+          BlocProvider(
+            create: (context) {
+              final cubit = sl<ProductCubit>();
+              if (product.id > 0) {
+                cubit.fetchProductDetails(product.id.toString());
+              }
+              return cubit;
+            },
+            child: ProductDetailsView(product: product),
+          ),
           settings: settings,
         );
       case Routes.productReviewsView:
@@ -100,23 +109,15 @@ class AppRouter {
         return _buildHomeRoute(3, settings);
       case Routes.editProfileView:
         return _buildPageRoute(
-          BlocProvider.value(
-            value: sl<ProfileCubit>()..fetchProfile(),
-            child: const EditProfileView(),
-          ),
+          const EditProfileView(),
           settings: settings,
         );
       case Routes.cartView:
         return _buildHomeRoute(2, settings);
       case Routes.checkoutView:
         return _buildPageRoute(
-          MultiBlocProvider(
-            providers: [
-              BlocProvider(create: (context) => sl<CheckoutCubit>()),
-              BlocProvider.value(
-                value: sl<ProfileCubit>(),
-              ),
-            ],
+          BlocProvider(
+            create: (context) => sl<CheckoutCubit>(),
             child: const CheckoutView(),
           ),
           settings: settings,
@@ -139,8 +140,21 @@ class AppRouter {
         );
 
       case Routes.orderTrackingDetailsView:
+        final args = settings.arguments;
+        int? orderId;
+        OrderEntity? order;
+        if (args is int) {
+          orderId = args;
+        } else if (args is OrderEntity) {
+          order = args;
+          orderId = args.id;
+        }
         return _buildPageRoute(
-          const OrderTrackingDetailsView(),
+          OrderTrackingDetailsView(
+            orderId: orderId,
+            initialOrder: order,
+            getOrderTrackingUseCase: sl<GetOrderTrackingUseCase>(),
+          ),
           settings: settings,
         );
 
@@ -240,11 +254,8 @@ class AppRouter {
 
   PageRouteBuilder _buildHomeRoute(int initialIndex, RouteSettings settings) {
     return _buildPageRoute(
-      MultiBlocProvider(
-        providers: [
-          BlocProvider(create: (context) => sl<HomeCubit>()..fetchHomeFeed()),
-          BlocProvider.value(value: sl<ProfileCubit>()..fetchProfile()),
-        ],
+      BlocProvider(
+        create: (context) => sl<HomeCubit>()..fetchHomeFeed(),
         child: HomeView(initialIndex: initialIndex),
       ),
       settings: settings,

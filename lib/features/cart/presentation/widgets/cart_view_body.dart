@@ -33,22 +33,11 @@ class _CartViewBodyState extends State<CartViewBody> {
   void initState() {
     super.initState();
     _internalController = widget.controller == null;
-    _controller = (widget.controller ?? CartController())
-      ..addListener(_onControllerTick);
-
-    final currentState = context.read<CartCubit>().state;
-    if (currentState is CartSuccessState) {
-      _controller.setFromEntity(currentState.cart);
-    }
-  }
-
-  void _onControllerTick() {
-    if (mounted) setState(() {});
+    _controller = widget.controller ?? CartController();
   }
 
   @override
   void dispose() {
-    _controller.removeListener(_onControllerTick);
     if (_internalController) {
       _controller.dispose();
     }
@@ -59,22 +48,12 @@ class _CartViewBodyState extends State<CartViewBody> {
   Widget build(BuildContext context) {
     return SafeArea(
       bottom: false,
-      child: BlocConsumer<CartCubit, CartState>(
-        listener: (context, state) {
-          if (state is CartSuccessState) {
-            _controller.setFromEntity(state.cart);
-          }
-        },
+      child: BlocBuilder<CartCubit, CartState>(
         builder: (context, state) {
-          if (state is CartSuccessState &&
-              _controller.items.isEmpty &&
-              state.cart.items.isNotEmpty) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              if (mounted) {
-                _controller.setFromEntity(state.cart);
-              }
-            });
+          if (state is CartSuccessState) {
+            _controller.updateCart(state.cart);
           }
+
           final isLoading = state is CartLoadingState && _controller.isEmpty;
 
           return Stack(

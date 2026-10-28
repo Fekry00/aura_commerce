@@ -36,7 +36,7 @@ class CheckoutCubit extends Cubit<CheckoutState> {
     final result = await selectShippingAddressUseCase(addressId: addressId);
 
     result.fold(
-      (failure) => null,
+      (failure) => emit(CheckoutErrorState(message: failure.errMessage)),
       (isUpdated) {
         if (state is CheckoutSuccessState) {
           fetchCheckoutDetails();
@@ -49,7 +49,7 @@ class CheckoutCubit extends Cubit<CheckoutState> {
     final result = await selectDeliveryMethodUseCase(methodId: methodId);
 
     result.fold(
-      (failure) => null,
+      (failure) => emit(CheckoutErrorState(message: failure.errMessage)),
       (isUpdated) {
         if (state is CheckoutSuccessState) {
           fetchCheckoutDetails();
@@ -62,7 +62,7 @@ class CheckoutCubit extends Cubit<CheckoutState> {
     final result = await applyPrivilegePasscodeUseCase(passcode: passcode);
 
     result.fold(
-      (failure) => null,
+      (failure) => emit(CheckoutErrorState(message: failure.errMessage)),
       (isApplied) {
         if (state is CheckoutSuccessState) {
           fetchCheckoutDetails();

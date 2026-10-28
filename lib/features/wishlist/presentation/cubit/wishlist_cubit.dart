@@ -26,20 +26,47 @@ class WishlistCubit extends Cubit<WishlistState> {
   }
 
   Future<void> fetchWishlist() async {
+    final currentCategoryIndex = (state is WishlistSuccessState)
+        ? (state as WishlistSuccessState).selectedCategoryIndex
+        : 0;
+    final currentSortAscending = (state is WishlistSuccessState)
+        ? (state as WishlistSuccessState).sortAscending
+        : false;
+
     emit(const WishlistLoadingState());
 
     final result = await getWishlistUseCase();
 
     result.fold(
       (failure) => emit(WishlistErrorState(message: failure.errMessage)),
-      (wishlist) => emit(WishlistSuccessState(wishlist: wishlist)),
+      (wishlist) => emit(WishlistSuccessState(
+        wishlist: wishlist,
+        selectedCategoryIndex: currentCategoryIndex,
+        sortAscending: currentSortAscending,
+      )),
     );
+  }
+
+  void selectCategory(int index) {
+    if (state is WishlistSuccessState) {
+      final current = state as WishlistSuccessState;
+      if (current.selectedCategoryIndex != index) {
+        emit(current.copyWith(selectedCategoryIndex: index));
+      }
+    }
+  }
+
+  void toggleSort() {
+    if (state is WishlistSuccessState) {
+      final current = state as WishlistSuccessState;
+      emit(current.copyWith(sortAscending: !current.sortAscending));
+    }
   }
 
   Future<void> addToWishlist(int productId) async {
     final result = await addToWishlistUseCase(productId: productId);
     result.fold(
-      (failure) => null,
+      (failure) => emit(WishlistErrorState(message: failure.errMessage)),
       (isAdded) => fetchWishlist(),
     );
   }
@@ -56,22 +83,24 @@ class WishlistCubit extends Cubit<WishlistState> {
     final result = await removeFromWishlistUseCase(productId: productId);
 
     result.fold(
-      (failure) => null,
+      (failure) => emit(WishlistErrorState(message: failure.errMessage)),
       (isRemoved) {
         fetchWishlist();
       },
     );
   }
 
-  Future<void> moveAllToBag() async {
+  Future<bool> moveAllToBag() async {
     final result = await moveAllToBagUseCase();
 
-    result.fold(
-      (failure) => null,
+    return result.fold(
+      (failure) {
+        emit(WishlistErrorState(message: failure.errMessage));
+        return false;
+      },
       (isMoved) {
-        if (state is WishlistSuccessState) {
-          fetchWishlist();
-        }
+        fetchWishlist();
+        return isMoved;
       },
     );
   }

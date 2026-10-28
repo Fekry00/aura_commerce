@@ -13,9 +13,28 @@ class WishlistLoadingState extends WishlistState {
 }
 
 class WishlistSuccessState extends WishlistState {
-  const WishlistSuccessState({required this.wishlist});
+  const WishlistSuccessState({
+    required this.wishlist,
+    this.selectedCategoryIndex = 0,
+    this.sortAscending = false,
+  });
 
   final WishlistEntity wishlist;
+  final int selectedCategoryIndex;
+  final bool sortAscending;
+
+  WishlistSuccessState copyWith({
+    WishlistEntity? wishlist,
+    int? selectedCategoryIndex,
+    bool? sortAscending,
+  }) {
+    return WishlistSuccessState(
+      wishlist: wishlist ?? this.wishlist,
+      selectedCategoryIndex:
+          selectedCategoryIndex ?? this.selectedCategoryIndex,
+      sortAscending: sortAscending ?? this.sortAscending,
+    );
+  }
 }
 
 class WishlistErrorState extends WishlistState {

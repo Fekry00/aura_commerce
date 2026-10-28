@@ -19,10 +19,6 @@ class HomeController {
   final CuratedDropTimerController timerController =
       CuratedDropTimerController();
 
-  int? selectedCategoryId;
-  String? selectedCategoryName;
-  int selectedTab = 0; // 0: All, 1: Popular
-
   void init() {
     timerController.startCountdown();
   }
@@ -33,8 +29,10 @@ class HomeController {
   }
 
   List<ProductHighlightEntity>? getFilteredProducts(
-    List<ProductHighlightEntity>? highlights,
-  ) {
+    List<ProductHighlightEntity>? highlights, {
+    int? selectedCategoryId,
+    int selectedTab = 0,
+  }) {
     if (highlights == null) return null;
     var filtered = highlights;
     if (selectedCategoryId != null) {
@@ -47,7 +45,11 @@ class HomeController {
     return filtered;
   }
 
-  String getEmptyMessage() {
+  String getEmptyMessage({
+    int? selectedCategoryId,
+    String? selectedCategoryName,
+    int selectedTab = 0,
+  }) {
     if (selectedCategoryId != null) {
       return 'No products found in $selectedCategoryName.';
     }
@@ -57,28 +59,17 @@ class HomeController {
     return 'No products available right now.';
   }
 
-  void onCategorySelected(CategoryEntity? cat, VoidCallback onUpdate) {
-    if (cat == null) {
-      selectedCategoryId = null;
-      selectedCategoryName = null;
-    } else {
-      selectedCategoryId = cat.id;
-      selectedCategoryName = cat.name;
-    }
-    onUpdate();
+  void onCategorySelected(BuildContext context, CategoryEntity? cat) {
+    context.read<HomeCubit>().selectCategory(cat);
   }
 
-  void onViewAllCategories(BuildContext context, VoidCallback onUpdate) {
-    selectedCategoryId = null;
-    selectedCategoryName = null;
-    onUpdate();
+  void onViewAllCategories(BuildContext context) {
+    context.read<HomeCubit>().clearCategorySelection();
     Navigator.pushNamed(context, Routes.categoriesView);
   }
 
-  void onTabChanged(int index, VoidCallback onUpdate) {
-    if (selectedTab == index) return;
-    selectedTab = index;
-    onUpdate();
+  void onTabChanged(BuildContext context, int index) {
+    context.read<HomeCubit>().selectTab(index);
   }
 
   Future<void> onRefresh(BuildContext context) async {

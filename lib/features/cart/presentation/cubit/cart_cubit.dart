@@ -55,7 +55,7 @@ class CartCubit extends Cubit<CartState> {
     );
 
     result.fold(
-      (failure) => null,
+      (failure) => emit(CartErrorState(message: failure.errMessage)),
       (isAdded) => fetchCart(),
     );
   }
@@ -64,7 +64,7 @@ class CartCubit extends Cubit<CartState> {
     final result = await clearCartUseCase();
 
     result.fold(
-      (failure) => null,
+      (failure) => emit(CartErrorState(message: failure.errMessage)),
       (isCleared) => fetchCart(),
     );
   }
@@ -79,12 +79,8 @@ class CartCubit extends Cubit<CartState> {
     );
 
     result.fold(
-      (failure) => null,
-      (isUpdated) {
-        if (state is CartSuccessState) {
-          fetchCart();
-        }
-      },
+      (failure) => emit(CartErrorState(message: failure.errMessage)),
+      (isUpdated) => fetchCart(),
     );
   }
 
@@ -92,12 +88,8 @@ class CartCubit extends Cubit<CartState> {
     final result = await removeCartItemUseCase(itemId: itemId);
 
     result.fold(
-      (failure) => null,
-      (isRemoved) {
-        if (state is CartSuccessState) {
-          fetchCart();
-        }
-      },
+      (failure) => emit(CartErrorState(message: failure.errMessage)),
+      (isRemoved) => fetchCart(),
     );
   }
 
@@ -105,12 +97,8 @@ class CartCubit extends Cubit<CartState> {
     final result = await applyVoucherUseCase(promoCode: promoCode);
 
     result.fold(
-      (failure) => null,
-      (isApplied) {
-        if (state is CartSuccessState) {
-          fetchCart();
-        }
-      },
+      (failure) => emit(CartErrorState(message: failure.errMessage)),
+      (isApplied) => fetchCart(),
     );
   }
 
@@ -118,12 +106,8 @@ class CartCubit extends Cubit<CartState> {
     final result = await removeVoucherUseCase();
 
     result.fold(
-      (failure) => null,
-      (isRemoved) {
-        if (state is CartSuccessState) {
-          fetchCart();
-        }
-      },
+      (failure) => emit(CartErrorState(message: failure.errMessage)),
+      (isRemoved) => fetchCart(),
     );
   }
 }

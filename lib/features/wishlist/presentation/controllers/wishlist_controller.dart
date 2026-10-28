@@ -7,10 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class WishlistController {
-  int selectedCategoryIndex = 0;
-  bool sortAscending = false;
-
-  String get sortLabel =>
+  String getSortLabel(bool sortAscending) =>
       sortAscending ? 'Price: Low to High' : 'Price: High to Low';
 
   List<String> getCategoryChips(List<WishlistItemData> allItems) {
@@ -28,16 +25,19 @@ class WishlistController {
 
   List<WishlistItemData> getFilteredAndSortedItems(
     List<WishlistItemData> allItems,
-    List<String> categoryChips,
-  ) {
-    if (selectedCategoryIndex >= categoryChips.length) {
-      selectedCategoryIndex = 0;
+    List<String> categoryChips, {
+    int selectedCategoryIndex = 0,
+    bool sortAscending = false,
+  }) {
+    int effectiveCategoryIndex = selectedCategoryIndex;
+    if (effectiveCategoryIndex >= categoryChips.length) {
+      effectiveCategoryIndex = 0;
     }
 
     List<WishlistItemData> displayed = List.from(allItems);
-    if (selectedCategoryIndex > 0 &&
-        selectedCategoryIndex < categoryChips.length) {
-      final selectedCat = categoryChips[selectedCategoryIndex];
+    if (effectiveCategoryIndex > 0 &&
+        effectiveCategoryIndex < categoryChips.length) {
+      final selectedCat = categoryChips[effectiveCategoryIndex];
       displayed = allItems
           .where((item) => item.category.trim() == selectedCat)
           .toList();
@@ -52,15 +52,12 @@ class WishlistController {
     return displayed;
   }
 
-  void onCategorySelected(int index, VoidCallback onUpdate) {
-    if (selectedCategoryIndex == index) return;
-    selectedCategoryIndex = index;
-    onUpdate();
+  void onCategorySelected(BuildContext context, int index) {
+    context.read<WishlistCubit>().selectCategory(index);
   }
 
-  void onToggleSort(VoidCallback onUpdate) {
-    sortAscending = !sortAscending;
-    onUpdate();
+  void onToggleSort(BuildContext context) {
+    context.read<WishlistCubit>().toggleSort();
   }
 
   Future<void> onRemoveItem(BuildContext context, String id) async {
@@ -103,17 +100,18 @@ class WishlistController {
       return;
     }
 
-    for (final item in availableItems) {
-      final idInt = int.tryParse(item.id);
-      if (idInt != null) {
-        await context.read<CartCubit>().addToCart(productId: idInt);
-      }
+    // Call moveAllToBagUseCase via WishlistCubit in a single call
+    final success = await context.read<WishlistCubit>().moveAllToBag();
+    if (!context.mounted) return;
+    if (!success) {
+      return;
     }
+    await context.read<CartCubit>().fetchCart();
 
     if (!context.mounted) return;
     showCustomSnackBar(
       context,
-      message: 'Added ${availableItems.length} item(s) to Cart',
+      message: 'Added all available items to Cart',
       type: SnackBarType.success,
     );
     MainTabController.switchTab(2);

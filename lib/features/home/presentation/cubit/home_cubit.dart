@@ -1,4 +1,5 @@
 import 'package:aura/features/home/domain/entities/home_feed_entity.dart';
+import 'package:aura/features/home/domain/entities/sub_entities/category_entity.dart';
 import 'package:aura/features/home/domain/entities/sub_entities/product_highlight_entity.dart';
 import 'package:aura/features/home/domain/usecases/get_home_feed_usecase.dart';
 import 'package:aura/features/home/domain/usecases/toggle_favorite_usecase.dart';
@@ -22,14 +23,58 @@ class HomeCubit extends Cubit<HomeState> {
   }
 
   Future<void> fetchHomeFeed() async {
+    final currentCategoryId = (state is HomeSuccessState)
+        ? (state as HomeSuccessState).selectedCategoryId
+        : null;
+    final currentCategoryName = (state is HomeSuccessState)
+        ? (state as HomeSuccessState).selectedCategoryName
+        : null;
+    final currentTab = (state is HomeSuccessState)
+        ? (state as HomeSuccessState).selectedTab
+        : 0;
+
     emit(const HomeLoadingState());
 
     final result = await getHomeFeedUseCase();
 
     result.fold(
       (failure) => emit(HomeErrorState(message: failure.errMessage)),
-      (feed) => emit(HomeSuccessState(homeFeed: feed)),
+      (feed) => emit(HomeSuccessState(
+        homeFeed: feed,
+        selectedCategoryId: currentCategoryId,
+        selectedCategoryName: currentCategoryName,
+        selectedTab: currentTab,
+      )),
     );
+  }
+
+  void selectCategory(CategoryEntity? category) {
+    if (state is HomeSuccessState) {
+      final current = state as HomeSuccessState;
+      if (category == null) {
+        emit(current.copyWith(clearCategory: true));
+      } else {
+        emit(current.copyWith(
+          selectedCategoryId: category.id,
+          selectedCategoryName: category.name,
+        ));
+      }
+    }
+  }
+
+  void clearCategorySelection() {
+    if (state is HomeSuccessState) {
+      emit((state as HomeSuccessState).copyWith(clearCategory: true));
+    }
+  }
+
+  void selectTab(int index) {
+    if (state is HomeSuccessState) {
+      final current = state as HomeSuccessState;
+      if (current.selectedTab != index) {
+        emit(current.copyWith(selectedTab: index));
+      }
+    }
   }
 
   Future<void> toggleFavorite(String productId, {bool? currentIsFavorite}) async {
@@ -65,6 +110,9 @@ class HomeCubit extends Cubit<HomeState> {
             curatedDrop: feed.curatedDrop,
             archiveStory: feed.archiveStory,
           ),
+          selectedCategoryId: currentState.selectedCategoryId,
+          selectedCategoryName: currentState.selectedCategoryName,
+          selectedTab: currentState.selectedTab,
         ));
       }
 

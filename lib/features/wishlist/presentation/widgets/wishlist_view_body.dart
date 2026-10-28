@@ -47,9 +47,20 @@ class _WishlistViewBodyState extends State<WishlistViewBody> {
                   .toList()
               : <WishlistItemData>[];
 
+          final selectedCategoryIndex = state is WishlistSuccessState
+              ? state.selectedCategoryIndex
+              : 0;
+          final sortAscending = state is WishlistSuccessState
+              ? state.sortAscending
+              : false;
+
           final categoryChips = _controller.getCategoryChips(allItems);
-          final displayedItems =
-              _controller.getFilteredAndSortedItems(allItems, categoryChips);
+          final displayedItems = _controller.getFilteredAndSortedItems(
+            allItems,
+            categoryChips,
+            selectedCategoryIndex: selectedCategoryIndex,
+            sortAscending: sortAscending,
+          );
           final summary = WishlistSummaryData.fromItems(displayedItems);
 
           return RefreshIndicator(
@@ -69,20 +80,16 @@ class _WishlistViewBodyState extends State<WishlistViewBody> {
                   if (categoryChips.isNotEmpty) ...[
                     WishlistFilterChips(
                       categories: categoryChips,
-                      selectedIndex: _controller.selectedCategoryIndex,
-                      onSelected: (index) => _controller.onCategorySelected(
-                        index,
-                        () => setState(() {}),
-                      ),
+                      selectedIndex: selectedCategoryIndex,
+                      onSelected: (index) =>
+                          _controller.onCategorySelected(context, index),
                     ),
                     const SizedBox(height: AppSpacing.spaceMd),
                   ],
                   if (allItems.isNotEmpty) ...[
                     WishlistSortingActionBar(
-                      sortLabel: _controller.sortLabel,
-                      onSortTap: () => _controller.onToggleSort(
-                        () => setState(() {}),
-                      ),
+                      sortLabel: _controller.getSortLabel(sortAscending),
+                      onSortTap: () => _controller.onToggleSort(context),
                       onMoveAllToBagTap: () => _controller.onAddAllToCart(
                         context,
                         displayedItems,

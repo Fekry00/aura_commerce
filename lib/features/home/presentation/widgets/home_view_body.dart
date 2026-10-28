@@ -46,9 +46,22 @@ class _HomeViewBodyState extends State<HomeViewBody> {
           final homeFeed = state is HomeSuccessState ? state.homeFeed : null;
           final banners = homeFeed?.banners;
           final categories = homeFeed?.categories;
-          final filteredProducts =
-              _controller.getFilteredProducts(homeFeed?.highlights);
-          final emptyMsg = _controller.getEmptyMessage();
+          final selectedCategoryId =
+              state is HomeSuccessState ? state.selectedCategoryId : null;
+          final selectedCategoryName =
+              state is HomeSuccessState ? state.selectedCategoryName : null;
+          final selectedTab =
+              state is HomeSuccessState ? state.selectedTab : 0;
+          final filteredProducts = _controller.getFilteredProducts(
+            homeFeed?.highlights,
+            selectedCategoryId: selectedCategoryId,
+            selectedTab: selectedTab,
+          );
+          final emptyMsg = _controller.getEmptyMessage(
+            selectedCategoryId: selectedCategoryId,
+            selectedCategoryName: selectedCategoryName,
+            selectedTab: selectedTab,
+          );
 
           return RefreshIndicator(
             color: const Color(0xFF1E382B),
@@ -110,17 +123,17 @@ class _HomeViewBodyState extends State<HomeViewBody> {
                     const SizedBox(height: AppSpacing.spaceLg),
                     HomeCategoriesSection(
                       categories: categories,
-                      selectedCategoryId: _controller.selectedCategoryId,
-                      onCategorySelected: (cat) => _controller
-                          .onCategorySelected(cat, () => setState(() {})),
-                      onViewAllTap: () => _controller
-                          .onViewAllCategories(context, () => setState(() {})),
+                      selectedCategoryId: selectedCategoryId,
+                      onCategorySelected: (cat) =>
+                          _controller.onCategorySelected(context, cat),
+                      onViewAllTap: () =>
+                          _controller.onViewAllCategories(context),
                     ),
                     const SizedBox(height: AppSpacing.spaceLg),
                     CuratedHighlightsHeader(
-                      selectedIndex: _controller.selectedTab,
+                      selectedIndex: selectedTab,
                       onTabChanged: (index) =>
-                          _controller.onTabChanged(index, () => setState(() {})),
+                          _controller.onTabChanged(context, index),
                     ),
                     const SizedBox(height: AppSpacing.spaceMd),
                     HomeProductsGrid(

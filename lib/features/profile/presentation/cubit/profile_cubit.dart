@@ -72,7 +72,7 @@ class ProfileCubit extends Cubit<ProfileState> {
       )),
       (profile) => emit(ProfileUpdateSuccessState(
         profile: profile,
-        message: 'تم تحديث البيانات بنجاح',
+        message: 'Profile updated successfully',
       )),
     );
   }
@@ -89,7 +89,7 @@ class ProfileCubit extends Cubit<ProfileState> {
       )),
       (profile) => emit(ProfileAvatarSuccessState(
         profile: profile,
-        message: 'تم تحديث الصورة الشخصية بنجاح',
+        message: 'Avatar updated successfully',
       )),
     );
   }
@@ -106,7 +106,7 @@ class ProfileCubit extends Cubit<ProfileState> {
       )),
       (profile) => emit(ProfileAvatarSuccessState(
         profile: profile,
-        message: 'تم حذف الصورة الشخصية بنجاح',
+        message: 'Avatar removed successfully',
       )),
     );
   }
@@ -143,7 +143,7 @@ class ProfileCubit extends Cubit<ProfileState> {
       )),
       (profile) => emit(ProfilePhoneVerifiedState(
         profile: profile,
-        message: 'تم تغيير رقم الهاتف بنجاح',
+        message: 'Phone number updated successfully',
       )),
     );
   }
@@ -167,7 +167,7 @@ class ProfileCubit extends Cubit<ProfileState> {
         profile: currentProfile,
       )),
       (success) => emit(ProfilePasswordChangedState(
-        message: 'تم تغيير كلمة المرور بنجاح',
+        message: 'Password changed successfully',
         profile: currentProfile,
       )),
     );

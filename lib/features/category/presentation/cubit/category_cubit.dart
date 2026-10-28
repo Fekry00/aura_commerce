@@ -69,28 +69,24 @@ class CategoryCubit extends Cubit<CategoryState> {
 
       if (pill == 'Vault Exclusives') {
         return c.subDepartments.any((s) =>
-                s.badge?.toUpperCase().contains('VAULT') == true ||
-                s.badge?.toUpperCase().contains('EXCLUSIVE') == true ||
-                s.badge?.toUpperCase().contains('UNHEATED') == true) ||
-            name.contains('electron') ||
-            name.contains('watch');
+            s.badge?.toUpperCase().contains('VAULT') == true ||
+            s.badge?.toUpperCase().contains('EXCLUSIVE') == true ||
+            s.badge?.toUpperCase().contains('UNHEATED') == true);
       }
 
       if (pill == 'Numbered Runs') {
         return c.subDepartments.any((s) =>
-                s.badge?.toUpperCase().contains('NUMBERED') == true ||
-                s.badge?.toUpperCase().contains('3 LEFT') == true ||
-                s.badge?.toUpperCase().contains('COMPLICATION') == true) ||
-            name.contains('cloth');
+            s.badge?.toUpperCase().contains('NUMBERED') == true ||
+            s.badge?.toUpperCase().contains('3 LEFT') == true ||
+            s.badge?.toUpperCase().contains('COMPLICATION') == true);
       }
 
       if (pill == 'Atelier Bespoke') {
         return c.subDepartments.any((s) =>
-                s.badge?.toUpperCase().contains('BESPOKE') == true ||
-                s.badge?.toUpperCase().contains('SIGNATURE') == true ||
-                s.badge?.toUpperCase().contains('HERITAGE') == true ||
-                s.badge?.toUpperCase().contains('HIGH JEWELRY') == true) ||
-            name.contains('beaut');
+            s.badge?.toUpperCase().contains('BESPOKE') == true ||
+            s.badge?.toUpperCase().contains('SIGNATURE') == true ||
+            s.badge?.toUpperCase().contains('HERITAGE') == true ||
+            s.badge?.toUpperCase().contains('HIGH JEWELRY') == true);
       }
 
       return false;
