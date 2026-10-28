@@ -1,4 +1,3 @@
-import 'package:aura/core/databases/cache/cache_helper.dart';
 import 'package:aura/features/checkout/data/models/checkout_model.dart';
 import 'package:aura/features/checkout/data/models/sub_models/checkout_payment_summary_model.dart';
 import 'package:aura/features/checkout/data/models/sub_models/checkout_step_model.dart';
@@ -20,9 +19,8 @@ abstract class CheckoutLocalDataSource {
 }
 
 class CheckoutLocalDataSourceImpl implements CheckoutLocalDataSource {
-  const CheckoutLocalDataSourceImpl({required this.cacheHelper});
+  const CheckoutLocalDataSourceImpl();
 
-  final CacheHelper cacheHelper;
   static const String cachedCheckoutKey = 'CACHED_CHECKOUT';
 
   @override

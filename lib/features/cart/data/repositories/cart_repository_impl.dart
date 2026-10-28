@@ -1,3 +1,4 @@
+import 'package:aura/core/errors/exceptions.dart';
 import 'package:aura/core/errors/failure.dart';
 import 'package:aura/core/network/connection/network_info.dart';
 import 'package:aura/features/cart/data/datasources/cart_local_data_source.dart';
@@ -24,6 +25,13 @@ class CartRepositoryImpl implements CartRepository {
         final remoteCart = await remoteDataSource.getCart();
         await localDataSource.cacheCart(remoteCart);
         return Right(remoteCart);
+      } on ServerException catch (e) {
+        try {
+          final localCart = await localDataSource.getLastCart();
+          return Right(localCart);
+        } catch (_) {
+          return Left(ServerFailure(errMessage: e.errorModel.errorMessage));
+        }
       } catch (e) {
         try {
           final localCart = await localDataSource.getLastCart();
@@ -61,6 +69,8 @@ class CartRepositoryImpl implements CartRepository {
         );
       }
       return Right(isAdded);
+    } on ServerException catch (e) {
+      return Left(ServerFailure(errMessage: e.errorModel.errorMessage));
     } catch (e) {
       return Left(ServerFailure(errMessage: e.toString()));
     }
@@ -83,6 +93,8 @@ class CartRepositoryImpl implements CartRepository {
         );
       }
       return Right(isUpdated);
+    } on ServerException catch (e) {
+      return Left(ServerFailure(errMessage: e.errorModel.errorMessage));
     } catch (e) {
       return Left(CacheFailure(errMessage: e.toString()));
     }
@@ -100,6 +112,8 @@ class CartRepositoryImpl implements CartRepository {
         await remoteDataSource.removeCartItem(itemId: itemId);
       }
       return Right(isRemoved);
+    } on ServerException catch (e) {
+      return Left(ServerFailure(errMessage: e.errorModel.errorMessage));
     } catch (e) {
       return Left(CacheFailure(errMessage: e.toString()));
     }
@@ -113,6 +127,8 @@ class CartRepositoryImpl implements CartRepository {
         await remoteDataSource.clearCart();
       }
       return Right(isCleared);
+    } on ServerException catch (e) {
+      return Left(ServerFailure(errMessage: e.errorModel.errorMessage));
     } catch (e) {
       return Left(ServerFailure(errMessage: e.toString()));
     }
@@ -130,6 +146,8 @@ class CartRepositoryImpl implements CartRepository {
         await remoteDataSource.applyVoucher(promoCode: promoCode);
       }
       return Right(isApplied);
+    } on ServerException catch (e) {
+      return Left(ServerFailure(errMessage: e.errorModel.errorMessage));
     } catch (e) {
       return Left(CacheFailure(errMessage: e.toString()));
     }
@@ -143,6 +161,8 @@ class CartRepositoryImpl implements CartRepository {
         await remoteDataSource.removeVoucher();
       }
       return Right(isRemoved);
+    } on ServerException catch (e) {
+      return Left(ServerFailure(errMessage: e.errorModel.errorMessage));
     } catch (e) {
       return Left(CacheFailure(errMessage: e.toString()));
     }

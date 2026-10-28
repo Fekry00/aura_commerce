@@ -9,9 +9,8 @@ abstract class CategoryLocalDataSource {
 }
 
 class CategoryLocalDataSourceImpl implements CategoryLocalDataSource {
-  const CategoryLocalDataSourceImpl({required this.cacheHelper});
+  const CategoryLocalDataSourceImpl();
 
-  final CacheHelper cacheHelper;
   static const String cachedCategoriesKey = 'CACHED_CATEGORIES';
 
   @override

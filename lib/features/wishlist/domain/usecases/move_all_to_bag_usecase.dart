@@ -1,12 +1,14 @@
 import 'package:aura/core/errors/failure.dart';
+import 'package:aura/core/usecase/usecase.dart';
 import 'package:aura/features/wishlist/domain/repositories/wishlist_repository.dart';
 import 'package:dartz/dartz.dart';
 
-class MoveAllToBagUseCase {
+class MoveAllToBagUseCase implements UseCaseNoParams<bool> {
   const MoveAllToBagUseCase(this.repository);
 
   final WishlistRepository repository;
 
+  @override
   Future<Either<Failure, bool>> call() {
     return repository.moveAllToBag();
   }

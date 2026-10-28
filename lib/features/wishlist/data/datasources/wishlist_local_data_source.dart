@@ -17,9 +17,8 @@ abstract class WishlistLocalDataSource {
 }
 
 class WishlistLocalDataSourceImpl implements WishlistLocalDataSource {
-  const WishlistLocalDataSourceImpl({required this.cacheHelper});
+  const WishlistLocalDataSourceImpl();
 
-  final CacheHelper cacheHelper;
   static const String cachedWishlistKey = 'CACHED_WISHLIST';
 
   @override

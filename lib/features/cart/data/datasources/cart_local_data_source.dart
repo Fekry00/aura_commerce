@@ -34,9 +34,8 @@ abstract class CartLocalDataSource {
 }
 
 class CartLocalDataSourceImpl implements CartLocalDataSource {
-  const CartLocalDataSourceImpl({required this.cacheHelper});
+  const CartLocalDataSourceImpl();
 
-  final CacheHelper cacheHelper;
   static const String cachedCartKey = 'CACHED_CART';
 
   @override

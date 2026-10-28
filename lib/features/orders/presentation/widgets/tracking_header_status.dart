@@ -1,21 +1,33 @@
 import 'package:aura/core/theme/app_colors.dart';
 import 'package:aura/core/theme/app_typography.dart';
+import 'package:aura/features/orders/domain/entities/order_entity.dart';
 import 'package:flutter/material.dart';
 
 class TrackingHeaderStatus extends StatelessWidget {
-  final String orderId;
-  final String totalAmount;
-  final String etaTime;
+  final OrderEntity? order;
+  final String? orderId;
+  final String? totalAmount;
+  final String? etaTime;
 
   const TrackingHeaderStatus({
     super.key,
-    this.orderId = 'Order #AL-984218',
-    this.totalAmount = '\$2,585.50',
-    this.etaTime = 'Today, Estimated arrival 2:45 PM – 3:15 PM',
+    this.order,
+    this.orderId,
+    this.totalAmount,
+    this.etaTime,
   });
 
   @override
   Widget build(BuildContext context) {
+    final displayOrderId = order != null ? 'Order #AUR-${order!.id}' : (orderId ?? 'Order #AL-984218');
+    final displayTotal = order != null ? '\$${order!.totalAmount.toStringAsFixed(2)}' : (totalAmount ?? '\$2,585.50');
+    final displayEta = etaTime ??
+        (order?.isDelivered == true
+            ? 'Delivered to Destination'
+            : (order?.isShipped == true
+                ? 'Today, Estimated arrival 2:45 PM – 3:15 PM'
+                : 'Processing • Estimated dispatch today'));
+    final statusBadge = order?.status.toUpperCase() ?? 'OUT FOR WHITE-GLOVE COURIER';
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -45,14 +57,14 @@ class TrackingHeaderStatus extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              orderId,
+              displayOrderId,
               style: AppTypography.headlineMd.copyWith(
                 fontWeight: FontWeight.w700,
                 color: AppColors.slateHeadline,
               ),
             ),
             Text(
-              totalAmount,
+              displayTotal,
               style: AppTypography.headlineSm.copyWith(
                 fontWeight: FontWeight.w700,
                 color: AppColors.slateHeadline,
@@ -83,7 +95,7 @@ class TrackingHeaderStatus extends StatelessWidget {
               ),
               const SizedBox(width: 6),
               Text(
-                'OUT FOR WHITE-GLOVE COURIER',
+                statusBadge,
                 style: AppTypography.labelCaps.copyWith(
                   color: AppColors.secondary,
                   fontWeight: FontWeight.w800,
@@ -114,7 +126,7 @@ class TrackingHeaderStatus extends StatelessWidget {
               const SizedBox(width: AppSpacing.spaceSm),
               Expanded(
                 child: Text(
-                  etaTime,
+                  displayEta,
                   style: AppTypography.bodySm.copyWith(
                     color: AppColors.slateHeadline,
                     fontWeight: FontWeight.w600,

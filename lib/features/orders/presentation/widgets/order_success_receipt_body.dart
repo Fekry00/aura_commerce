@@ -1,3 +1,4 @@
+import 'package:aura/core/routing/routes.dart';
 import 'package:aura/core/theme/app_typography.dart';
 import 'package:aura/features/orders/domain/entities/order_entity.dart';
 import 'package:aura/features/orders/presentation/controllers/order_receipt_controller.dart';
@@ -37,6 +38,13 @@ class OrderSuccessReceiptBody extends StatelessWidget {
           OrderReceiptSettlementCard(order: order),
           const SizedBox(height: AppSpacing.spaceLg),
           OrderReceiptActionsCard(
+            onTrackOrder: () {
+              Navigator.pushNamed(
+                context,
+                Routes.orderTrackingDetailsView,
+                arguments: order,
+              );
+            },
             onViewAllOrders: () => controller.onViewAllOrders(context),
             onReturnHome: () => controller.onReturnHome(context),
           ),

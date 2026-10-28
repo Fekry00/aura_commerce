@@ -1,4 +1,5 @@
 import 'package:aura/core/network/api/end_points.dart';
+import 'package:aura/core/routing/routes.dart';
 import 'package:aura/core/theme/app_colors.dart';
 import 'package:aura/core/theme/app_typography.dart';
 import 'package:aura/features/orders/domain/entities/order_entity.dart';
@@ -203,6 +204,42 @@ class OrderCard extends StatelessWidget {
                             fontSize: 12,
                             fontWeight: FontWeight.w700,
                           ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                    ],
+                    if (order.isShipped || order.isDelivered) ...[
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.pushNamed(
+                            context,
+                            Routes.orderTrackingDetailsView,
+                            arguments: order,
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.secondary,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 6,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        child: const Row(
+                          children: [
+                            Icon(Icons.local_shipping_outlined, size: 14),
+                            SizedBox(width: 4),
+                            Text(
+                              'Track',
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                       const SizedBox(width: 8),

@@ -18,9 +18,8 @@ abstract class ProfileLocalDataSource {
 }
 
 class ProfileLocalDataSourceImpl implements ProfileLocalDataSource {
-  const ProfileLocalDataSourceImpl({required this.cacheHelper});
+  const ProfileLocalDataSourceImpl();
 
-  final CacheHelper cacheHelper;
   static const String cachedProfileKey = 'CACHED_PROFILE';
 
   @override

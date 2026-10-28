@@ -1,15 +1,24 @@
 import 'package:aura/core/theme/app_colors.dart';
 import 'package:aura/core/theme/app_typography.dart';
+import 'package:aura/features/orders/domain/entities/order_item_entity.dart';
 import 'package:aura/features/orders/presentation/widgets/tracking_dispatch_item_card.dart';
 import 'package:flutter/material.dart';
 
 class TrackingCuratedDispatchItems extends StatelessWidget {
+  final List<OrderItemEntity>? items;
   final VoidCallback? onInspectCertificate;
 
-  const TrackingCuratedDispatchItems({super.key, this.onInspectCertificate});
+  const TrackingCuratedDispatchItems({
+    super.key,
+    this.items,
+    this.onInspectCertificate,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final dispatchItems = items ?? const [];
+    final count = dispatchItems.length;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -17,7 +26,7 @@ class TrackingCuratedDispatchItems extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              'Curated Dispatch (2)',
+              'Curated Dispatch ($count)',
               style: AppTypography.headlineSm.copyWith(
                 fontWeight: FontWeight.w700,
                 color: AppColors.slateHeadline,
@@ -34,28 +43,33 @@ class TrackingCuratedDispatchItems extends StatelessWidget {
           ],
         ),
         const SizedBox(height: AppSpacing.spaceSm + 2),
-        const TrackingDispatchItemCard(
-          category: 'HAUTE HORLOGERIE',
-          title: 'Aethel Chronograph 40...',
-          subtitle: 'Brushed Titanium • Serial #AT-092-7489',
-          qty: 'Qty: 01',
-          price: '\$1,450.00',
-          serialTag: 'N°04',
-          imageUrl:
-              'https://lh3.googleusercontent.com/aida-public/AB6AXuDD0sbnNVvsv33yBAnoqPB20Vs7jx_Bj8lrn6GPRWyjaiVPYFvMjgfhitJOdJa_e3iNRbQl4cxRWwt0yEj0sLuRq-yCgOIxFtwssw9ylmZNFpkGom4eQiQoQxdrnKt94SI5N-N3yNHthLaG9q0PzQWohNcVO_UcaRu7gqz066HwD0YLLELX7PCOtQL2HXflN219MVpetlDdx8hDSQd4XLoHLMIPXCT0rOP_8dMk6s31A7WaQsGiUdo8',
-        ),
+        if (dispatchItems.isEmpty)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 12),
+            child: Text(
+              'No items specified for this consignment.',
+              style: AppTypography.bodySm.copyWith(color: AppColors.slateBody),
+            ),
+          )
+        else
+          ...dispatchItems.map(
+            (item) => Padding(
+              padding: const EdgeInsets.only(bottom: AppSpacing.spaceSm),
+              child: TrackingDispatchItemCard(
+                category: 'HAUTE CURATION',
+                title: item.productName,
+                subtitle: item.productSlug ?? 'Verified Vault Allocation',
+                qty: 'Qty: ${item.quantity.toString().padLeft(2, '0')}',
+                price: '\$${item.price.toStringAsFixed(2)}',
+                serialTag: 'N°${item.productId}',
+                imageUrl: (item.productThumbnail != null &&
+                        item.productThumbnail!.isNotEmpty)
+                    ? item.productThumbnail!
+                    : 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=300',
+              ),
+            ),
+          ),
         const SizedBox(height: AppSpacing.spaceSm),
-        const TrackingDispatchItemCard(
-          category: 'MAISON LEATHER',
-          title: 'Verona Nappa Handbag',
-          subtitle: 'Forest Green • Hand-stitched Calfsuede',
-          qty: 'Qty: 01',
-          price: '\$890.00',
-          serialTag: '08',
-          imageUrl:
-              'https://lh3.googleusercontent.com/aida-public/AB6AXuAC9S5sow3Mq93k0DT7B6_MTu4V_ZluO8KoBzdbylC-FlrceCygBoyXqVaLh6JfBU-pyeiwrmcJuYOUv33Qi-vxd64NW4Bb6qaWPDo5xb06Bsx87XLpj1n7zZ68m9dHzPSkRJZuhYQ9MrISpLwq4IAD3g4T6LcSFG3SLcnzkonYx-jpQBoI_z0j4K6-co3FpCTBnsB9Rkgu4nk89bsIcxRQ2ShVM3j1GIm2s3EwUY-qRLuXXR5OWgzz',
-        ),
-        const SizedBox(height: AppSpacing.spaceSm + 2),
         InkWell(
           onTap: onInspectCertificate,
           borderRadius: BorderRadius.circular(AppSpacing.spaceSm),

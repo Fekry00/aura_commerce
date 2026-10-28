@@ -1,4 +1,3 @@
-import 'package:aura/core/databases/cache/cache_helper.dart';
 import 'package:aura/core/network/api/end_points.dart';
 import 'package:aura/features/product/data/models/product_details_model.dart';
 import 'package:aura/features/product/data/models/sub_models/product_item_model.dart';
@@ -15,9 +14,8 @@ abstract class ProductLocalDataSource {
 }
 
 class ProductLocalDataSourceImpl implements ProductLocalDataSource {
-  const ProductLocalDataSourceImpl({required this.cacheHelper});
+  const ProductLocalDataSourceImpl();
 
-  final CacheHelper cacheHelper;
   static const String cachedProductPrefix = 'CACHED_PRODUCT_';
 
   @override

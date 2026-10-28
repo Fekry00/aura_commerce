@@ -11,9 +11,8 @@ abstract class HomeLocalDataSource {
 }
 
 class HomeLocalDataSourceImpl implements HomeLocalDataSource {
-  const HomeLocalDataSourceImpl({required this.cacheHelper});
+  const HomeLocalDataSourceImpl();
 
-  final CacheHelper cacheHelper;
   static const String cachedHomeFeedKey = 'CACHED_HOME_FEED';
 
   @override

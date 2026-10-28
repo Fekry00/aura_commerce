@@ -1,4 +1,3 @@
-import 'package:aura/core/databases/cache/cache_helper.dart';
 import 'package:aura/features/orders/data/models/order_model.dart';
 
 abstract class OrdersLocalDataSource {
@@ -8,9 +7,8 @@ abstract class OrdersLocalDataSource {
 }
 
 class OrdersLocalDataSourceImpl implements OrdersLocalDataSource {
-  const OrdersLocalDataSourceImpl({required this.cacheHelper});
+  const OrdersLocalDataSourceImpl();
 
-  final CacheHelper cacheHelper;
   static const String cachedOrderKey = 'CACHED_ORDER';
 
   @override

@@ -1,4 +1,5 @@
 import 'package:aura/core/theme/app_typography.dart';
+import 'package:aura/features/orders/domain/entities/order_entity.dart';
 import 'package:aura/features/orders/presentation/controllers/order_tracking_controller.dart';
 import 'package:aura/features/orders/presentation/widgets/tracking_action_buttons.dart';
 import 'package:aura/features/orders/presentation/widgets/tracking_courier_liaison_card.dart';
@@ -11,15 +12,20 @@ import 'package:flutter/material.dart';
 
 class OrderTrackingDetailsBody extends StatelessWidget {
   final OrderTrackingController controller;
+  final OrderEntity order;
 
   const OrderTrackingDetailsBody({
     super.key,
     required this.controller,
+    required this.order,
   });
 
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
+      physics: const AlwaysScrollableScrollPhysics(
+        parent: BouncingScrollPhysics(),
+      ),
       padding: const EdgeInsets.symmetric(
         horizontal: AppSpacing.gutter,
         vertical: AppSpacing.spaceSm,
@@ -27,7 +33,7 @@ class OrderTrackingDetailsBody extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const TrackingHeaderStatus(),
+          TrackingHeaderStatus(order: order),
           const SizedBox(height: AppSpacing.spaceLg),
           const TrackingLiveMapCard(),
           const SizedBox(height: AppSpacing.spaceLg),
@@ -36,14 +42,15 @@ class OrderTrackingDetailsBody extends StatelessWidget {
             onMessage: () => controller.onMessageCourier(context),
           ),
           const SizedBox(height: AppSpacing.spaceLg),
-          const TrackingMilestonesStepper(),
+          TrackingMilestonesStepper(order: order),
           const SizedBox(height: AppSpacing.spaceLg),
           TrackingCuratedDispatchItems(
+            items: order.items,
             onInspectCertificate: () =>
                 controller.onInspectCertificate(context),
           ),
           const SizedBox(height: AppSpacing.spaceLg),
-          const TrackingDossierCard(),
+          TrackingDossierCard(order: order),
           const SizedBox(height: AppSpacing.spaceLg),
           TrackingActionButtons(
             onDownloadInvoice: () => controller.onDownloadInvoice(context),

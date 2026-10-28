@@ -1,13 +1,31 @@
 import 'package:aura/core/theme/app_colors.dart';
 import 'package:aura/core/theme/app_typography.dart';
+import 'package:aura/features/orders/domain/entities/order_entity.dart';
 import 'package:aura/features/orders/presentation/widgets/tracking_dossier_row.dart';
 import 'package:flutter/material.dart';
 
 class TrackingDossierCard extends StatelessWidget {
-  const TrackingDossierCard({super.key});
+  final OrderEntity? order;
+
+  const TrackingDossierCard({super.key, this.order});
 
   @override
   Widget build(BuildContext context) {
+    final addressText = order?.shippingAddress.isNotEmpty == true
+        ? order!.shippingAddress
+        : '742 Evergreen St, Penthouse B\nManhattan, NY 10021';
+    final paymentTitle = order != null
+        ? (order!.paymentMethod.toLowerCase() == 'cod'
+            ? 'Cash on Delivery Protocol'
+            : 'Vault Pay (${order!.paymentMethod.toUpperCase()})')
+        : 'Vault Pay (Amex Centurion)';
+    final paymentSubtitle = order != null
+        ? 'Total Authorized: \$${order!.totalAmount.toStringAsFixed(2)}'
+        : '•••• 1008 • Subtotal incl. \$245.50 State Surcharge';
+    final paymentBadge = order != null
+        ? (order!.isPending ? 'PENDING' : 'VERIFIED')
+        : 'PAID';
+
     return Container(
       padding: const EdgeInsets.all(AppSpacing.spaceMd),
       decoration: BoxDecoration(
@@ -28,10 +46,10 @@ class TrackingDossierCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: AppSpacing.spaceMd),
-          const TrackingDossierRow(
+          TrackingDossierRow(
             icon: Icons.location_on_outlined,
-            title: 'Claire Daniels',
-            subtitle: '742 Evergreen St, Penthouse B\nManhattan, NY 10021',
+            title: 'Consignee Recipient',
+            subtitle: addressText,
           ),
           const SizedBox(height: AppSpacing.spaceMd),
           const TrackingDossierRow(
@@ -41,11 +59,11 @@ class TrackingDossierCard extends StatelessWidget {
             subtitleColor: AppColors.secondary,
           ),
           const SizedBox(height: AppSpacing.spaceMd),
-          const TrackingDossierRow(
+          TrackingDossierRow(
             icon: Icons.credit_card_outlined,
-            title: 'Vault Pay (Amex Centurion)',
-            badgeText: 'PAID',
-            subtitle: '•••• 1008 • Subtotal incl. \$245.50 State Surcharge',
+            title: paymentTitle,
+            badgeText: paymentBadge,
+            subtitle: paymentSubtitle,
           ),
         ],
       ),
