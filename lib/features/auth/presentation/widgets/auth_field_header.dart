@@ -2,7 +2,6 @@ import 'package:aura/core/theme/app_colors.dart';
 import 'package:aura/core/theme/app_typography.dart';
 import 'package:flutter/material.dart';
 
-
 class AuthFieldHeader extends StatelessWidget {
   final String label;
   final bool isRequired;
@@ -34,12 +33,11 @@ class AuthFieldHeader extends StatelessWidget {
               ),
             ),
             if (isRequired)
-              const Text(
+              Text(
                 ' *',
-                style: TextStyle(
+                style: AppTypography.labelCaps.copyWith(
                   color: AppColors.error,
                   fontWeight: FontWeight.bold,
-                  fontSize: 11,
                 ),
               ),
           ],

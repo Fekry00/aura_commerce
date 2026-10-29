@@ -1,3 +1,4 @@
+import 'package:aura/core/theme/app_typography.dart';
 import 'package:aura/core/widgets/product_card.dart';
 import 'package:aura/features/home/domain/entities/sub_entities/product_highlight_entity.dart';
 import 'package:flutter/material.dart';
@@ -26,16 +27,16 @@ class HomeProductsGrid extends StatelessWidget {
       return Container(
         height: 140,
         alignment: Alignment.center,
-        padding: const EdgeInsets.symmetric(horizontal: 24),
+        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.spaceLg),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Icon(Icons.category_outlined, size: 36, color: Colors.black26),
-            const SizedBox(height: 8),
+            const SizedBox(height: AppSpacing.spaceSm),
             Text(
               emptyMessage ?? 'No products available right now.',
               textAlign: TextAlign.center,
-              style: const TextStyle(color: Colors.black54, fontSize: 13),
+              style: AppTypography.bodySm.copyWith(color: Colors.black54),
             ),
           ],
         ),
@@ -48,8 +49,8 @@ class HomeProductsGrid extends StatelessWidget {
       itemCount: items.length,
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
-        mainAxisSpacing: 16,
-        crossAxisSpacing: 16,
+        mainAxisSpacing: AppSpacing.spaceMd,
+        crossAxisSpacing: AppSpacing.spaceMd,
         childAspectRatio: 0.70,
       ),
       itemBuilder: (context, index) {

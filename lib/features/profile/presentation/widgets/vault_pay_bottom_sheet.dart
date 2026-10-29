@@ -203,12 +203,12 @@ class _VaultPayBottomSheetState extends State<VaultPayBottomSheet> {
                               color: const Color(0xFFD1FADF),
                               borderRadius: BorderRadius.circular(10),
                             ),
-                            child: const Text(
+                            child: Text(
                               'VERIFIED',
-                              style: TextStyle(
+                              style: AppTypography.labelCaps.copyWith(
                                 fontSize: 10,
                                 fontWeight: FontWeight.w800,
-                                color: Color(0xFF027A48),
+                                color: const Color(0xFF027A48),
                                 letterSpacing: 0.5,
                               ),
                             ),
@@ -472,9 +472,9 @@ class _VaultPayBottomSheetState extends State<VaultPayBottomSheet> {
                   color: Colors.white.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: const Text(
+                child: Text(
                   'TIER PRIVILEGE',
-                  style: TextStyle(
+                  style: AppTypography.labelCaps.copyWith(
                     color: Colors.white,
                     fontSize: 9,
                     fontWeight: FontWeight.w700,
@@ -486,7 +486,7 @@ class _VaultPayBottomSheetState extends State<VaultPayBottomSheet> {
           const SizedBox(height: 14),
           Text(
             balance,
-            style: const TextStyle(
+            style: AppTypography.displayHero.copyWith(
               color: Colors.white,
               fontSize: 26,
               fontWeight: FontWeight.w800,
@@ -496,7 +496,7 @@ class _VaultPayBottomSheetState extends State<VaultPayBottomSheet> {
           const SizedBox(height: 4),
           Text(
             'Instant credit applicable automatically at checkout',
-            style: TextStyle(
+            style: AppTypography.bodySm.copyWith(
               color: Colors.white.withValues(alpha: 0.7),
               fontSize: 11,
             ),
@@ -532,7 +532,7 @@ class _VaultPayBottomSheetState extends State<VaultPayBottomSheet> {
             ),
             child: Text(
               card.cardBrand.toUpperCase(),
-              style: const TextStyle(
+              style: AppTypography.labelCaps.copyWith(
                 color: Colors.white,
                 fontWeight: FontWeight.w900,
                 fontSize: 10,
@@ -564,12 +564,12 @@ class _VaultPayBottomSheetState extends State<VaultPayBottomSheet> {
                           color: const Color(0xFFD1FADF),
                           borderRadius: BorderRadius.circular(6),
                         ),
-                        child: const Text(
+                        child: Text(
                           'DEFAULT',
-                          style: TextStyle(
+                          style: AppTypography.labelCaps.copyWith(
                             fontSize: 9,
                             fontWeight: FontWeight.w800,
-                            color: Color(0xFF027A48),
+                            color: const Color(0xFF027A48),
                           ),
                         ),
                       ),
@@ -819,9 +819,11 @@ class _VaultPayBottomSheetState extends State<VaultPayBottomSheet> {
                   ),
                   elevation: 0,
                 ),
-                child: const Text(
+                child: Text(
                   'Save & Link Card',
-                  style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
+                  style: AppTypography.bodyMd.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ),
             ),

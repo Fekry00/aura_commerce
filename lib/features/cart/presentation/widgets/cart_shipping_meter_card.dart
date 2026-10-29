@@ -1,11 +1,11 @@
 import 'package:aura/core/theme/app_colors.dart';
 import 'package:aura/core/theme/app_typography.dart';
-import 'package:aura/features/cart/presentation/controllers/cart_controller.dart';
+import 'package:aura/features/cart/domain/entities/sub_entities/shipping_meter_entity.dart';
 import 'package:flutter/material.dart';
 
 /// Pure declarative UI widget for shipping progress meter and threshold indicator.
 class CartShippingMeterCard extends StatelessWidget {
-  final CartController? controller;
+  final ShippingMeterEntity? meter;
   final String? remainingAmount;
   final double? progress;
   final String? percentLabel;
@@ -13,7 +13,7 @@ class CartShippingMeterCard extends StatelessWidget {
 
   const CartShippingMeterCard({
     super.key,
-    this.controller,
+    this.meter,
     this.remainingAmount,
     this.progress,
     this.percentLabel,
@@ -23,13 +23,13 @@ class CartShippingMeterCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final remaining = remainingAmount ??
-        controller?.formattedShippingRemaining ??
-        '0 EGP';
-    final progressValue = progress ?? controller?.shippingProgressRatio ?? 1.0;
-    final percent = percentLabel ??
-        (controller != null ? '${controller!.shippingPercent}%' : '100%');
-    final effectiveIsUnlocked =
-        isUnlocked ?? controller?.isShippingUnlocked ?? true;
+        (meter != null
+            ? '${meter!.remainingAmount.toStringAsFixed(0)} EGP'
+            : '0 EGP');
+    final progressValue = progress ?? meter?.progressRatio ?? 1.0;
+    final percent =
+        percentLabel ?? (meter != null ? '${meter!.progressPercent}%' : '100%');
+    final effectiveIsUnlocked = isUnlocked ?? meter?.isComplimentary ?? true;
 
     return Container(
       padding: const EdgeInsets.all(AppSpacing.spaceMd),
@@ -56,18 +56,19 @@ class CartShippingMeterCard extends StatelessWidget {
                             color: AppColors.onSurface,
                             fontWeight: FontWeight.w500,
                           ),
-                          children: const [
+                          children: [
                             TextSpan(
                               text: 'Complimentary Express Courier ',
-                              style: TextStyle(
+                              style: AppTypography.bodySm.copyWith(
                                 fontWeight: FontWeight.w700,
                                 color: AppColors.secondary,
                               ),
                             ),
                             TextSpan(
                               text: 'Unlocked 🎉',
-                              style: TextStyle(
+                              style: AppTypography.bodySm.copyWith(
                                 fontWeight: FontWeight.w600,
+                                color: AppColors.onSurface,
                               ),
                             ),
                           ],
@@ -83,7 +84,7 @@ class CartShippingMeterCard extends StatelessWidget {
                             const TextSpan(text: 'Add '),
                             TextSpan(
                               text: remaining,
-                              style: const TextStyle(
+                              style: AppTypography.bodySm.copyWith(
                                 fontWeight: FontWeight.w700,
                                 color: AppColors.secondary,
                               ),

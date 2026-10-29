@@ -1,27 +1,26 @@
 import 'package:aura/core/theme/app_typography.dart';
 import 'package:aura/features/product/domain/entities/sub_entities/product_item_entity.dart';
 import 'package:aura/features/product/domain/entities/sub_entities/product_review_entity.dart';
-import 'package:aura/features/product/presentation/controllers/product_reviews_controller.dart';
+import 'package:aura/features/product/presentation/cubit/review_cubit.dart';
 import 'package:aura/features/product/presentation/widgets/reviews_consensus_summary.dart';
 import 'package:aura/features/product/presentation/widgets/reviews_list_section.dart';
 import 'package:aura/features/product/presentation/widgets/reviews_product_header_card.dart';
 import 'package:aura/features/product/presentation/widgets/reviews_shimmer_skeleton.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ProductReviewsBody extends StatelessWidget {
   final ProductItemEntity product;
   final List<ProductReviewEntity> reviews;
   final bool isLoading;
-  final ProductReviewsController controller;
-  final VoidCallback onStateUpdate;
+  final VoidCallback? onWriteReviewTap;
 
   const ProductReviewsBody({
     super.key,
     required this.product,
     required this.reviews,
     required this.isLoading,
-    required this.controller,
-    required this.onStateUpdate,
+    this.onWriteReviewTap,
   });
 
   @override
@@ -30,8 +29,10 @@ class ProductReviewsBody extends StatelessWidget {
       return const ReviewsShimmerSkeleton();
     }
 
-    final filteredReviews = controller.getFilteredReviews(reviews);
-    final filterLabels = controller.getFilterLabels(reviews);
+    final reviewCubit = context.watch<ReviewCubit>();
+    final filteredReviews = reviewCubit.filteredReviews;
+    final filterLabels = reviewCubit.filterLabels;
+    final selectedFilter = reviewCubit.selectedFilter;
 
     return SingleChildScrollView(
       physics: const BouncingScrollPhysics(),
@@ -40,10 +41,7 @@ class ProductReviewsBody extends StatelessWidget {
         children: [
           ReviewsProductHeaderCard(
             product: product,
-            onWriteReview: () => controller.showAddReviewModal(
-              context,
-              product.id.toString(),
-            ),
+            onWriteReview: onWriteReviewTap,
           ),
           const SizedBox(height: AppSpacing.spaceMd),
           ReviewsConsensusSummary.fromReviews(reviews: reviews),
@@ -51,13 +49,9 @@ class ProductReviewsBody extends StatelessWidget {
           ReviewsListSection(
             reviews: filteredReviews,
             filterLabels: filterLabels,
-            selectedFilter: controller.selectedFilter,
-            onFilterSelected: (index) =>
-                controller.onFilterSelected(index, onStateUpdate),
-            onWriteReview: () => controller.showAddReviewModal(
-              context,
-              product.id.toString(),
-            ),
+            selectedFilter: selectedFilter,
+            onFilterSelected: (index) => reviewCubit.setFilter(index),
+            onWriteReview: onWriteReviewTap,
           ),
           const SizedBox(height: AppSpacing.spaceXl),
         ],

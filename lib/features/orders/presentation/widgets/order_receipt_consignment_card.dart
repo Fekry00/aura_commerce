@@ -13,10 +13,10 @@ class OrderReceiptConsignmentCard extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AppSpacing.spaceMd),
         border: Border.all(color: const Color(0xFFE2E8F0)),
       ),
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(AppSpacing.spaceMd),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -27,37 +27,34 @@ class OrderReceiptConsignmentCard extends StatelessWidget {
                 size: 18,
                 color: Color(0xFF0B3B2C),
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: AppSpacing.spaceSm),
               Text(
                 'DELIVERY ADDRESS & CONTACT',
                 style: AppTypography.labelCaps.copyWith(
                   color: const Color(0xFF0B3B2C),
                   fontWeight: FontWeight.w800,
-                  fontSize: 10.5,
                   letterSpacing: 1.1,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.space12),
           Text(
             order.shippingAddress,
-            style: const TextStyle(
-              fontSize: 13.5,
+            style: AppTypography.bodyMd.copyWith(
               fontWeight: FontWeight.w600,
-              color: Color(0xFF1E293B),
+              color: const Color(0xFF1E293B),
             ),
           ),
           if (order.phone != null && order.phone!.isNotEmpty) ...[
-            const SizedBox(height: 4),
+            const SizedBox(height: AppSpacing.spaceXs),
             Row(
               children: [
                 const Icon(Icons.phone, size: 14, color: AppColors.slateBody),
-                const SizedBox(width: 6),
+                const SizedBox(width: AppSpacing.spaceSm),
                 Text(
                   order.phone!,
-                  style: const TextStyle(
-                    fontSize: 12,
+                  style: AppTypography.bodySm.copyWith(
                     color: AppColors.slateBody,
                   ),
                 ),
@@ -65,29 +62,30 @@ class OrderReceiptConsignmentCard extends StatelessWidget {
             ),
           ],
           if (order.notes != null && order.notes!.isNotEmpty) ...[
-            const SizedBox(height: 6),
+            const SizedBox(height: AppSpacing.spaceSm),
             Text(
               'Notes: ${order.notes}',
-              style: const TextStyle(
-                fontSize: 11.5,
+              style: AppTypography.labelCaps.copyWith(
                 fontStyle: FontStyle.italic,
                 color: AppColors.slateBody,
               ),
             ),
           ],
-          const SizedBox(height: 8),
+          const SizedBox(height: AppSpacing.spaceSm),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.spaceSm,
+              vertical: AppSpacing.spaceXs,
+            ),
             decoration: BoxDecoration(
               color: const Color(0xFFF1F5F9),
-              borderRadius: BorderRadius.circular(6),
+              borderRadius: BorderRadius.circular(AppSpacing.spaceXs),
             ),
             child: Text(
               'Payment: ${order.paymentMethod.toUpperCase()}',
-              style: const TextStyle(
-                fontSize: 10.5,
+              style: AppTypography.labelCaps.copyWith(
                 fontWeight: FontWeight.w700,
-                color: Color(0xFF475569),
+                color: const Color(0xFF475569),
               ),
             ),
           ),

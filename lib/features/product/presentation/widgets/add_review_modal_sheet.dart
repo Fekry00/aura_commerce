@@ -37,10 +37,10 @@ class _AddReviewModalSheetState extends State<AddReviewModalSheet> {
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.only(
-        left: 20,
-        right: 20,
-        top: 20,
-        bottom: MediaQuery.of(context).viewInsets.bottom + 20,
+        left: AppSpacing.margin,
+        right: AppSpacing.margin,
+        top: AppSpacing.margin,
+        bottom: MediaQuery.of(context).viewInsets.bottom + AppSpacing.margin,
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -52,7 +52,6 @@ class _AddReviewModalSheetState extends State<AddReviewModalSheet> {
               Text(
                 'Write a Review',
                 style: AppTypography.headlineSm.copyWith(
-                  fontSize: 18,
                   fontWeight: FontWeight.w800,
                   color: const Color(0xFF002419),
                 ),
@@ -63,7 +62,7 @@ class _AddReviewModalSheetState extends State<AddReviewModalSheet> {
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.space12),
           Text(
             'Rate your experience',
             style: AppTypography.bodySm.copyWith(
@@ -71,7 +70,7 @@ class _AddReviewModalSheetState extends State<AddReviewModalSheet> {
               fontWeight: FontWeight.w600,
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppSpacing.spaceSm),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: List.generate(5, (index) {
@@ -92,42 +91,43 @@ class _AddReviewModalSheetState extends State<AddReviewModalSheet> {
               );
             }),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.gutter),
           TextField(
             controller: _commentController,
             maxLines: 4,
             decoration: InputDecoration(
               hintText:
                   'Share your authentic thoughts on quality, craftsmanship, and performance...',
-              hintStyle:
-                  const TextStyle(fontSize: 13, color: AppColors.slateBody),
+              hintStyle: AppTypography.bodySm.copyWith(
+                color: AppColors.slateBody,
+              ),
               filled: true,
               fillColor: const Color(0xFFF8FAFC),
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(AppSpacing.spaceMd),
                 borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
               ),
               enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(AppSpacing.spaceMd),
                 borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
               ),
               focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(AppSpacing.spaceMd),
                 borderSide:
                     const BorderSide(color: Color(0xFF0B3B2C), width: 1.5),
               ),
             ),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: AppSpacing.margin),
           SizedBox(
             width: double.infinity,
-            height: 48,
+            height: AppSpacing.space2Xl,
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF0B3B2C),
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(AppSpacing.spaceMd),
                 ),
               ),
               onPressed: () {
@@ -143,11 +143,11 @@ class _AddReviewModalSheetState extends State<AddReviewModalSheet> {
                 Navigator.pop(context);
                 widget.onSubmitReview(_selectedRating, text);
               },
-              child: const Text(
+              child: Text(
                 'Submit Review',
-                style: TextStyle(
-                  fontSize: 15,
+                style: AppTypography.bodyLg.copyWith(
                   fontWeight: FontWeight.w700,
+                  color: Colors.white,
                 ),
               ),
             ),

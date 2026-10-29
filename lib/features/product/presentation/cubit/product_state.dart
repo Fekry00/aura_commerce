@@ -31,10 +31,62 @@ class ProductListEmptyState extends ProductState {
 }
 
 class ProductSuccessState extends ProductState {
-  const ProductSuccessState({required this.productDetails});
+  const ProductSuccessState({
+    required this.productDetails,
+    this.quantity = 1,
+    this.selectedColorIndex = 0,
+    this.selectedSizeIndex = 0,
+    this.activeImageIndex = 0,
+    this.isAddingToCart = false,
+  });
 
   final ProductDetailsEntity productDetails;
+  final int quantity;
+  final int selectedColorIndex;
+  final int selectedSizeIndex;
+  final int activeImageIndex;
+  final bool isAddingToCart;
+
+  ProductSuccessState copyWith({
+    ProductDetailsEntity? productDetails,
+    int? quantity,
+    int? selectedColorIndex,
+    int? selectedSizeIndex,
+    int? activeImageIndex,
+    bool? isAddingToCart,
+  }) {
+    return ProductSuccessState(
+      productDetails: productDetails ?? this.productDetails,
+      quantity: quantity ?? this.quantity,
+      selectedColorIndex: selectedColorIndex ?? this.selectedColorIndex,
+      selectedSizeIndex: selectedSizeIndex ?? this.selectedSizeIndex,
+      activeImageIndex: activeImageIndex ?? this.activeImageIndex,
+      isAddingToCart: isAddingToCart ?? this.isAddingToCart,
+    );
+  }
 }
+
+class AddToCartLoadingState extends ProductState {
+  const AddToCartLoadingState();
+}
+
+class AddToCartSuccessState extends ProductState {
+  const AddToCartSuccessState({
+    required this.message,
+    this.quantity = 1,
+  });
+
+  final String message;
+  final int quantity;
+}
+typedef AddToCartSuccess = AddToCartSuccessState;
+
+class AddToCartErrorState extends ProductState {
+  const AddToCartErrorState({required this.message});
+
+  final String message;
+}
+typedef AddToCartError = AddToCartErrorState;
 
 class ProductErrorState extends ProductState {
   const ProductErrorState({required this.message});

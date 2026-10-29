@@ -13,9 +13,17 @@ class GetCategoriesLoadingState extends CategoryState {
 }
 
 class GetCategoriesSuccessState extends CategoryState {
-  const GetCategoriesSuccessState({required this.categories});
+  const GetCategoriesSuccessState({
+    required this.categories,
+    this.selectedCategory,
+    this.selectedPillIndex = 0,
+    this.deliverTo = 'New York, 10001',
+  });
 
   final List<CategoryEntity> categories;
+  final CategoryEntity? selectedCategory;
+  final int selectedPillIndex;
+  final String deliverTo;
 }
 
 class GetCategoriesEmptyState extends CategoryState {
@@ -35,13 +43,27 @@ class GetCategoryDetailsLoadingState extends CategoryState {
 }
 
 class GetCategoryDetailsSuccessState extends CategoryState {
-  const GetCategoryDetailsSuccessState({required this.category});
+  const GetCategoryDetailsSuccessState({
+    required this.category,
+    this.selectedSubDepartmentIndex = 0,
+  });
 
   final CategoryEntity category;
+  final int selectedSubDepartmentIndex;
 }
 
 class GetCategoryDetailsErrorState extends CategoryState {
   const GetCategoryDetailsErrorState({required this.errMessage});
 
   final String errMessage;
+}
+
+class CategoryActionMessageState extends CategoryState {
+  const CategoryActionMessageState({
+    required this.message,
+    this.isSuccess = false,
+  });
+
+  final String message;
+  final bool isSuccess;
 }

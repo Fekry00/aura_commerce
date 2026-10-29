@@ -1,6 +1,5 @@
 import 'package:aura/core/theme/app_colors.dart';
 import 'package:aura/core/theme/app_typography.dart';
-import 'package:aura/features/profile/presentation/controllers/edit_profile_controller.dart';
 import 'package:aura/features/profile/presentation/cubit/profile_cubit.dart';
 import 'package:aura/features/profile/presentation/cubit/profile_state.dart';
 import 'package:aura/features/profile/presentation/utils/edit_profile_listener_handler.dart';
@@ -8,26 +7,8 @@ import 'package:aura/features/profile/presentation/widgets/edit_profile_view_bod
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class EditProfileView extends StatefulWidget {
-  final EditProfileController? controller;
-
-  const EditProfileView({
-    super.key,
-    this.controller,
-  });
-
-  @override
-  State<EditProfileView> createState() => _EditProfileViewState();
-}
-
-class _EditProfileViewState extends State<EditProfileView> {
-  late final EditProfileController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = widget.controller ?? const EditProfileController();
-  }
+class EditProfileView extends StatelessWidget {
+  const EditProfileView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -58,10 +39,7 @@ class _EditProfileViewState extends State<EditProfileView> {
               ),
             ),
           ),
-          body: EditProfileViewBody(
-            state: state,
-            controller: _controller,
-          ),
+          body: EditProfileViewBody(state: state),
         );
       },
     );

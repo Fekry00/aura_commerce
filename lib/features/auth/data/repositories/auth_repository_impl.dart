@@ -96,9 +96,15 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<Either<Failure, bool>> verifyResetOtp({required String otp}) async {
+  Future<Either<Failure, bool>> verifyResetOtp({
+    required String otp,
+    String? email,
+  }) async {
     try {
-      final isValid = await remoteDataSource.verifyResetOtp(otp: otp);
+      final isValid = await remoteDataSource.verifyResetOtp(
+        otp: otp,
+        email: email,
+      );
       return Right(isValid);
     } on ServerException catch (e) {
       return Left(ServerFailure(errMessage: e.errorModel.errorMessage));
@@ -111,11 +117,13 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<Either<Failure, bool>> resetPassword({
     required String otp,
     required String newPassword,
+    String? email,
   }) async {
     try {
       final isSuccess = await remoteDataSource.resetPassword(
         otp: otp,
         newPassword: newPassword,
+        email: email,
       );
       return Right(isSuccess);
     } on ServerException catch (e) {

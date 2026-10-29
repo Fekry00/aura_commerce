@@ -21,7 +21,12 @@ class ProductStickyBottomBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.spaceMd,
+        AppSpacing.space12,
+        AppSpacing.spaceMd,
+        AppSpacing.spaceMd,
+      ),
       decoration: BoxDecoration(
         color: Colors.white,
         boxShadow: [
@@ -53,40 +58,39 @@ class ProductStickyBottomBar extends StatelessWidget {
                             'TOTAL PAYABLE',
                             style: AppTypography.labelCaps.copyWith(
                               color: AppColors.slateBody,
-                              fontSize: 9.5,
                               fontWeight: FontWeight.w700,
                             ),
                           ),
-                          const SizedBox(width: 6),
+                          const SizedBox(width: AppSpacing.spaceSm),
                           Container(
                             padding: const EdgeInsets.symmetric(
-                              horizontal: 6,
-                              vertical: 1.5,
+                              horizontal: AppSpacing.spaceXs,
+                              vertical: AppSpacing.space2Xs,
                             ),
                             decoration: BoxDecoration(
                               color: const Color(0xFFE8F5E9),
-                              borderRadius: BorderRadius.circular(4),
+                              borderRadius:
+                                  BorderRadius.circular(AppSpacing.spaceXs),
                             ),
-                            child: const Text(
+                            child: Text(
                               'FREE SHIPPING',
-                              style: TextStyle(
-                                fontSize: 8.5,
+                              style: AppTypography.labelCaps.copyWith(
+                                fontSize: 9,
                                 fontWeight: FontWeight.w800,
-                                color: Color(0xFF2E7D32),
+                                color: const Color(0xFF2E7D32),
                               ),
                             ),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 2),
+                      const SizedBox(height: AppSpacing.space2Xs),
                       FittedBox(
                         alignment: Alignment.centerLeft,
                         fit: BoxFit.scaleDown,
                         child: Text(
                           '$formattedTotalPrice EGP',
-                          style: AppTypography.headlineSm.copyWith(
+                          style: AppTypography.headlineMd.copyWith(
                             fontWeight: FontWeight.w900,
-                            fontSize: 20,
                             color: const Color(0xFF0B3B2C),
                           ),
                         ),
@@ -94,13 +98,13 @@ class ProductStickyBottomBar extends StatelessWidget {
                     ],
                   ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: AppSpacing.space12),
                 // Stepper Container
                 Container(
                   height: 38,
                   decoration: BoxDecoration(
                     color: const Color(0xFFF8FAFC),
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(AppSpacing.margin),
                     border: Border.all(color: const Color(0xFFE2E8F0)),
                   ),
                   child: Row(
@@ -110,13 +114,13 @@ class ProductStickyBottomBar extends StatelessWidget {
                         color: Colors.transparent,
                         child: InkWell(
                           borderRadius: const BorderRadius.horizontal(
-                            left: Radius.circular(20),
+                            left: Radius.circular(AppSpacing.margin),
                           ),
                           onTap: onDecrement,
                           child: const Padding(
                             padding: EdgeInsets.symmetric(
-                              horizontal: 10,
-                              vertical: 8,
+                              horizontal: AppSpacing.spaceSm,
+                              vertical: AppSpacing.spaceSm,
                             ),
                             child: Icon(
                               Icons.remove,
@@ -127,12 +131,13 @@ class ProductStickyBottomBar extends StatelessWidget {
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AppSpacing.spaceSm,
+                        ),
                         child: Text(
                           '$quantity',
-                          style: AppTypography.bodySm.copyWith(
+                          style: AppTypography.bodyMd.copyWith(
                             fontWeight: FontWeight.w800,
-                            fontSize: 14,
                             color: const Color(0xFF0F172A),
                           ),
                         ),
@@ -141,13 +146,13 @@ class ProductStickyBottomBar extends StatelessWidget {
                         color: Colors.transparent,
                         child: InkWell(
                           borderRadius: const BorderRadius.horizontal(
-                            right: Radius.circular(20),
+                            right: Radius.circular(AppSpacing.margin),
                           ),
                           onTap: onIncrement,
                           child: const Padding(
                             padding: EdgeInsets.symmetric(
-                              horizontal: 10,
-                              vertical: 8,
+                              horizontal: AppSpacing.spaceSm,
+                              vertical: AppSpacing.spaceSm,
                             ),
                             child: Icon(
                               Icons.add,
@@ -162,17 +167,17 @@ class ProductStickyBottomBar extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: AppSpacing.spaceSm),
             // Row 2: Full Width Add to Bag Button
             SizedBox(
               width: double.infinity,
-              height: 48,
+              height: AppSpacing.space2Xl,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF0B3B2C),
                   foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(AppSpacing.spaceMd),
                   ),
                   elevation: 2,
                 ),
@@ -183,23 +188,21 @@ class ProductStickyBottomBar extends StatelessWidget {
                     const Icon(
                       Icons.shopping_bag_outlined,
                       color: Colors.white,
-                      size: 20,
+                      size: AppSpacing.margin,
                     ),
-                    const SizedBox(width: 8),
+                    const SizedBox(width: AppSpacing.spaceSm),
                     Text(
                       'Add to Bag',
-                      style: AppTypography.headlineSm.copyWith(
+                      style: AppTypography.bodyLg.copyWith(
                         color: Colors.white,
-                        fontSize: 15,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
-                    const SizedBox(width: 8),
+                    const SizedBox(width: AppSpacing.spaceSm),
                     Text(
                       '•  $formattedTotalPrice EGP',
-                      style: const TextStyle(
-                        color: Color(0xFF86EFAC),
-                        fontSize: 13,
+                      style: AppTypography.bodySm.copyWith(
+                        color: const Color(0xFF86EFAC),
                         fontWeight: FontWeight.w700,
                       ),
                     ),

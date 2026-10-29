@@ -3,14 +3,15 @@ class EndPoint {
   // Connected via adb reverse tcp:8000 tcp:8000 or Desktop/Web
   static const String serverUrl = "http://127.0.0.1:8000";
   static const String baseUrl = "$serverUrl/api/v1/";
-  static const String fallbackLanBaseUrl = "http://192.168.100.120:8000/api/v1/";
+  static const String fallbackLanBaseUrl = "http://10.187.214.235:8000/api/v1/";
 
   static String fixImageUrl(String? url) {
     if (url == null || url.trim().isEmpty) return '';
     String result = url.trim();
-    result = result
-        .replaceAll('http://192.168.100.120:8000', serverUrl)
-        .replaceAll('http://localhost:8000', serverUrl);
+    result = result.replaceAll(
+      RegExp(r'http://(127\.0\.0\.1|localhost|192\.168\.[0-9\.]+|10\.[0-9\.]+):8000'),
+      serverUrl,
+    );
     if (!result.startsWith('http://') && !result.startsWith('https://')) {
       final cleanPath = result.startsWith('/') ? result.substring(1) : result;
       result = '$serverUrl/$cleanPath';
@@ -45,6 +46,8 @@ class EndPoint {
   static const String deleteAccount = "profile";
   static const String orders = "orders";
   static const String checkout = "checkout";
+  static const String coupons = "coupons";
+  static const String validateCoupon = "coupons/validate";
   static String categoryDetails(dynamic id) => "categories/$id";
 }
 

@@ -171,6 +171,7 @@ Future<void> initDependencies() async {
       addToWishlistUseCase: sl(),
       removeFromWishlistUseCase: sl(),
       moveAllToBagUseCase: sl(),
+      addToCartUseCase: sl(),
     ),
   );
   sl.registerLazySingleton(() => GetWishlistUseCase(sl()));
@@ -234,6 +235,7 @@ Future<void> initDependencies() async {
       getProductDetailsUseCase: sl(),
       toggleProductFavoriteUseCase: sl(),
       getProductsUseCase: sl(),
+      addToCartUseCase: sl(),
     ),
   );
   sl.registerFactory(
@@ -285,10 +287,11 @@ Future<void> initDependencies() async {
   );
 
   // Orders
-  sl.registerFactory(
+  sl.registerLazySingleton(
     () => OrdersCubit(
       getMyOrdersUseCase: sl(),
       getOrderDetailsUseCase: sl(),
+      getOrderTrackingUseCase: sl(),
       cancelOrderUseCase: sl(),
       downloadOrderInvoiceUseCase: sl(),
     ),

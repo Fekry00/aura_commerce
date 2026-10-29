@@ -1,6 +1,6 @@
 import 'package:aura/core/theme/app_colors.dart';
 import 'package:aura/core/theme/app_typography.dart';
-import 'package:aura/features/auth/presentation/controllers/verify_new_password_section_controller.dart';
+import 'package:aura/features/auth/presentation/utils/auth_validation_helper.dart';
 import 'package:aura/features/auth/presentation/widgets/verify_password_strength_meter.dart';
 import 'package:aura/features/auth/presentation/widgets/verify_password_text_field.dart';
 import 'package:flutter/material.dart';
@@ -9,13 +9,11 @@ import 'package:flutter/material.dart';
 class VerifyNewPasswordSection extends StatefulWidget {
   final TextEditingController passwordController;
   final TextEditingController confirmPasswordController;
-  final VerifyNewPasswordSectionController? controller;
 
   const VerifyNewPasswordSection({
     super.key,
     required this.passwordController,
     required this.confirmPasswordController,
-    this.controller,
   });
 
   @override
@@ -24,17 +22,19 @@ class VerifyNewPasswordSection extends StatefulWidget {
 }
 
 class _VerifyNewPasswordSectionState extends State<VerifyNewPasswordSection> {
-  late final VerifyNewPasswordSectionController _controller;
+  bool _obscurePassword = true;
+  bool _obscureConfirm = true;
 
   @override
   void initState() {
     super.initState();
-    _controller = widget.controller ?? VerifyNewPasswordSectionController();
     widget.passwordController.addListener(_onChanged);
     widget.confirmPasswordController.addListener(_onChanged);
   }
 
-  void _onChanged() => setState(() {});
+  void _onChanged() {
+    if (mounted) setState(() {});
+  }
 
   @override
   void dispose() {
@@ -48,9 +48,10 @@ class _VerifyNewPasswordSectionState extends State<VerifyNewPasswordSection> {
     final passwordText = widget.passwordController.text;
     final confirmText = widget.confirmPasswordController.text;
 
-    final score = _controller.getStrengthScore(passwordText);
-    final label = _controller.getStrengthLabel(score);
-    final isMatching = _controller.isMatching(passwordText, confirmText);
+    final score = AuthValidationHelper.calculateSecurityScore(passwordText);
+    final label = AuthValidationHelper.getSecurityScoreLabel(score);
+    final isMatching =
+        AuthValidationHelper.isMatching(passwordText, confirmText);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -83,17 +84,17 @@ class _VerifyNewPasswordSectionState extends State<VerifyNewPasswordSection> {
         VerifyPasswordTextField(
           controller: widget.passwordController,
           hint: 'Min. 8 characters',
-          obscure: _controller.obscurePassword,
+          obscure: _obscurePassword,
           suffix: IconButton(
             icon: Icon(
-              _controller.obscurePassword
+              _obscurePassword
                   ? Icons.visibility_outlined
                   : Icons.visibility_off_outlined,
               size: 20,
               color: AppColors.onSurfaceVariant,
             ),
             onPressed: () =>
-                setState(() => _controller.toggleObscurePassword()),
+                setState(() => _obscurePassword = !_obscurePassword),
           ),
         ),
         const SizedBox(height: AppSpacing.spaceSm),
@@ -109,7 +110,7 @@ class _VerifyNewPasswordSectionState extends State<VerifyNewPasswordSection> {
         VerifyPasswordTextField(
           controller: widget.confirmPasswordController,
           hint: 'Re-enter password',
-          obscure: _controller.obscureConfirm,
+          obscure: _obscureConfirm,
           suffix: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -124,14 +125,14 @@ class _VerifyNewPasswordSectionState extends State<VerifyNewPasswordSection> {
                 ),
               IconButton(
                 icon: Icon(
-                  _controller.obscureConfirm
+                  _obscureConfirm
                       ? Icons.visibility_outlined
                       : Icons.visibility_off_outlined,
                   size: 20,
                   color: AppColors.onSurfaceVariant,
                 ),
                 onPressed: () =>
-                    setState(() => _controller.toggleObscureConfirm()),
+                    setState(() => _obscureConfirm = !_obscureConfirm),
               ),
             ],
           ),

@@ -1,5 +1,8 @@
 import 'package:aura/core/theme/app_colors.dart';
 import 'package:aura/core/theme/app_typography.dart';
+import 'package:aura/core/widgets/shimmer/app_shimmer.dart';
+import 'package:aura/features/cart/domain/entities/sub_entities/cart_item_entity.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class CartItemUiModel {
@@ -20,6 +23,18 @@ class CartItemUiModel {
     required this.quantity,
     required this.imageUrl,
   });
+
+  factory CartItemUiModel.fromEntity(CartItemEntity entity) {
+    return CartItemUiModel(
+      id: entity.id,
+      category: entity.category.isNotEmpty ? entity.category : 'General',
+      title: entity.title,
+      subtitle: entity.subtitle,
+      unitPrice: entity.price,
+      quantity: entity.quantity,
+      imageUrl: entity.imageUrl,
+    );
+  }
 
   CartItemUiModel copyWith({int? quantity}) {
     return CartItemUiModel(
@@ -81,129 +96,136 @@ class CartItemCard extends StatelessWidget {
               width: 80,
               height: 96,
               color: AppColors.surfaceContainer,
-              child: Image.network(
-                item.imageUrl,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) => Container(
-                  color: AppColors.surfaceContainerHigh,
-                  child: const Icon(
-                    Icons.inventory_2_outlined,
-                    color: AppColors.slateBody,
-                    size: AppSpacing.spaceLg,
-                  ),
-                ),
-              ),
+              child: item.imageUrl.isNotEmpty
+                  ? CachedNetworkImage(
+                      imageUrl: item.imageUrl,
+                      fit: BoxFit.cover,
+                      placeholder: (context, url) => const ShimmerImageLoading(),
+                      errorWidget: (context, url, error) => Container(
+                        color: AppColors.surfaceContainerHigh,
+                        child: const Icon(
+                          Icons.inventory_2_outlined,
+                          color: AppColors.slateBody,
+                          size: AppSpacing.spaceLg,
+                        ),
+                      ),
+                    )
+                  : Container(
+                      color: AppColors.surfaceContainerHigh,
+                      child: const Icon(
+                        Icons.inventory_2_outlined,
+                        color: AppColors.slateBody,
+                        size: AppSpacing.spaceLg,
+                      ),
+                    ),
             ),
           ),
           const SizedBox(width: AppSpacing.spaceMd - 2),
           Expanded(
-            child: SizedBox(
-              height: 96,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  // Top info with delete button
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              item.category,
-                              style: AppTypography.labelCaps.copyWith(
-                                color: AppColors.onSurfaceVariant,
-                              ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Top info with delete button
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            item.category,
+                            style: AppTypography.labelCaps.copyWith(
+                              color: AppColors.onSurfaceVariant,
                             ),
-                            const SizedBox(height: AppSpacing.spaceXs / 2),
-                            Text(
-                              item.title,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: AppTypography.headlineSm.copyWith(
-                                fontSize: 15,
+                          ),
+                          const SizedBox(height: AppSpacing.spaceXs / 2),
+                          Text(
+                            item.title,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: AppTypography.headlineSm.copyWith(
+                              fontSize: 15,
+                              color: AppColors.onSurface,
+                            ),
+                          ),
+                          const SizedBox(height: AppSpacing.spaceXs / 2),
+                          Text(
+                            item.subtitle,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: AppTypography.bodySm.copyWith(
+                              color: AppColors.onSurfaceVariant,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    InkWell(
+                      onTap: onRemove,
+                      borderRadius: BorderRadius.circular(AppSpacing.margin),
+                      child: const Padding(
+                        padding: EdgeInsets.all(AppSpacing.spaceXs),
+                        child: Icon(
+                          Icons.close_rounded,
+                          size: AppSpacing.spaceMd + 2,
+                          color: AppColors.outline,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: AppSpacing.spaceSm),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      item.formattedPrice,
+                      style: AppTypography.priceCatalog.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.spaceXs,
+                        vertical: AppSpacing.spaceXs / 2,
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppColors.surfaceContainerHigh,
+                        borderRadius: BorderRadius.circular(
+                          AppSpacing.margin,
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          _buildStepperButton(
+                            icon: Icons.remove,
+                            onTap: onDecrement,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: AppSpacing.spaceSm,
+                            ),
+                            child: Text(
+                              '${item.quantity}',
+                              style: AppTypography.bodySm.copyWith(
+                                fontWeight: FontWeight.w700,
                                 color: AppColors.onSurface,
                               ),
                             ),
-                            const SizedBox(height: AppSpacing.spaceXs / 2),
-                            Text(
-                              item.subtitle,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: AppTypography.bodySm.copyWith(
-                                color: AppColors.onSurfaceVariant,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      InkWell(
-                        onTap: onRemove,
-                        borderRadius: BorderRadius.circular(AppSpacing.margin),
-                        child: const Padding(
-                          padding: EdgeInsets.all(AppSpacing.spaceXs),
-                          child: Icon(
-                            Icons.close_rounded,
-                            size: AppSpacing.spaceMd + 2,
-                            color: AppColors.outline,
                           ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Text(
-                        item.formattedPrice,
-                        style: AppTypography.priceCatalog.copyWith(
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: AppSpacing.spaceXs,
-                          vertical: AppSpacing.spaceXs / 2,
-                        ),
-                        decoration: BoxDecoration(
-                          color: AppColors.surfaceContainerHigh,
-                          borderRadius: BorderRadius.circular(
-                            AppSpacing.margin,
+                          _buildStepperButton(
+                            icon: Icons.add,
+                            onTap: onIncrement,
                           ),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            _buildStepperButton(
-                              icon: Icons.remove,
-                              onTap: onDecrement,
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: AppSpacing.spaceSm,
-                              ),
-                              child: Text(
-                                '${item.quantity}',
-                                style: AppTypography.bodySm.copyWith(
-                                  fontWeight: FontWeight.w700,
-                                  color: AppColors.onSurface,
-                                ),
-                              ),
-                            ),
-                            _buildStepperButton(
-                              icon: Icons.add,
-                              onTap: onIncrement,
-                            ),
-                          ],
-                        ),
+                        ],
                       ),
-                    ],
-                  ),
-                ],
-              ),
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
         ],

@@ -1,11 +1,11 @@
 import 'package:aura/core/theme/app_colors.dart';
 import 'package:aura/core/theme/app_typography.dart';
-import 'package:aura/features/cart/presentation/controllers/cart_controller.dart';
+import 'package:aura/features/cart/domain/entities/cart_entity.dart';
 import 'package:flutter/material.dart';
 
 /// Pure declarative UI widget presenting order subtotal, discount, shipping, tax, and total.
 class CartOrderSummaryCard extends StatelessWidget {
-  final CartController? controller;
+  final CartEntity? cart;
   final String? subtotal;
   final String? discount;
   final String? discountPercentage;
@@ -17,7 +17,7 @@ class CartOrderSummaryCard extends StatelessWidget {
 
   const CartOrderSummaryCard({
     super.key,
-    this.controller,
+    this.cart,
     this.subtotal,
     this.discount,
     this.discountPercentage,
@@ -30,17 +30,14 @@ class CartOrderSummaryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final effectiveCount = itemCount ?? controller?.totalItemCount ?? 0;
-    final effectiveSubtotal =
-        subtotal ?? controller?.formattedSubtotal ?? '0 EGP';
-    final effectiveDiscount =
-        discount ?? controller?.formattedOrderDiscount ?? '-0 EGP';
+    final effectiveCount = itemCount ?? cart?.items.length ?? 0;
+    final effectiveSubtotal = subtotal ?? cart?.formattedSubtotal ?? '0 EGP';
+    final effectiveDiscount = discount ?? cart?.formattedOrderDiscount ?? '-0 EGP';
     final effectiveDiscountPct =
-        discountPercentage ?? controller?.formattedDiscountPercentage ?? '0%';
-    final effectiveHasDiscount =
-        hasDiscount ?? controller?.hasDiscount ?? false;
-    final effectiveTax = tax ?? controller?.formattedTax ?? '0 EGP';
-    final effectiveTotal = total ?? controller?.formattedTotal ?? '0 EGP';
+        discountPercentage ?? cart?.formattedDiscountPercentage ?? '0%';
+    final effectiveHasDiscount = hasDiscount ?? cart?.hasDiscount ?? false;
+    final effectiveTax = tax ?? cart?.formattedTax ?? '0 EGP';
+    final effectiveTotal = total ?? cart?.formattedTotal ?? '0 EGP';
 
     return Container(
       padding: const EdgeInsets.all(AppSpacing.margin),
@@ -141,10 +138,15 @@ class CartOrderSummaryCard extends StatelessWidget {
           const SizedBox(height: AppSpacing.spaceSm + AppSpacing.spaceXs / 2),
 
           // Tax
-          _buildSummaryRow(
-            label: 'Estimated Sales Tax • NY',
-            value: effectiveTax,
-          ),
+          if ((cart?.orderSummary.tax ?? 0) > 0 || (tax != null && tax != '0 EGP')) ...[
+            _buildSummaryRow(
+              label: (cart?.orderSummary.taxLocation.isNotEmpty ?? false)
+                  ? 'Estimated Sales Tax • ${cart!.orderSummary.taxLocation}'
+                  : 'Estimated Sales Tax',
+              value: effectiveTax,
+            ),
+            const SizedBox(height: AppSpacing.spaceSm + AppSpacing.spaceXs / 2),
+          ],
           const SizedBox(height: AppSpacing.spaceMd),
 
           // Divider

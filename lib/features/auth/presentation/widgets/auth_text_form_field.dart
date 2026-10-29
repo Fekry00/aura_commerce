@@ -50,37 +50,36 @@ class AuthTextFormField extends StatelessWidget {
             : null,
         suffixIcon: suffixWidget != null
             ? Padding(
-                padding: const EdgeInsets.only(right: 8),
+                padding: const EdgeInsets.only(right: AppSpacing.spaceSm),
                 child: suffixWidget,
               )
             : null,
         contentPadding: const EdgeInsets.symmetric(
-          horizontal: 14,
-          vertical: 12,
+          horizontal: AppSpacing.space12 + AppSpacing.space2Xs,
+          vertical: AppSpacing.space12,
         ),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(AppSpacing.spaceSm),
           borderSide: BorderSide.none,
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(AppSpacing.spaceSm),
           borderSide: BorderSide.none,
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(AppSpacing.spaceSm),
           borderSide: const BorderSide(color: Color(0xFF0B3B2C), width: 1.2),
         ),
         errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(AppSpacing.spaceSm),
           borderSide: const BorderSide(color: AppColors.error, width: 1.0),
         ),
         focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(AppSpacing.spaceSm),
           borderSide: const BorderSide(color: AppColors.error, width: 1.2),
         ),
-        errorStyle: const TextStyle(
+        errorStyle: AppTypography.labelCaps.copyWith(
           color: AppColors.error,
-          fontSize: 11,
           fontWeight: FontWeight.w500,
         ),
       ),

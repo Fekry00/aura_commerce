@@ -3,11 +3,10 @@ import 'package:aura/core/theme/app_typography.dart';
 import 'package:aura/features/auth/presentation/widgets/auth_text_form_field.dart';
 import 'package:flutter/material.dart';
 
-import 'package:aura/features/profile/presentation/controllers/edit_profile_controller.dart';
+import 'package:aura/features/profile/presentation/utils/profile_validators.dart';
 
 class EditProfilePasswordSection extends StatefulWidget {
   final bool isLoading;
-  final EditProfileController? controller;
   final void Function({
     required String currentPassword,
     required String newPassword,
@@ -17,7 +16,6 @@ class EditProfilePasswordSection extends StatefulWidget {
   const EditProfilePasswordSection({
     super.key,
     this.isLoading = false,
-    this.controller,
     required this.onUpdatePassword,
   });
 
@@ -167,9 +165,7 @@ class _EditProfilePasswordSectionState
                       onPressed: () =>
                           setState(() => _obscureCurrent = !_obscureCurrent),
                     ),
-                    validator:
-                        (widget.controller ?? const EditProfileController())
-                            .validateCurrentPassword,
+                    validator: ProfileValidators.validateCurrentPassword,
                   ),
                   const SizedBox(height: AppSpacing.spaceMd),
 
@@ -198,9 +194,7 @@ class _EditProfilePasswordSectionState
                       onPressed: () =>
                           setState(() => _obscureNew = !_obscureNew),
                     ),
-                    validator:
-                        (widget.controller ?? const EditProfileController())
-                            .validateNewPassword,
+                    validator: ProfileValidators.validateNewPassword,
                   ),
                   const SizedBox(height: AppSpacing.spaceMd),
 
@@ -230,8 +224,7 @@ class _EditProfilePasswordSectionState
                           setState(() => _obscureConfirm = !_obscureConfirm),
                     ),
                     validator: (val) =>
-                        (widget.controller ?? const EditProfileController())
-                            .validateConfirmPassword(
+                        ProfileValidators.validateConfirmPassword(
                       val,
                       _newPasswordController.text,
                     ),

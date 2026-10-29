@@ -1,3 +1,4 @@
+import 'package:aura/core/errors/exceptions.dart';
 import 'package:aura/core/errors/failure.dart';
 import 'package:aura/core/network/connection/network_info.dart';
 import 'package:aura/features/wishlist/data/datasources/wishlist_local_data_source.dart';
@@ -24,22 +25,27 @@ class WishlistRepositoryImpl implements WishlistRepository {
         final remoteWishlist = await remoteDataSource.getWishlist();
         await localDataSource.cacheWishlist(remoteWishlist);
         return Right(remoteWishlist);
-      } catch (e) {
+      } on ServerException catch (e) {
         try {
           final localWishlist = await localDataSource.getLastWishlist();
           return Right(localWishlist);
         } catch (_) {
-          return Left(ServerFailure(errMessage: e.toString()));
+          return Left(ServerFailure(errMessage: e.errorModel.errorMessage));
+        }
+      } catch (_) {
+        try {
+          final localWishlist = await localDataSource.getLastWishlist();
+          return Right(localWishlist);
+        } catch (_) {
+          return const Left(ServerFailure(errMessage: 'An unexpected error occurred while fetching wishlist'));
         }
       }
     } else {
       try {
         final localWishlist = await localDataSource.getLastWishlist();
         return Right(localWishlist);
-      } catch (e) {
-        return Left(
-          CacheFailure(errMessage: 'No internet connection: ${e.toString()}'),
-        );
+      } catch (_) {
+        return const Left(NetworkFailure(errMessage: 'No internet connection'));
       }
     }
   }
@@ -54,8 +60,10 @@ class WishlistRepositoryImpl implements WishlistRepository {
         await remoteDataSource.addToWishlist(productId: productId);
       }
       return Right(isAdded);
-    } catch (e) {
-      return Left(ServerFailure(errMessage: e.toString()));
+    } on ServerException catch (e) {
+      return Left(ServerFailure(errMessage: e.errorModel.errorMessage));
+    } catch (_) {
+      return const Left(ServerFailure(errMessage: 'Failed to add item to wishlist'));
     }
   }
 
@@ -70,8 +78,10 @@ class WishlistRepositoryImpl implements WishlistRepository {
         await remoteDataSource.removeFromWishlist(productId: productId);
       }
       return Right(isRemoved);
-    } catch (e) {
-      return Left(CacheFailure(errMessage: e.toString()));
+    } on ServerException catch (e) {
+      return Left(ServerFailure(errMessage: e.errorModel.errorMessage));
+    } catch (_) {
+      return const Left(ServerFailure(errMessage: 'Failed to remove item from wishlist'));
     }
   }
 
@@ -83,8 +93,10 @@ class WishlistRepositoryImpl implements WishlistRepository {
         await remoteDataSource.moveAllToBag();
       }
       return Right(isMoved);
-    } catch (e) {
-      return Left(CacheFailure(errMessage: e.toString()));
+    } on ServerException catch (e) {
+      return Left(ServerFailure(errMessage: e.errorModel.errorMessage));
+    } catch (_) {
+      return const Left(ServerFailure(errMessage: 'Failed to move items to bag'));
     }
   }
 }

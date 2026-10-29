@@ -90,14 +90,32 @@ class AppTypography {
     letterSpacing: 0,
     color: AppColors.slateBody,
   );
+
+  static TextStyle get brandSplashTitle => GoogleFonts.cormorantGaramond(
+    fontSize: 30,
+    fontWeight: FontWeight.w600,
+    letterSpacing: 10,
+    color: const Color(0xFF9E834B),
+  );
+
+  static TextStyle get brandSplashSubtitle => GoogleFonts.cormorantGaramond(
+    fontSize: 11.5,
+    fontWeight: FontWeight.w500,
+    letterSpacing: 4,
+    color: const Color(0xFF8C7A5B),
+  );
 }
 
 class AppSpacing {
+  static const double space2Xs = 2.0;
   static const double spaceXs = 4.0;
   static const double spaceSm = 8.0;
+  static const double space12 = 12.0;
   static const double spaceMd = 16.0;
-  static const double spaceLg = 24.0;
-  static const double spaceXl = 40.0;
-  static const double gutter = 16.0;
   static const double margin = 20.0;
+  static const double spaceLg = 24.0;
+  static const double space32 = 32.0;
+  static const double spaceXl = 40.0;
+  static const double space2Xl = 48.0;
+  static const double gutter = 16.0;
 }

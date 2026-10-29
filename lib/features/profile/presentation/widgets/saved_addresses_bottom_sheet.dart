@@ -109,13 +109,15 @@ class _SavedAddressesBottomSheetState extends State<SavedAddressesBottomSheet> {
     return Container(
       decoration: const BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(AppSpacing.spaceLg),
+        ),
       ),
       padding: EdgeInsets.only(
-        top: 16,
-        left: 20,
-        right: 20,
-        bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+        top: AppSpacing.gutter,
+        left: AppSpacing.margin,
+        right: AppSpacing.margin,
+        bottom: MediaQuery.of(context).viewInsets.bottom + AppSpacing.spaceLg,
       ),
       child: SingleChildScrollView(
         child: Column(
@@ -125,21 +127,21 @@ class _SavedAddressesBottomSheetState extends State<SavedAddressesBottomSheet> {
             // Drag handle
             Center(
               child: Container(
-                width: 40,
-                height: 4,
+                width: AppSpacing.spaceXl,
+                height: AppSpacing.spaceXs,
                 decoration: BoxDecoration(
                   color: Colors.grey.shade300,
-                  borderRadius: BorderRadius.circular(2),
+                  borderRadius: BorderRadius.circular(AppSpacing.space2Xs),
                 ),
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSpacing.gutter),
 
             // Header Row
             Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.all(8),
+                  padding: const EdgeInsets.all(AppSpacing.spaceSm),
                   decoration: BoxDecoration(
                     color: const Color(0xFF0B3B2C).withValues(alpha: 0.08),
                     shape: BoxShape.circle,
@@ -150,7 +152,7 @@ class _SavedAddressesBottomSheetState extends State<SavedAddressesBottomSheet> {
                     size: 20,
                   ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: AppSpacing.space12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -160,16 +162,14 @@ class _SavedAddressesBottomSheetState extends State<SavedAddressesBottomSheet> {
                         style: AppTypography.labelCaps.copyWith(
                           color: const Color(0xFF0B3B2C),
                           fontWeight: FontWeight.w800,
-                          fontSize: 11,
                           letterSpacing: 1.2,
                         ),
                       ),
-                      const SizedBox(height: 2),
+                      const SizedBox(height: AppSpacing.space2Xs),
                       Text(
                         'Manage your delivery addresses',
                         style: AppTypography.bodySm.copyWith(
                           color: AppColors.slateBody,
-                          fontSize: 12,
                         ),
                       ),
                     ],
@@ -178,13 +178,16 @@ class _SavedAddressesBottomSheetState extends State<SavedAddressesBottomSheet> {
                 if (!_isAdding)
                   TextButton.icon(
                     onPressed: () => setState(() => _isAdding = true),
-                    icon: const Icon(Icons.add, size: 18, color: Color(0xFF0B3B2C)),
-                    label: const Text(
+                    icon: const Icon(
+                      Icons.add,
+                      size: 18,
+                      color: Color(0xFF0B3B2C),
+                    ),
+                    label: Text(
                       'Add New',
-                      style: TextStyle(
-                        color: Color(0xFF0B3B2C),
+                      style: AppTypography.bodySm.copyWith(
+                        color: const Color(0xFF0B3B2C),
                         fontWeight: FontWeight.w700,
-                        fontSize: 13,
                       ),
                     ),
                   ),
@@ -195,9 +198,9 @@ class _SavedAddressesBottomSheetState extends State<SavedAddressesBottomSheet> {
                   ),
               ],
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSpacing.gutter),
             const Divider(height: 1, color: Color(0xFFE2E8F0)),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSpacing.gutter),
 
             if (_isAdding) ...[
               _buildAddAddressForm(),
@@ -214,7 +217,7 @@ class _SavedAddressesBottomSheetState extends State<SavedAddressesBottomSheet> {
 
   Widget _buildEmptyState() {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 32),
+      padding: const EdgeInsets.symmetric(vertical: AppSpacing.space32),
       child: Center(
         child: Column(
           children: [
@@ -231,35 +234,44 @@ class _SavedAddressesBottomSheetState extends State<SavedAddressesBottomSheet> {
                 color: Color(0xFF0B3B2C),
               ),
             ),
-            const SizedBox(height: 16),
-            const Text(
+            const SizedBox(height: AppSpacing.gutter),
+            Text(
               'No Saved Addresses',
-              style: TextStyle(
-                fontSize: 16,
+              style: AppTypography.priceCatalog.copyWith(
                 fontWeight: FontWeight.w700,
-                color: Color(0xFF1E293B),
+                color: const Color(0xFF1E293B),
               ),
             ),
-            const SizedBox(height: 6),
-            const Text(
+            const SizedBox(height: AppSpacing.spaceSm),
+            Text(
               'Add your delivery locations for faster checkout',
               textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 13,
-                color: Color(0xFF64748B),
+              style: AppTypography.bodySm.copyWith(
+                color: const Color(0xFF64748B),
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: AppSpacing.margin),
             ElevatedButton.icon(
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF0B3B2C),
                 foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.margin,
+                  vertical: AppSpacing.space12,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(AppSpacing.space12),
+                ),
               ),
               onPressed: () => setState(() => _isAdding = true),
               icon: const Icon(Icons.add, size: 18),
-              label: const Text('Add Delivery Address'),
+              label: Text(
+                'Add Delivery Address',
+                style: AppTypography.bodyMd.copyWith(
+                  fontWeight: FontWeight.w700,
+                  color: Colors.white,
+                ),
+              ),
             ),
           ],
         ),
@@ -269,11 +281,11 @@ class _SavedAddressesBottomSheetState extends State<SavedAddressesBottomSheet> {
 
   Widget _buildAddressCard(ShippingAddressModel address) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(14),
+      margin: const EdgeInsets.only(bottom: AppSpacing.space12),
+      padding: const EdgeInsets.all(AppSpacing.space12),
       decoration: BoxDecoration(
         color: const Color(0xFFF8FAFC),
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(AppSpacing.space12),
         border: Border.all(
           color: address.isDefault
               ? const Color(0xFF0B3B2C).withValues(alpha: 0.4)
@@ -287,32 +299,38 @@ class _SavedAddressesBottomSheetState extends State<SavedAddressesBottomSheet> {
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.spaceSm,
+                  vertical: AppSpacing.space2Xs,
+                ),
                 decoration: BoxDecoration(
                   color: const Color(0xFF0B3B2C).withValues(alpha: 0.08),
-                  borderRadius: BorderRadius.circular(6),
+                  borderRadius: BorderRadius.circular(AppSpacing.spaceXs),
                 ),
                 child: Text(
                   address.label.toUpperCase(),
-                  style: const TextStyle(
+                  style: AppTypography.labelCaps.copyWith(
                     fontSize: 10,
                     fontWeight: FontWeight.w800,
-                    color: Color(0xFF0B3B2C),
+                    color: const Color(0xFF0B3B2C),
                     letterSpacing: 0.8,
                   ),
                 ),
               ),
               if (address.isDefault) ...[
-                const SizedBox(width: 8),
+                const SizedBox(width: AppSpacing.spaceSm),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.spaceSm,
+                    vertical: AppSpacing.space2Xs,
+                  ),
                   decoration: BoxDecoration(
                     color: const Color(0xFF0B3B2C),
-                    borderRadius: BorderRadius.circular(6),
+                    borderRadius: BorderRadius.circular(AppSpacing.spaceXs),
                   ),
-                  child: const Text(
+                  child: Text(
                     'DEFAULT',
-                    style: TextStyle(
+                    style: AppTypography.labelCaps.copyWith(
                       fontSize: 10,
                       fontWeight: FontWeight.w800,
                       color: Colors.white,
@@ -328,52 +346,55 @@ class _SavedAddressesBottomSheetState extends State<SavedAddressesBottomSheet> {
                     widget.onSelectAddress!(address);
                     Navigator.pop(context);
                   },
-                  child: const Text(
+                  child: Text(
                     'Select',
-                    style: TextStyle(
-                      color: Color(0xFF0B3B2C),
+                    style: AppTypography.bodySm.copyWith(
+                      color: const Color(0xFF0B3B2C),
                       fontWeight: FontWeight.w700,
-                      fontSize: 13,
                     ),
                   ),
                 ),
               IconButton(
-                icon: const Icon(Icons.delete_outline_rounded, size: 18, color: Colors.redAccent),
+                icon: const Icon(
+                  Icons.delete_outline_rounded,
+                  size: 18,
+                  color: Colors.redAccent,
+                ),
                 onPressed: () => _onDelete(address.id),
                 padding: EdgeInsets.zero,
                 constraints: const BoxConstraints(),
               ),
             ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppSpacing.spaceSm),
           Text(
             address.address,
-            style: const TextStyle(
-              fontSize: 13,
+            style: AppTypography.bodyMd.copyWith(
               fontWeight: FontWeight.w600,
-              color: Color(0xFF1E293B),
+              color: const Color(0xFF1E293B),
             ),
           ),
           if (address.recipient.isNotEmpty || address.phone.isNotEmpty) ...[
-            const SizedBox(height: 4),
+            const SizedBox(height: AppSpacing.spaceXs),
             Text(
-              [if (address.recipient.isNotEmpty) address.recipient, if (address.phone.isNotEmpty) address.phone].join(' • '),
-              style: const TextStyle(
-                fontSize: 12,
-                color: Color(0xFF64748B),
+              [
+                if (address.recipient.isNotEmpty) address.recipient,
+                if (address.phone.isNotEmpty) address.phone,
+              ].join(' • '),
+              style: AppTypography.bodySm.copyWith(
+                color: const Color(0xFF64748B),
               ),
             ),
           ],
           if (!address.isDefault) ...[
-            const SizedBox(height: 8),
+            const SizedBox(height: AppSpacing.spaceSm),
             GestureDetector(
               onTap: () => _onSetDefault(address.id),
-              child: const Text(
+              child: Text(
                 'Set as default address',
-                style: TextStyle(
-                  fontSize: 12,
+                style: AppTypography.bodySm.copyWith(
                   fontWeight: FontWeight.w600,
-                  color: Color(0xFF0B3B2C),
+                  color: const Color(0xFF0B3B2C),
                   decoration: TextDecoration.underline,
                 ),
               ),
@@ -390,20 +411,19 @@ class _SavedAddressesBottomSheetState extends State<SavedAddressesBottomSheet> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Address Label',
-            style: TextStyle(
-              fontSize: 12,
+            style: AppTypography.labelSm.copyWith(
               fontWeight: FontWeight.w700,
-              color: Color(0xFF475569),
+              color: const Color(0xFF475569),
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppSpacing.spaceSm),
           Row(
             children: ['Home', 'Office', 'Villa', 'Other'].map((label) {
               final isSelected = _selectedLabel == label;
               return Padding(
-                padding: const EdgeInsets.only(right: 8),
+                padding: const EdgeInsets.only(right: AppSpacing.spaceSm),
                 child: ChoiceChip(
                   label: Text(label),
                   selected: isSelected,
@@ -411,89 +431,92 @@ class _SavedAddressesBottomSheetState extends State<SavedAddressesBottomSheet> {
                     if (val) setState(() => _selectedLabel = label);
                   },
                   selectedColor: const Color(0xFF0B3B2C),
-                  labelStyle: TextStyle(
+                  labelStyle: AppTypography.labelSm.copyWith(
                     color: isSelected ? Colors.white : const Color(0xFF334155),
                     fontWeight: FontWeight.w600,
-                    fontSize: 12,
                   ),
                 ),
               );
             }).toList(),
           ),
-          const SizedBox(height: 14),
-          const Text(
+          const SizedBox(height: AppSpacing.space12),
+          Text(
             'Detailed Delivery Address *',
-            style: TextStyle(
-              fontSize: 12,
+            style: AppTypography.labelSm.copyWith(
               fontWeight: FontWeight.w700,
-              color: Color(0xFF475569),
+              color: const Color(0xFF475569),
             ),
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: AppSpacing.spaceSm),
           TextFormField(
             controller: _addressController,
             maxLines: 2,
             decoration: InputDecoration(
               hintText: 'Enter street, building, apartment, city...',
-              hintStyle: const TextStyle(fontSize: 13, color: Colors.black38),
+              hintStyle: AppTypography.bodySm.copyWith(color: Colors.black38),
               filled: true,
               fillColor: AppColors.surfaceContainerLowest,
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(AppSpacing.space12),
                 borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
               ),
             ),
-            validator: (v) => (v == null || v.trim().isEmpty) ? 'Please enter address' : null,
+            validator: (v) =>
+                (v == null || v.trim().isEmpty) ? 'Please enter address' : null,
           ),
-          const SizedBox(height: 12),
-          const Text(
+          const SizedBox(height: AppSpacing.space12),
+          Text(
             'Recipient Contact Phone',
-            style: TextStyle(
-              fontSize: 12,
+            style: AppTypography.labelSm.copyWith(
               fontWeight: FontWeight.w700,
-              color: Color(0xFF475569),
+              color: const Color(0xFF475569),
             ),
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: AppSpacing.spaceSm),
           TextFormField(
             controller: _phoneController,
             keyboardType: TextInputType.phone,
             decoration: InputDecoration(
               hintText: 'e.g. 010XXXXXXXX',
-              hintStyle: const TextStyle(fontSize: 13, color: Colors.black38),
+              hintStyle: AppTypography.bodySm.copyWith(color: Colors.black38),
               filled: true,
               fillColor: AppColors.surfaceContainerLowest,
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(AppSpacing.space12),
                 borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
               ),
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.space12),
           CheckboxListTile(
             contentPadding: EdgeInsets.zero,
             value: _setAsDefault,
             activeColor: const Color(0xFF0B3B2C),
-            title: const Text(
+            title: Text(
               'Set as default delivery address',
-              style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+              style: AppTypography.bodySm.copyWith(fontWeight: FontWeight.w600),
             ),
             onChanged: (val) => setState(() => _setAsDefault = val ?? false),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.gutter),
           SizedBox(
             width: double.infinity,
-            height: 46,
+            height: AppSpacing.space2Xl,
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF0B3B2C),
                 foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(AppSpacing.space12),
+                ),
               ),
               onPressed: _onSaveAddress,
-              child: const Text(
+              child: Text(
                 'Save Address',
-                style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
+                style: AppTypography.bodyMd.copyWith(
+                  fontWeight: FontWeight.w700,
+                  color: Colors.white,
+                ),
               ),
             ),
           ),

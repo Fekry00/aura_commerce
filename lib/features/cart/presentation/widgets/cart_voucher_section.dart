@@ -1,26 +1,51 @@
 import 'package:aura/core/theme/app_colors.dart';
 import 'package:aura/core/theme/app_typography.dart';
-import 'package:aura/features/cart/presentation/controllers/cart_controller.dart';
 import 'package:flutter/material.dart';
 
 /// Pure declarative UI widget for voucher code entry and active privilege badge.
-class CartVoucherSection extends StatelessWidget {
-  final CartController controller;
-  final VoidCallback? onApply;
+class CartVoucherSection extends StatefulWidget {
+  final String? activeVoucherCode;
+  final String? voucherLabel;
+  final bool hasActiveVoucher;
+  final ValueChanged<String>? onApply;
   final VoidCallback? onRemove;
 
   const CartVoucherSection({
     super.key,
-    required this.controller,
+    this.activeVoucherCode,
+    this.voucherLabel,
+    this.hasActiveVoucher = false,
     this.onApply,
     this.onRemove,
   });
 
   @override
+  State<CartVoucherSection> createState() => _CartVoucherSectionState();
+}
+
+class _CartVoucherSectionState extends State<CartVoucherSection> {
+  final TextEditingController _voucherController = TextEditingController();
+
+  @override
+  void dispose() {
+    _voucherController.dispose();
+    super.dispose();
+  }
+
+  void _submitVoucher() {
+    final code = _voucherController.text.trim();
+    if (widget.onApply != null) {
+      widget.onApply!(code);
+    }
+    _voucherController.clear();
+    FocusScope.of(context).unfocus();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final code = controller.activeVoucherCode;
-    final label = controller.voucherLabel ?? '-10% VIP Privilege';
-    final hasActiveVoucher = controller.hasDiscount;
+    final code = widget.activeVoucherCode;
+    final label = widget.voucherLabel ?? '-10% VIP Privilege';
+    final hasActiveVoucher = widget.hasActiveVoucher;
 
     return Container(
       padding: const EdgeInsets.all(AppSpacing.spaceMd),
@@ -55,7 +80,7 @@ class CartVoucherSection extends StatelessWidget {
                     borderRadius: BorderRadius.circular(AppSpacing.spaceLg),
                   ),
                   child: TextField(
-                    controller: controller.voucherInputController,
+                    controller: _voucherController,
                     textCapitalization: TextCapitalization.characters,
                     style: AppTypography.bodyMd.copyWith(
                       color: AppColors.onSurface,
@@ -78,15 +103,13 @@ class CartVoucherSection extends StatelessWidget {
                         horizontal: AppSpacing.spaceMd,
                       ),
                     ),
-                    onSubmitted: (_) =>
-                        onApply != null ? onApply!() : controller.onApplyVoucher(context),
+                    onSubmitted: (_) => _submitVoucher(),
                   ),
                 ),
               ),
               const SizedBox(width: AppSpacing.spaceSm),
               InkWell(
-                onTap: () =>
-                    onApply != null ? onApply!() : controller.onApplyVoucher(context),
+                onTap: _submitVoucher,
                 borderRadius: BorderRadius.circular(AppSpacing.spaceLg),
                 child: Container(
                   height: AppSpacing.spaceXl + AppSpacing.spaceSm,
@@ -161,9 +184,7 @@ class CartVoucherSection extends StatelessWidget {
                   ),
                   const Spacer(),
                   InkWell(
-                    onTap: () => onRemove != null
-                        ? onRemove!()
-                        : controller.onRemoveVoucher(context),
+                    onTap: widget.onRemove,
                     borderRadius: BorderRadius.circular(
                       AppSpacing.spaceSm + AppSpacing.spaceXs,
                     ),

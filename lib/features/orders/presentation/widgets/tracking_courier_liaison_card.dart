@@ -1,14 +1,23 @@
 import 'package:aura/core/theme/app_colors.dart';
 import 'package:aura/core/theme/app_typography.dart';
 import 'package:aura/features/orders/presentation/widgets/tracking_courier_protocol_box.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class TrackingCourierLiaisonCard extends StatelessWidget {
+  final String courierName;
+  final String courierRole;
+  final String courierBadge;
+  final String? courierAvatarUrl;
   final VoidCallback? onCall;
   final VoidCallback? onMessage;
 
   const TrackingCourierLiaisonCard({
     super.key,
+    this.courierName = 'Aura Armored Courier',
+    this.courierRole = 'White-Glove Private Transit Specialist',
+    this.courierBadge = 'Aura Verified Dispatch',
+    this.courierAvatarUrl,
     this.onCall,
     this.onMessage,
   });
@@ -30,11 +39,40 @@ class TrackingCourierLiaisonCard extends StatelessWidget {
             children: [
               Stack(
                 children: [
-                  const CircleAvatar(
-                    radius: 24,
-                    backgroundImage: NetworkImage(
-                      'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=300',
-                    ),
+                  ClipOval(
+                    child: (courierAvatarUrl != null &&
+                            courierAvatarUrl!.isNotEmpty)
+                        ? CachedNetworkImage(
+                            imageUrl: courierAvatarUrl!,
+                            width: 48,
+                            height: 48,
+                            fit: BoxFit.cover,
+                            placeholder: (context, url) => Container(
+                              width: 48,
+                              height: 48,
+                              color: AppColors.surfaceContainerLow,
+                            ),
+                            errorWidget: (context, url, error) => Container(
+                              width: 48,
+                              height: 48,
+                              color: AppColors.primaryContainer,
+                              child: const Icon(
+                                Icons.shield_outlined,
+                                color: Colors.white,
+                                size: 22,
+                              ),
+                            ),
+                          )
+                        : Container(
+                            width: 48,
+                            height: 48,
+                            color: AppColors.primaryContainer,
+                            child: const Icon(
+                              Icons.shield_outlined,
+                              color: Colors.white,
+                              size: 22,
+                            ),
+                          ),
                   ),
                   Positioned(
                     right: 0,
@@ -61,13 +99,13 @@ class TrackingCourierLiaisonCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Marcus Vance',
+                      courierName,
                       style: AppTypography.bodyMd.copyWith(
                         fontWeight: FontWeight.w700,
                       ),
                     ),
                     Text(
-                      'Senior White-Glove Stylist & Escort',
+                      courierRole,
                       style: AppTypography.bodySm.copyWith(
                         color: AppColors.slateBody,
                         fontSize: 11,
@@ -77,23 +115,17 @@ class TrackingCourierLiaisonCard extends StatelessWidget {
                     Row(
                       children: [
                         const Icon(
-                          Icons.star_rounded,
-                          size: 14,
+                          Icons.verified_user_outlined,
+                          size: 13,
                           color: AppColors.secondary,
                         ),
-                        const SizedBox(width: 2),
+                        const SizedBox(width: 3),
                         Text(
-                          '5.0',
-                          style: AppTypography.labelSm.copyWith(
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.secondary,
-                          ),
-                        ),
-                        Text(
-                          ' • 420+ Secure Deliveries',
+                          courierBadge,
                           style: AppTypography.bodySm.copyWith(
                             color: AppColors.slateBody,
                             fontSize: 10.5,
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
                       ],
@@ -107,7 +139,7 @@ class TrackingCourierLiaisonCard extends StatelessWidget {
                 child: Container(
                   width: 36,
                   height: 36,
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     color: AppColors.surfaceContainerLow,
                     shape: BoxShape.circle,
                   ),
@@ -129,7 +161,7 @@ class TrackingCourierLiaisonCard extends StatelessWidget {
                     color: AppColors.primaryContainer,
                     shape: BoxShape.circle,
                   ),
-                  child: Icon(
+                  child: const Icon(
                     Icons.chat_bubble_outline_rounded,
                     size: 16,
                     color: Colors.white,

@@ -54,9 +54,13 @@ class ApiInterceptor extends Interceptor {
             ),
           );
 
-          final retryOptions = err.requestOptions;
-          retryOptions.baseUrl = EndPoint.fallbackLanBaseUrl;
-          retryOptions.extra['retried_fallback'] = true;
+          final retryOptions = err.requestOptions.copyWith(
+            baseUrl: EndPoint.fallbackLanBaseUrl,
+            extra: {
+              ...err.requestOptions.extra,
+              'retried_fallback': true,
+            },
+          );
 
           final retryResponse = await fallbackDio.fetch(retryOptions);
           useLanFallback = true;
@@ -158,6 +162,8 @@ class ApiInterceptor extends Interceptor {
             completer.complete(null);
           }
         } catch (refreshErr) {
+          await CacheHelper.removeData(key: ApiKey.token);
+          await CacheHelper.removeData(key: 'CACHED_AUTH_TOKEN');
           _refreshTokenCompleter = null;
           completer.completeError(refreshErr);
         }

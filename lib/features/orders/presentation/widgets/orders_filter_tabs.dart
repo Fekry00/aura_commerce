@@ -1,4 +1,5 @@
-import 'package:aura/features/orders/presentation/controllers/orders_controller.dart';
+import 'package:aura/core/theme/app_typography.dart';
+import 'package:aura/features/orders/presentation/cubit/orders_state.dart';
 import 'package:flutter/material.dart';
 
 class OrdersFilterTabs extends StatelessWidget {
@@ -13,7 +14,7 @@ class OrdersFilterTabs extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final filters = OrdersController.filters;
+    const filters = OrdersListSuccessState.filters;
 
     return Container(
       color: Colors.white,
@@ -21,19 +22,21 @@ class OrdersFilterTabs extends StatelessWidget {
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         physics: const BouncingScrollPhysics(),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.gutter,
+          vertical: AppSpacing.spaceSm,
+        ),
         clipBehavior: Clip.none,
         child: Row(
           children: filters.map((f) {
             final isSelected = selectedFilter == f['key'];
             final isLast = f == filters.last;
             return Padding(
-              padding: EdgeInsets.only(right: isLast ? 0 : 8),
+              padding: EdgeInsets.only(right: isLast ? 0 : AppSpacing.spaceSm),
               child: ChoiceChip(
                 label: Text(
                   f['label']!,
-                  style: TextStyle(
-                    fontSize: 12,
+                  style: AppTypography.labelSm.copyWith(
                     fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
                     color: isSelected
                         ? Colors.white
@@ -44,7 +47,7 @@ class OrdersFilterTabs extends StatelessWidget {
                 selectedColor: const Color(0xFF0B3B2C),
                 backgroundColor: const Color(0xFFF1F5F9),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(AppSpacing.margin),
                   side: BorderSide.none,
                 ),
                 onSelected: (selected) {

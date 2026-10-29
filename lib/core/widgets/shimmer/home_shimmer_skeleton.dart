@@ -107,9 +107,9 @@ class HomeShimmerSkeleton extends StatelessWidget {
             itemCount: 4,
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
-              childAspectRatio: 0.60,
-              crossAxisSpacing: AppSpacing.spaceSm,
-              mainAxisSpacing: AppSpacing.spaceSm,
+              childAspectRatio: 0.70,
+              crossAxisSpacing: 16,
+              mainAxisSpacing: 16,
             ),
             itemBuilder: (context, index) {
               return const ProductCardShimmer();

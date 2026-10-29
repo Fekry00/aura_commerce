@@ -1,13 +1,12 @@
-import 'package:aura/core/theme/app_colors.dart';
+import 'package:aura/core/routing/routes.dart';
 import 'package:aura/core/theme/app_typography.dart';
 import 'package:aura/core/utils/functions/custom_snack_bar.dart';
-import 'package:aura/features/profile/presentation/controllers/profile_controller.dart';
+import 'package:aura/features/profile/presentation/widgets/saved_addresses_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 
 class ProfileSectionsList extends StatelessWidget {
   final String dispatchAddress;
   final String vaultCreditText;
-  final ProfileController? controller;
   final VoidCallback? onOrdersTap;
   final VoidCallback? onAddressesTap;
 
@@ -15,7 +14,6 @@ class ProfileSectionsList extends StatelessWidget {
     super.key,
     this.dispatchAddress = 'No address saved yet',
     this.vaultCreditText = '0 EGP store credit available',
-    this.controller,
     this.onOrdersTap,
     this.onAddressesTap,
   });
@@ -32,8 +30,7 @@ class ProfileSectionsList extends StatelessWidget {
           'Order History & Returns',
           'Track active dispatch & instant courier status',
           onTap: onOrdersTap ??
-              () => (controller ?? const ProfileController())
-                  .onMyOrdersPressed(context),
+              () => Navigator.pushNamed(context, Routes.ordersView),
         ),
         _buildTile(
           context,
@@ -41,8 +38,12 @@ class ProfileSectionsList extends StatelessWidget {
           'White-Glove Dispatch Address',
           dispatchAddress,
           onTap: onAddressesTap ??
-              () => (controller ?? const ProfileController())
-                  .onSavedAddressesPressed(context),
+              () => showModalBottomSheet<void>(
+                    context: context,
+                    isScrollControlled: true,
+                    backgroundColor: Colors.transparent,
+                    builder: (_) => const SavedAddressesBottomSheet(),
+                  ),
         ),
         _buildTile(
           context,
@@ -68,29 +69,8 @@ class ProfileSectionsList extends StatelessWidget {
         _buildTile(
           context,
           Icons.fingerprint_rounded,
-          'Atelier Vault & Biometrics',
-          'Protected Authentication • 2FA',
-        ),
-        const SizedBox(height: AppSpacing.spaceLg),
-        _buildSectionHeader('PRIVILEGE & REGIONAL'),
-        _buildTile(
-          context,
-          Icons.public_rounded,
-          'Currency & Dispatch Region',
-          'EGP (ج.م) • Egypt',
-        ),
-        _buildTile(
-          context,
-          Icons.headset_mic_outlined,
-          'Private Salon Concierge Desk',
-          'Priority 24/7 direct assistance',
-          isGreenSubtitle: true,
-        ),
-        _buildTile(
-          context,
-          Icons.verified_user_outlined,
-          'Terms of Privilege & Privacy',
-          'Encrypted data compliance & heritage care',
+          'Biometric Passkey Authentication',
+          'FaceID & Device Security Enabled',
         ),
       ],
     );
@@ -98,10 +78,18 @@ class ProfileSectionsList extends StatelessWidget {
 
   Widget _buildSectionHeader(String title) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: AppSpacing.spaceSm, top: AppSpacing.spaceXs),
+      padding: const EdgeInsets.only(
+        left: AppSpacing.spaceXs,
+        bottom: AppSpacing.spaceSm,
+      ),
       child: Text(
         title,
-        style: AppTypography.labelCaps.copyWith(color: AppColors.slateBody, letterSpacing: 0.8),
+        style: AppTypography.labelCaps.copyWith(
+          color: const Color(0xFF6B7280),
+          letterSpacing: 1.2,
+          fontSize: 11,
+          fontWeight: FontWeight.w700,
+        ),
       ),
     );
   }
@@ -116,55 +104,58 @@ class ProfileSectionsList extends StatelessWidget {
   }) {
     return Container(
       margin: const EdgeInsets.only(bottom: AppSpacing.spaceSm),
-      child: InkWell(
-        onTap: onTap ??
-            () => showCustomSnackBar(context,
-                message: 'Opening $title...', type: SnackBarType.info),
-        borderRadius: BorderRadius.circular(AppSpacing.spaceMd),
-        child: Container(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.spaceMd,
-            vertical: AppSpacing.spaceSm + AppSpacing.spaceXs,
-          ),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(AppSpacing.margin),
+        border: Border.all(color: const Color(0xFFE5E7EB), width: 1.0),
+      ),
+      child: ListTile(
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.spaceMd,
+          vertical: AppSpacing.spaceXs,
+        ),
+        leading: Container(
+          width: 38,
+          height: 38,
           decoration: BoxDecoration(
-            color: AppColors.surfaceContainerLowest,
-            borderRadius: BorderRadius.circular(AppSpacing.spaceMd),
-            border: Border.all(color: AppColors.outlineVariant, width: 1.0),
+            color: const Color(0xFFF3F4F6),
+            borderRadius: BorderRadius.circular(10),
           ),
-          child: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(AppSpacing.spaceSm),
-                decoration: const BoxDecoration(
-                  color: AppColors.surfaceContainerLow,
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(icon, size: AppSpacing.spaceMd, color: AppColors.slateHeadline),
-              ),
-              const SizedBox(width: AppSpacing.spaceMd),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(title, style: AppTypography.bodyMd.copyWith(fontWeight: FontWeight.w700, color: AppColors.slateHeadline)),
-                    const SizedBox(height: AppSpacing.spaceXs / 2),
-                    Text(
-                      subtitle,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: AppTypography.bodySm.copyWith(
-                        color: isGreenSubtitle ? AppColors.secondary : AppColors.slateBody,
-                        fontSize: 11,
-                        fontWeight: isGreenSubtitle ? FontWeight.w600 : FontWeight.w400,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const Icon(Icons.chevron_right_rounded, size: AppSpacing.spaceLg, color: AppColors.slateBody),
-            ],
+          child: Icon(icon, color: const Color(0xFF1F2937), size: 20),
+        ),
+        title: Text(
+          title,
+          style: AppTypography.bodyMd.copyWith(
+            fontWeight: FontWeight.w600,
+            color: const Color(0xFF111827),
+            fontSize: 14,
           ),
         ),
+        subtitle: Text(
+          subtitle,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: AppTypography.bodySm.copyWith(
+            color: isGreenSubtitle
+                ? const Color(0xFF0B3B2C)
+                : const Color(0xFF6B7280),
+            fontWeight: isGreenSubtitle ? FontWeight.w600 : FontWeight.w400,
+            fontSize: 12,
+          ),
+        ),
+        trailing: const Icon(
+          Icons.arrow_forward_ios_rounded,
+          size: 14,
+          color: Color(0xFF9CA3AF),
+        ),
+        onTap: onTap ??
+            () {
+              showCustomSnackBar(
+                context,
+                message: '$title preferences up to date',
+                type: SnackBarType.info,
+              );
+            },
       ),
     );
   }

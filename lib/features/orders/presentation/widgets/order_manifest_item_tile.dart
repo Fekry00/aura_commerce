@@ -1,5 +1,7 @@
+import 'package:aura/core/network/api/end_points.dart';
 import 'package:aura/core/theme/app_colors.dart';
 import 'package:aura/core/theme/app_typography.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class OrderManifestItemTile extends StatelessWidget {
@@ -35,10 +37,13 @@ class OrderManifestItemTile extends StatelessWidget {
               child: Stack(
                 children: [
                   Positioned.fill(
-                    child: Image.network(
-                      imageUrl,
+                    child: CachedNetworkImage(
+                      imageUrl: EndPoint.fixImageUrl(imageUrl),
                       fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) => Container(
+                      placeholder: (context, url) => Container(
+                        color: AppColors.surfaceContainerLow,
+                      ),
+                      errorWidget: (context, url, error) => Container(
                         color: AppColors.surfaceContainerLow,
                         child: const Icon(
                           Icons.inventory_2_outlined,

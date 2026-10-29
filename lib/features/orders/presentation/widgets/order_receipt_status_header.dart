@@ -15,10 +15,10 @@ class OrderReceiptStatusHeader extends StatelessWidget {
     final statusBg = OrderUiHelper.getStatusBgColor(order.status);
 
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(AppSpacing.margin),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(AppSpacing.margin),
         border: Border.all(color: const Color(0xFFE2E8F0)),
         boxShadow: [
           BoxShadow(
@@ -40,19 +40,18 @@ class OrderReceiptStatusHeader extends StatelessWidget {
             child: const Icon(
               Icons.check_circle_rounded,
               color: Color(0xFF0B3B2C),
-              size: 32,
+              size: AppSpacing.space32,
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.space12),
           Text(
             'Order Confirmed',
             style: AppTypography.headlineSm.copyWith(
-              fontSize: 18,
               fontWeight: FontWeight.w800,
               color: const Color(0xFF002419),
             ),
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: AppSpacing.spaceXs),
           Text(
             OrderUiHelper.formatOrderId(order.id),
             style: AppTypography.bodySm.copyWith(
@@ -61,19 +60,21 @@ class OrderReceiptStatusHeader extends StatelessWidget {
               letterSpacing: 1.1,
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.space12),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.space12,
+              vertical: AppSpacing.spaceXs,
+            ),
             decoration: BoxDecoration(
               color: statusBg,
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(AppSpacing.margin),
             ),
             child: Text(
               order.status.toUpperCase(),
-              style: TextStyle(
+              style: AppTypography.labelCaps.copyWith(
                 color: statusColor,
                 fontWeight: FontWeight.w800,
-                fontSize: 11.5,
                 letterSpacing: 1.2,
               ),
             ),

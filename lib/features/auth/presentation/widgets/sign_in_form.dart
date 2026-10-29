@@ -1,9 +1,9 @@
 import 'package:aura/core/routing/routes.dart';
 import 'package:aura/core/theme/app_typography.dart';
 import 'package:aura/core/utils/functions/custom_snack_bar.dart';
-import 'package:aura/features/auth/presentation/controllers/sign_in_form_controller.dart';
 import 'package:aura/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:aura/features/auth/presentation/cubit/auth_state.dart';
+import 'package:aura/features/auth/presentation/utils/auth_validation_helper.dart';
 import 'package:aura/features/cart/presentation/cubit/cart_cubit.dart';
 import 'package:aura/features/wishlist/presentation/cubit/wishlist_cubit.dart';
 import 'package:flutter/material.dart';
@@ -17,38 +17,68 @@ import 'sign_in_submit_button.dart';
 /// Pure declarative UI widget for Sign In form.
 class SignInForm extends StatefulWidget {
   final String? initialEmail;
-  final SignInFormController? controller;
 
-  const SignInForm({super.key, this.initialEmail, this.controller});
+  const SignInForm({super.key, this.initialEmail});
 
   @override
   State<SignInForm> createState() => _SignInFormState();
 }
 
 class _SignInFormState extends State<SignInForm> {
-  late final SignInFormController _controller;
-  late final bool _internalController;
+  final _formKey = GlobalKey<FormState>();
+  late final TextEditingController _emailController;
+  final TextEditingController _passwordController = TextEditingController();
+
+  bool _rememberDevice = true;
+  bool _obscurePassword = true;
 
   @override
   void initState() {
     super.initState();
-    _internalController = widget.controller == null;
-    _controller = widget.controller ??
-        SignInFormController(initialEmail: widget.initialEmail);
+    _emailController = TextEditingController(text: widget.initialEmail ?? '');
   }
 
   @override
   void dispose() {
-    if (_internalController) {
-      _controller.dispose();
-    }
+    _emailController.dispose();
+    _passwordController.dispose();
     super.dispose();
+  }
+
+  void _onSignIn() {
+    final isValid = _formKey.currentState?.validate() ?? false;
+    context.read<AuthCubit>().signIn(
+          email: _emailController.text.trim(),
+          password: _passwordController.text,
+          rememberDevice: _rememberDevice,
+          isFormValid: isValid,
+        );
+  }
+
+  String? _validateEmail(String? val) {
+    if (val == null || val.trim().isEmpty) {
+      return 'Email address is required';
+    }
+    if (!AuthValidationHelper.isValidEmail(val)) {
+      return 'Please enter a valid email address';
+    }
+    return null;
+  }
+
+  String? _validatePassword(String? val) {
+    if (val == null || val.trim().isEmpty) {
+      return 'Password is required';
+    }
+    if (val.length < 8) {
+      return 'Password must be at least 8 characters';
+    }
+    return null;
   }
 
   @override
   Widget build(BuildContext context) {
     return Form(
-      key: _controller.formKey,
+      key: _formKey,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -59,11 +89,11 @@ class _SignInFormState extends State<SignInForm> {
           ),
           const SizedBox(height: AppSpacing.spaceXs),
           AuthTextFormField(
-            controller: _controller.emailController,
+            controller: _emailController,
             hintText: 'name@gmail.com',
             prefixIcon: Icons.mail_outline_rounded,
             keyboardType: TextInputType.emailAddress,
-            validator: _controller.validateEmail,
+            validator: _validateEmail,
           ),
           const SizedBox(height: AppSpacing.spaceMd),
 
@@ -73,29 +103,28 @@ class _SignInFormState extends State<SignInForm> {
           ),
           const SizedBox(height: AppSpacing.spaceXs),
           AuthTextFormField(
-            controller: _controller.passwordController,
-            obscureText: _controller.obscurePassword,
+            controller: _passwordController,
+            obscureText: _obscurePassword,
             hintText: 'Enter your confidential passkey',
             prefixIcon: Icons.lock_outline_rounded,
-            validator: _controller.validatePassword,
+            validator: _validatePassword,
             suffixWidget: IconButton(
               icon: Icon(
-                _controller.obscurePassword
+                _obscurePassword
                     ? Icons.visibility_off_outlined
                     : Icons.visibility_outlined,
                 size: 18,
                 color: const Color(0xFF9CA3AF),
               ),
               onPressed: () =>
-                  setState(() => _controller.toggleObscurePassword()),
+                  setState(() => _obscurePassword = !_obscurePassword),
             ),
           ),
           const SizedBox(height: AppSpacing.spaceSm + 2),
 
           SignInActionsRow(
-            rememberDevice: _controller.rememberDevice,
-            onRememberChanged: (val) =>
-                setState(() => _controller.setRememberDevice(val)),
+            rememberDevice: _rememberDevice,
+            onRememberChanged: (val) => setState(() => _rememberDevice = val),
           ),
           const SizedBox(height: AppSpacing.spaceLg),
 
@@ -128,7 +157,7 @@ class _SignInFormState extends State<SignInForm> {
               final isLoading = state is AuthLoadingState;
               return SignInSubmitButton(
                 isLoading: isLoading,
-                onPressed: () => _controller.onSignIn(context),
+                onPressed: _onSignIn,
               );
             },
           ),

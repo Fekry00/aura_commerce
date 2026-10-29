@@ -23,12 +23,16 @@ abstract class AuthRepository {
   Future<Either<Failure, bool>> resendOtp({required String email});
 
   /// Step 3: Verify OTP — returns true if valid.
-  Future<Either<Failure, bool>> verifyResetOtp({required String otp});
+  Future<Either<Failure, bool>> verifyResetOtp({
+    required String otp,
+    String? email,
+  });
 
   /// Step 4: Set new password.
   Future<Either<Failure, bool>> resetPassword({
     required String otp,
     required String newPassword,
+    String? email,
   });
 
   Future<Either<Failure, AuthEntity?>> getSavedAuthSession();

@@ -24,11 +24,11 @@ class _AuthPhoneFieldState extends State<AuthPhoneField> {
         const AuthFieldHeader(label: 'PHONE NUMBER (COURIER DISPATCH)'),
         const SizedBox(height: AppSpacing.spaceXs),
         Container(
-          height: 44,
-          padding: const EdgeInsets.symmetric(horizontal: 14),
+          height: AppSpacing.spaceXl + AppSpacing.spaceXs,
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.space12 + AppSpacing.space2Xs),
           decoration: BoxDecoration(
             color: const Color(0xFFF3F4F6),
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(AppSpacing.spaceSm),
           ),
           child: Row(
             children: [
@@ -41,18 +41,18 @@ class _AuthPhoneFieldState extends State<AuthPhoneField> {
                   });
                 },
                 initialSelection: 'US',
-                favorite: const ['+20', 'EG','+1', 'US',  '+966', 'SA'],
+                favorite: const ['+20', 'EG', '+1', 'US', '+966', 'SA'],
                 showFlag: false,
                 padding: EdgeInsets.zero,
                 searchDecoration: InputDecoration(
                   hintText: 'Search country...',
                   prefixIcon: const Icon(Icons.search, size: 18),
                   contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 10,
+                    horizontal: AppSpacing.space12,
+                    vertical: AppSpacing.spaceSm + AppSpacing.space2Xs,
                   ),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(AppSpacing.spaceSm),
                     borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
                   ),
                 ),
@@ -72,7 +72,7 @@ class _AuthPhoneFieldState extends State<AuthPhoneField> {
                   );
                 },
               ),
-              const SizedBox(width: AppSpacing.spaceSm + 2),
+              const SizedBox(width: AppSpacing.spaceSm + AppSpacing.space2Xs),
               const Icon(
                 Icons.phone_outlined,
                 size: 16,
@@ -83,14 +83,14 @@ class _AuthPhoneFieldState extends State<AuthPhoneField> {
                 child: TextField(
                   controller: widget.controller,
                   keyboardType: TextInputType.phone,
-                  style: const TextStyle(
+                  style: AppTypography.bodySm.copyWith(
                     fontSize: 13,
-                    color: Color(0xFF111827),
+                    color: const Color(0xFF111827),
                   ),
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     hintText: 'Enter phone number',
-                    hintStyle: TextStyle(
-                      color: Color(0xFF9CA3AF),
+                    hintStyle: AppTypography.bodySm.copyWith(
+                      color: const Color(0xFF9CA3AF),
                       fontSize: 13,
                     ),
                     isDense: true,

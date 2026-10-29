@@ -1,3 +1,4 @@
+import 'package:aura/core/errors/exceptions.dart';
 import 'package:aura/core/errors/failure.dart';
 import 'package:aura/core/network/connection/network_info.dart';
 import 'package:aura/features/checkout/data/datasources/checkout_local_data_source.dart';
@@ -20,12 +21,32 @@ class CheckoutRepositoryImpl implements CheckoutRepository {
 
   @override
   Future<Either<Failure, CheckoutEntity>> getCheckoutDetails() async {
-    try {
-      final remote = await remoteDataSource.getCheckoutDetails();
-      return Right(remote);
-    } catch (e) {
-      final local = await localDataSource.getLastCheckout();
-      return Right(local);
+    if (await networkInfo.isConnected) {
+      try {
+        final remote = await remoteDataSource.getCheckoutDetails();
+        return Right(remote);
+      } on ServerException catch (e) {
+        try {
+          final local = await localDataSource.getLastCheckout();
+          return Right(local);
+        } catch (_) {
+          return Left(ServerFailure(errMessage: e.errorModel.errorMessage));
+        }
+      } catch (_) {
+        try {
+          final local = await localDataSource.getLastCheckout();
+          return Right(local);
+        } catch (_) {
+          return const Left(ServerFailure(errMessage: 'An unexpected error occurred while fetching checkout'));
+        }
+      }
+    } else {
+      try {
+        final local = await localDataSource.getLastCheckout();
+        return Right(local);
+      } catch (_) {
+        return const Left(NetworkFailure(errMessage: 'No internet connection'));
+      }
     }
   }
 
@@ -47,11 +68,17 @@ class CheckoutRepositoryImpl implements CheckoutRepository {
   Future<Either<Failure, bool>> applyPrivilegePasscode({
     required String passcode,
   }) async {
+    if (!await networkInfo.isConnected) {
+      return const Left(NetworkFailure(errMessage: 'No internet connection'));
+    }
     try {
-      final res = await remoteDataSource.applyPrivilegePasscode(passcode: passcode);
+      final res =
+          await remoteDataSource.applyPrivilegePasscode(passcode: passcode);
       return Right(res);
-    } catch (e) {
-      return Left(ServerFailure(errMessage: e.toString()));
+    } on ServerException catch (e) {
+      return Left(ServerFailure(errMessage: e.errorModel.errorMessage));
+    } catch (_) {
+      return const Left(ServerFailure(errMessage: 'Failed to apply privilege passcode'));
     }
   }
 
@@ -68,6 +95,9 @@ class CheckoutRepositoryImpl implements CheckoutRepository {
     String? notes,
     List<Map<String, dynamic>>? items,
   }) async {
+    if (!await networkInfo.isConnected) {
+      return const Left(NetworkFailure(errMessage: 'No internet connection'));
+    }
     try {
       final order = await remoteDataSource.placeOrder(
         shippingAddress: shippingAddress,
@@ -77,8 +107,10 @@ class CheckoutRepositoryImpl implements CheckoutRepository {
         items: items,
       );
       return Right(order);
-    } catch (e) {
-      return Left(ServerFailure(errMessage: e.toString()));
+    } on ServerException catch (e) {
+      return Left(ServerFailure(errMessage: e.errorModel.errorMessage));
+    } catch (_) {
+      return const Left(ServerFailure(errMessage: 'Failed to place order'));
     }
   }
 }

@@ -7,7 +7,10 @@ class VerifyResetOtpUseCase {
 
   final AuthRepository repository;
 
-  Future<Either<Failure, bool>> call({required String otp}) {
-    return repository.verifyResetOtp(otp: otp);
+  Future<Either<Failure, bool>> call({
+    required String otp,
+    String? email,
+  }) {
+    return repository.verifyResetOtp(otp: otp, email: email);
   }
 }

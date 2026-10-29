@@ -16,6 +16,47 @@ class ReviewCubit extends Cubit<ReviewState> {
   List<ProductReviewEntity> _cachedReviews = [];
   List<ProductReviewEntity> get reviews => _cachedReviews;
 
+  int _selectedFilter = 0;
+  int get selectedFilter => _selectedFilter;
+
+  @override
+  void emit(ReviewState state) {
+    if (!isClosed) {
+      super.emit(state);
+    }
+  }
+
+  void setFilter(int index) {
+    if (_selectedFilter == index) return;
+    _selectedFilter = index;
+    if (state is ReviewSuccessState) {
+      emit((state as ReviewSuccessState).copyWith(selectedFilter: index));
+    }
+  }
+
+  List<ProductReviewEntity> get filteredReviews {
+    if (_selectedFilter == 1) {
+      return _cachedReviews.where((r) => r.rating.round() == 5).toList();
+    } else if (_selectedFilter == 2) {
+      return _cachedReviews.where((r) => r.rating.round() == 4).toList();
+    }
+    return _cachedReviews;
+  }
+
+  List<String> get filterLabels {
+    final count = _cachedReviews.length;
+    final stars5Count =
+        _cachedReviews.where((r) => r.rating.round() == 5).length;
+    final stars4Count =
+        _cachedReviews.where((r) => r.rating.round() == 4).length;
+
+    return [
+      'All ($count)',
+      '★ 5 Stars ($stars5Count)',
+      '★ 4 Stars ($stars4Count)',
+    ];
+  }
+
   Future<void> fetchReviews(String productId) async {
     emit(const ReviewLoadingState());
 
@@ -25,7 +66,10 @@ class ReviewCubit extends Cubit<ReviewState> {
       (failure) => emit(ReviewErrorState(message: failure.errMessage)),
       (items) {
         _cachedReviews = items;
-        emit(ReviewSuccessState(reviews: items));
+        emit(ReviewSuccessState(
+          reviews: items,
+          selectedFilter: _selectedFilter,
+        ));
       },
     );
   }
@@ -51,7 +95,10 @@ class ReviewCubit extends Cubit<ReviewState> {
           review: newReview,
           message: 'Review submitted successfully!',
         ));
-        emit(ReviewSuccessState(reviews: _cachedReviews));
+        emit(ReviewSuccessState(
+          reviews: _cachedReviews,
+          selectedFilter: _selectedFilter,
+        ));
       },
     );
   }

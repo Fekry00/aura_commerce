@@ -22,12 +22,13 @@ abstract class AuthRemoteDataSource {
   Future<bool> resendOtp({required String email});
 
   /// Step 3: Verify OTP only — returns true if valid.
-  Future<bool> verifyResetOtp({required String otp});
+  Future<bool> verifyResetOtp({required String otp, String? email});
 
   /// Step 4: Set new password after OTP is verified.
   Future<bool> resetPassword({
     required String otp,
     required String newPassword,
+    String? email,
   });
 
   /// Refresh Sanctum Bearer Token
@@ -103,10 +104,13 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   }
 
   @override
-  Future<bool> verifyResetOtp({required String otp}) async {
+  Future<bool> verifyResetOtp({required String otp, String? email}) async {
     final response = await apiConsumer.post(
       EndPoint.verifyResetOtp,
-      data: {'otp': otp},
+      data: {
+        'otp': otp,
+        if (email != null && email.isNotEmpty) 'email': email,
+      },
     );
     return response['success'] ?? true;
   }
@@ -115,13 +119,15 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   Future<bool> resetPassword({
     required String otp,
     required String newPassword,
+    String? email,
   }) async {
     final response = await apiConsumer.post(
       EndPoint.resetPassword,
       data: {
+        if (email != null && email.isNotEmpty) 'email': email,
         'otp': otp,
-        'new_password': newPassword,
-        'new_password_confirmation': newPassword,
+        'password': newPassword,
+        'password_confirmation': newPassword,
       },
     );
     return response['success'] ?? true;

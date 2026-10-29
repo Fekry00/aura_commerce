@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:aura/features/home/domain/entities/home_feed_entity.dart';
 import 'package:aura/features/home/domain/entities/sub_entities/category_entity.dart';
 import 'package:aura/features/home/domain/entities/sub_entities/product_highlight_entity.dart';
@@ -10,16 +11,39 @@ class HomeCubit extends Cubit<HomeState> {
   HomeCubit({
     required this.getHomeFeedUseCase,
     required this.toggleFavoriteUseCase,
-  }) : super(const HomeInitialState());
+  }) : super(const HomeInitialState()) {
+    _startCuratedDropTimer();
+  }
 
   final GetHomeFeedUseCase getHomeFeedUseCase;
   final ToggleFavoriteUseCase toggleFavoriteUseCase;
+
+  Timer? _dropTimer;
+  Duration _remainingDropDuration =
+      const Duration(hours: 8, minutes: 24, seconds: 11);
 
   @override
   void emit(HomeState state) {
     if (!isClosed) {
       super.emit(state);
     }
+  }
+
+  void _startCuratedDropTimer() {
+    _dropTimer?.cancel();
+    _dropTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (_remainingDropDuration.inSeconds <= 0) {
+        timer.cancel();
+      } else {
+        _remainingDropDuration =
+            _remainingDropDuration - const Duration(seconds: 1);
+        if (state is HomeSuccessState) {
+          emit((state as HomeSuccessState).copyWith(
+            remainingDropDuration: _remainingDropDuration,
+          ));
+        }
+      }
+    });
   }
 
   Future<void> fetchHomeFeed() async {
@@ -44,6 +68,7 @@ class HomeCubit extends Cubit<HomeState> {
         selectedCategoryId: currentCategoryId,
         selectedCategoryName: currentCategoryName,
         selectedTab: currentTab,
+        remainingDropDuration: _remainingDropDuration,
       )),
     );
   }
@@ -77,17 +102,24 @@ class HomeCubit extends Cubit<HomeState> {
     }
   }
 
-  Future<void> toggleFavorite(String productId, {bool? currentIsFavorite}) async {
+  Future<void> toggleFavorite(
+    String productId, {
+    bool? currentIsFavorite,
+  }) async {
     final currentState = state;
     if (currentState is HomeSuccessState) {
       final feed = currentState.homeFeed;
-      final existingIndex = feed.highlights.indexWhere((p) => p.id == productId);
+      final existingIndex =
+          feed.highlights.indexWhere((p) => p.id == productId);
       final isCurrentlyFav = currentIsFavorite ??
-          (existingIndex != -1 ? feed.highlights[existingIndex].isFavorite : false);
+          (existingIndex != -1
+              ? feed.highlights[existingIndex].isFavorite
+              : false);
 
       if (existingIndex != -1) {
         final oldItem = feed.highlights[existingIndex];
-        final updatedHighlights = List<ProductHighlightEntity>.from(feed.highlights);
+        final updatedHighlights =
+            List<ProductHighlightEntity>.from(feed.highlights);
         updatedHighlights[existingIndex] = ProductHighlightEntity(
           id: oldItem.id,
           title: oldItem.title,
@@ -113,6 +145,7 @@ class HomeCubit extends Cubit<HomeState> {
           selectedCategoryId: currentState.selectedCategoryId,
           selectedCategoryName: currentState.selectedCategoryName,
           selectedTab: currentState.selectedTab,
+          remainingDropDuration: _remainingDropDuration,
         ));
       }
 
@@ -126,5 +159,11 @@ class HomeCubit extends Cubit<HomeState> {
         isCurrentlyFavorite: currentIsFavorite ?? false,
       );
     }
+  }
+
+  @override
+  Future<void> close() {
+    _dropTimer?.cancel();
+    return super.close();
   }
 }

@@ -42,7 +42,7 @@ class ProductSpecificationsCard extends StatelessWidget {
               const SizedBox(width: AppSpacing.spaceSm),
               Expanded(
                 child: Text(
-                  'Machined from monolithic 316L cold-forged stainless steel with dual-domed anti-reflective sapphire crystal, engineered to 5 ATM water resistance.',
+                  '${product?.name ?? "Curated Piece"} — authenticated with certified provenance and luxury packaging. Verified Category: ${product?.categoryName ?? "Curated Goods"}.',
                   style: AppTypography.bodySm.copyWith(
                     color: AppColors.slateBody,
                     fontSize: 12,
@@ -55,14 +55,16 @@ class ProductSpecificationsCard extends StatelessWidget {
         ),
         const SizedBox(height: AppSpacing.spaceMd),
 
-        // Accordion 1: Craftsmanship & Calibre
+        // Accordion 1: Specifications & Provenance
         _buildAccordion(
-          title: 'Craftsmanship & Calibre',
+          title: 'Product Specifications & Calibre',
           content: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'The Aethel Minimalist Chronograph reconciles classic horology with brutalist purity. Featuring custom counterpoised sub-dials and a high-beat automatic movement tuned to +/- 3 seconds daily variance.',
+                product?.description?.isNotEmpty == true
+                    ? product!.description!
+                    : 'Authentic luxury creation carefully inspected and certified by our global atelier network.',
                 style: AppTypography.bodySm.copyWith(
                   color: AppColors.slateBody,
                   fontSize: 12,
@@ -70,37 +72,40 @@ class ProductSpecificationsCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: AppSpacing.spaceMd),
-              const Row(
+              Row(
                 children: [
                   Expanded(
                     child: _SpecCard(
-                      title: 'MOVEMENT',
-                      value: 'Calibre AT-902 Autowind',
+                      title: 'CATEGORY',
+                      value: product?.categoryName ?? 'Curated Goods',
                     ),
                   ),
-                  SizedBox(width: AppSpacing.spaceSm),
+                  const SizedBox(width: AppSpacing.spaceSm),
                   Expanded(
                     child: _SpecCard(
-                      title: 'GLASS',
-                      value: '9H Sapphire Crystal',
+                      title: 'CATALOGUE ID',
+                      value: 'AUR-#${product?.id ?? 1}',
                     ),
                   ),
                 ],
               ),
               const SizedBox(height: AppSpacing.spaceSm),
-              const Row(
+              Row(
                 children: [
                   Expanded(
                     child: _SpecCard(
-                      title: 'STRAP MATERIAL',
-                      value: 'Full-grain Horween Leather',
+                      title: 'STOCK DISPOSITION',
+                      value: (product?.inStock ?? true)
+                          ? 'Available for Dispatch'
+                          : 'By Private Order',
                     ),
                   ),
-                  SizedBox(width: AppSpacing.spaceSm),
+                  const SizedBox(width: AppSpacing.spaceSm),
                   Expanded(
                     child: _SpecCard(
-                      title: 'POWER RESERVE',
-                      value: '44-Hour Reserve',
+                      title: 'COLLECTOR RATING',
+                      value:
+                          '★ ${product?.rating ?? 4.9} (${product?.reviewsCount ?? 0})',
                     ),
                   ),
                 ],
@@ -131,11 +136,11 @@ class ProductSpecificationsCard extends StatelessWidget {
         ),
         const SizedBox(height: AppSpacing.spaceSm),
 
-        // Accordion 3: Atelier 5-Year Guarantee
+        // Accordion 3: Atelier Certified Guarantee
         _buildAccordion(
-          title: 'Atelier 5-Year Guarantee',
+          title: 'Atelier Certified Guarantee',
           content: Text(
-            'Every AURA timepiece is registered to our global horological registry. Comprehensive servicing, mechanical calibration, and water-resistance seal renewals are guaranteed every 24 months.',
+            'Every item in the Aura portfolio is registered to our global authentication ledger. Comprehensive servicing, verification, and dedicated concierge support are included.',
             style: AppTypography.bodySm.copyWith(
               color: AppColors.slateBody,
               fontSize: 12,
@@ -292,12 +297,11 @@ class ProductSpecificationsCard extends StatelessWidget {
                       );
                     }
                   },
-                  child: const Text(
+                  child: Text(
                     'Be the first to review',
-                    style: TextStyle(
-                      color: Color(0xFF1E382B),
+                    style: AppTypography.labelSm.copyWith(
+                      color: const Color(0xFF1E382B),
                       fontWeight: FontWeight.w700,
-                      fontSize: 12,
                     ),
                   ),
                 ),

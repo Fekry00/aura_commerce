@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:aura/features/auth/domain/usecases/auth_change_password_usecase.dart';
 import 'package:aura/features/auth/domain/usecases/forgot_password_usecase.dart';
 import 'package:aura/features/auth/domain/usecases/logout_usecase.dart';
@@ -33,11 +34,66 @@ class AuthCubit extends Cubit<AuthState> {
   final LogoutUseCase logoutUseCase;
   final AuthChangePasswordUseCase changePasswordUseCase;
 
+  String? resetEmail;
+  Timer? _otpTimer;
+  int _otpSecondsRemaining = 120;
+  bool _canResendOtp = false;
+
+  int get otpSecondsRemaining => _otpSecondsRemaining;
+  bool get canResendOtp => _canResendOtp;
+  String get formattedOtpTimer {
+    final m = (_otpSecondsRemaining ~/ 60).toString().padLeft(2, '0');
+    final s = (_otpSecondsRemaining % 60).toString().padLeft(2, '0');
+    return '$m:$s';
+  }
+
+  void startOtpTimer({int duration = 120}) {
+    _otpTimer?.cancel();
+    _otpSecondsRemaining = duration;
+    _canResendOtp = false;
+    emit(AuthOtpTimerTickState(
+      secondsRemaining: _otpSecondsRemaining,
+      canResend: _canResendOtp,
+      formattedTimer: formattedOtpTimer,
+    ));
+
+    _otpTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (_otpSecondsRemaining <= 1) {
+        timer.cancel();
+        _otpSecondsRemaining = 0;
+        _canResendOtp = true;
+        emit(const AuthOtpTimerTickState(
+          secondsRemaining: 0,
+          canResend: true,
+          formattedTimer: '00:00',
+        ));
+      } else {
+        _otpSecondsRemaining--;
+        emit(AuthOtpTimerTickState(
+          secondsRemaining: _otpSecondsRemaining,
+          canResend: false,
+          formattedTimer: formattedOtpTimer,
+        ));
+      }
+    });
+  }
+
+  void stopOtpTimer() {
+    _otpTimer?.cancel();
+    _otpTimer = null;
+  }
+
   @override
   void emit(AuthState state) {
     if (!isClosed) {
       super.emit(state);
     }
+  }
+
+  @override
+  Future<void> close() {
+    _otpTimer?.cancel();
+    return super.close();
   }
 
   Future<void> signIn({
@@ -108,38 +164,47 @@ class AuthCubit extends Cubit<AuthState> {
       return;
     }
 
+    resetEmail = email.trim();
     emit(const AuthLoadingState());
 
     final result = await forgotPasswordUseCase(email: email);
 
     result.fold(
       (failure) => emit(AuthErrorState(message: failure.errMessage)),
-      (_) => emit(const AuthOtpSentState()),
+      (_) {
+        startOtpTimer();
+        emit(const AuthOtpSentState());
+      },
     );
   }
 
   /// Step 2 (optional): Resend OTP to the same email.
   Future<void> resendOtp({required String email}) async {
+    resetEmail = email.trim();
     emit(const AuthLoadingState());
 
     final result = await resendOtpUseCase(email: email);
 
     result.fold(
       (failure) => emit(AuthErrorState(message: failure.errMessage)),
-      (_) => emit(const AuthOtpSentState()),
+      (_) {
+        startOtpTimer();
+        emit(const AuthOtpSentState());
+      },
     );
   }
 
   /// Step 3: Verify OTP.
-  Future<void> verifyResetOtp({required String otp}) async {
+  Future<void> verifyResetOtp({required String otp, String? email}) async {
     if (otp.length < 6) {
       emit(const AuthErrorState(message: 'Please enter all 6 digits.'));
       return;
     }
 
+    final targetEmail = email ?? resetEmail;
     emit(const AuthLoadingState());
 
-    final result = await verifyResetOtpUseCase(otp: otp);
+    final result = await verifyResetOtpUseCase(otp: otp, email: targetEmail);
 
     result.fold(
       (failure) => emit(AuthErrorState(message: failure.errMessage)),
@@ -152,6 +217,7 @@ class AuthCubit extends Cubit<AuthState> {
     required String otp,
     required String newPassword,
     String? confirmPassword,
+    String? email,
     bool isFormValid = true,
   }) async {
     if (!isFormValid) {
@@ -171,11 +237,13 @@ class AuthCubit extends Cubit<AuthState> {
       return;
     }
 
+    final targetEmail = email ?? resetEmail;
     emit(const AuthLoadingState());
 
     final result = await resetPasswordUseCase(
       otp: otp,
       newPassword: newPassword,
+      email: targetEmail,
     );
 
     result.fold(
@@ -203,11 +271,13 @@ class AuthCubit extends Cubit<AuthState> {
 
   /// Dispatches keycode resend notification
   void dispatchKeycode() {
+    startOtpTimer(duration: 40);
     emit(const AuthInfoMessageState(message: 'New keycode dispatched.'));
   }
 
   /// Dispatches keycode via SMS notification
   void dispatchKeycodeSms() {
+    startOtpTimer(duration: 40);
     emit(const AuthInfoMessageState(message: 'Authorization keycode dispatched via SMS.'));
   }
 

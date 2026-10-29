@@ -40,9 +40,55 @@ class CartModel extends CartEntity {
     final summaryItemsCount = ((summaryMap?['itemsCount'] ?? summaryMap?['items_count']) as num?)?.toInt() ?? itemsList.length;
     final summarySubtotal = ((summaryMap?['subtotal'] ?? summaryMap?['subTotal']) as num?)?.toDouble() ?? calculatedSubtotal;
 
+    final voucher = (json['voucher'] ?? json['voucher_privilege']) != null
+        ? VoucherModel.fromJson(
+            (json['voucher'] ?? json['voucher_privilege'])
+                as Map<String, dynamic>,
+          )
+        : null;
+
+    double discountAmount = ((summaryMap?['discount_amount'] ??
+            summaryMap?['discountAmount']) as num?)
+        ?.toDouble() ??
+        0.0;
+
+    if (discountAmount == 0.0 && voucher != null) {
+      if (voucher.type == 'fixed') {
+        discountAmount = voucher.value <= summarySubtotal
+            ? voucher.value
+            : summarySubtotal;
+      } else {
+        discountAmount = summarySubtotal * voucher.discountRate;
+      }
+    }
+
+    final shippingLabel = (summaryMap?['shipping_label'] ??
+            summaryMap?['shippingLabel'] ??
+            json['shipping_label']) as String? ??
+        'COMPLIMENTARY';
+
+    final tax = ((summaryMap?['tax'] ?? summaryMap?['sales_tax']) as num?)
+            ?.toDouble() ??
+        0.0;
+
+    final taxLocation = (summaryMap?['tax_location'] ??
+            summaryMap?['taxLocation'] ??
+            json['tax_location']) as String? ??
+        '';
+
+    final calculatedTotal = (summarySubtotal - discountAmount + tax)
+        .clamp(0.0, double.infinity);
+
+    final total = ((summaryMap?['total'] ?? summaryMap?['total_payable'])
+            as num?)
+        ?.toDouble() ??
+        calculatedTotal;
+
     return CartModel(
-      curatedBadge: (dataMap['curated_badge'] ?? dataMap['curatedBadge'] ?? json['curated_badge'] ?? json['curatedBadge'])
-              as String? ??
+      curatedBadge: (dataMap['curated_badge'] ??
+              dataMap['curatedBadge'] ??
+              json['curated_badge'] ??
+              json['curatedBadge']) as String? ??
           '${itemsList.length} CURATED ITEMS',
       shippingMeter: json['shipping_meter'] is Map<String, dynamic>
           ? ShippingMeterModel.fromJson(
@@ -57,28 +103,56 @@ class CartModel extends CartEntity {
               isComplimentary: true,
             ),
       items: itemsList,
-      voucher: (json['voucher'] ?? json['voucher_privilege']) != null
-          ? VoucherModel.fromJson(
-              (json['voucher'] ?? json['voucher_privilege'])
-                  as Map<String, dynamic>,
-            )
-          : null,
-      orderSummary: summaryMap != null
-          ? OrderSummaryModel.fromJson({
-              ...summaryMap,
-              'subtotal': summarySubtotal,
-              'itemsCount': summaryItemsCount,
-              'total': summarySubtotal,
-            })
-          : OrderSummaryModel(
-              itemsCount: itemsList.length,
-              subtotal: calculatedSubtotal,
-              discountAmount: 0.0,
-              shippingLabel: 'COMPLIMENTARY',
-              tax: 0.0,
-              taxLocation: 'CA',
-              total: calculatedSubtotal,
-            ),
+      voucher: voucher,
+      orderSummary: OrderSummaryModel(
+        itemsCount: summaryItemsCount,
+        subtotal: summarySubtotal,
+        discountAmount: discountAmount,
+        shippingLabel: shippingLabel,
+        tax: tax,
+        taxLocation: taxLocation,
+        total: total,
+      ),
+    );
+  }
+
+  CartModel applyVoucher(VoucherModel? newVoucher) {
+    if (newVoucher == null) {
+      final newTotal = (orderSummary.subtotal + orderSummary.tax)
+          .clamp(0.0, double.infinity);
+      return CartModel(
+        curatedBadge: curatedBadge,
+        shippingMeter: shippingMeter as ShippingMeterModel,
+        items: items.map((e) => e as CartItemModel).toList(),
+        voucher: null,
+        orderSummary: (orderSummary as OrderSummaryModel).copyWith(
+          discountAmount: 0.0,
+          total: newTotal,
+        ),
+      );
+    }
+
+    double discount = 0.0;
+    if (newVoucher.type == 'fixed') {
+      discount = newVoucher.value <= orderSummary.subtotal
+          ? newVoucher.value
+          : orderSummary.subtotal;
+    } else {
+      discount = orderSummary.subtotal * newVoucher.discountRate;
+    }
+
+    final newTotal = (orderSummary.subtotal - discount + orderSummary.tax)
+        .clamp(0.0, double.infinity);
+
+    return CartModel(
+      curatedBadge: curatedBadge,
+      shippingMeter: shippingMeter as ShippingMeterModel,
+      items: items.map((e) => e as CartItemModel).toList(),
+      voucher: newVoucher,
+      orderSummary: (orderSummary as OrderSummaryModel).copyWith(
+        discountAmount: discount,
+        total: newTotal,
+      ),
     );
   }
 

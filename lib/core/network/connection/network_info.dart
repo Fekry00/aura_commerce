@@ -12,22 +12,23 @@ class NetworkInfoImpl implements NetworkInfo {
 
   @override
   Future<bool> get isConnected async {
+    // 1. Fast check: is local backend directly reachable (via adb reverse / localhost:8000)
+    try {
+      final socket = await Socket.connect(
+        '127.0.0.1',
+        8000,
+        timeout: const Duration(milliseconds: 500),
+      );
+      socket.destroy();
+      return true;
+    } catch (_) {}
+
+    // 2. General internet connection check
     try {
       final hasNet = await connectionChecker.hasConnection;
       if (hasNet) return true;
     } catch (_) {}
 
-    // Fallback: Check if local backend is reachable (via adb reverse / localhost:8000)
-    try {
-      final socket = await Socket.connect(
-        '127.0.0.1',
-        8000,
-        timeout: const Duration(seconds: 2),
-      );
-      socket.destroy();
-      return true;
-    } catch (_) {
-      return false;
-    }
+    return false;
   }
 }

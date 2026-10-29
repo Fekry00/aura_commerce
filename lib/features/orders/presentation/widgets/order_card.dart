@@ -4,6 +4,7 @@ import 'package:aura/core/theme/app_colors.dart';
 import 'package:aura/core/theme/app_typography.dart';
 import 'package:aura/features/orders/domain/entities/order_entity.dart';
 import 'package:aura/features/orders/presentation/utils/order_ui_helper.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class OrderCard extends StatelessWidget {
@@ -31,7 +32,7 @@ class OrderCard extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(AppSpacing.spaceMd),
           border: Border.all(color: const Color(0xFFE2E8F0)),
           boxShadow: [
             BoxShadow(
@@ -41,7 +42,7 @@ class OrderCard extends StatelessWidget {
             ),
           ],
         ),
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(AppSpacing.spaceMd),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -51,24 +52,24 @@ class OrderCard extends StatelessWidget {
               children: [
                 Text(
                   'Order #AUR-${order.id}',
-                  style: AppTypography.headlineSm.copyWith(
-                    fontSize: 14,
+                  style: AppTypography.bodyMd.copyWith(
                     fontWeight: FontWeight.w800,
                     color: const Color(0xFF002419),
                   ),
                 ),
                 Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.spaceSm,
+                    vertical: AppSpacing.spaceXs,
+                  ),
                   decoration: BoxDecoration(
                     color: statusBg,
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(AppSpacing.space12),
                   ),
                   child: Text(
                     order.status.toUpperCase(),
-                    style: TextStyle(
+                    style: AppTypography.labelCaps.copyWith(
                       color: statusColor,
-                      fontSize: 10.5,
                       fontWeight: FontWeight.w800,
                       letterSpacing: 0.8,
                     ),
@@ -76,64 +77,66 @@ class OrderCard extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: AppSpacing.spaceSm),
 
             // Date & Items count
             Row(
               children: [
                 const Icon(
                   Icons.calendar_today_outlined,
-                  size: 13,
+                  size: 14,
                   color: AppColors.slateBody,
                 ),
-                const SizedBox(width: 5),
+                const SizedBox(width: AppSpacing.spaceXs),
                 Text(
                   formattedDate,
-                  style: const TextStyle(
-                    fontSize: 12,
+                  style: AppTypography.bodySm.copyWith(
                     color: AppColors.slateBody,
                   ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: AppSpacing.space12),
                 Text(
                   '•  $itemsCountText',
-                  style: const TextStyle(
-                    fontSize: 12,
+                  style: AppTypography.bodySm.copyWith(
                     color: AppColors.slateBody,
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: AppSpacing.space12),
 
             // Item Thumbnails
             if (order.items.isNotEmpty) ...[
               SizedBox(
-                height: 48,
+                height: AppSpacing.space2Xl,
                 child: ListView.separated(
                   scrollDirection: Axis.horizontal,
                   physics: const BouncingScrollPhysics(),
                   itemCount: order.items.length,
                   separatorBuilder: (context, index) =>
-                      const SizedBox(width: 8),
+                      const SizedBox(width: AppSpacing.spaceSm),
                   itemBuilder: (context, index) {
                     final item = order.items[index];
                     return Container(
-                      width: 48,
-                      height: 48,
+                      width: AppSpacing.space2Xl,
+                      height: AppSpacing.space2Xl,
                       decoration: BoxDecoration(
                         color: const Color(0xFFF8FAFC),
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(AppSpacing.spaceSm),
                         border: Border.all(color: const Color(0xFFE2E8F0)),
                       ),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(7),
                         child: (item.productThumbnail != null &&
                                 item.productThumbnail!.isNotEmpty)
-                            ? Image.network(
-                                EndPoint.fixImageUrl(item.productThumbnail!),
+                            ? CachedNetworkImage(
+                                imageUrl: EndPoint.fixImageUrl(
+                                    item.productThumbnail!),
                                 fit: BoxFit.cover,
-                                errorBuilder: (context, error, stackTrace) =>
+                                placeholder: (context, url) => Container(
+                                  color: const Color(0xFFF1F5F9),
+                                ),
+                                errorWidget: (context, url, error) =>
                                     const Icon(
                                   Icons.shopping_bag_outlined,
                                   size: 18,
@@ -150,12 +153,12 @@ class OrderCard extends StatelessWidget {
                   },
                 ),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: AppSpacing.space12),
             ],
 
             // Divider
             const Divider(color: Color(0xFFF1F5F9), height: 1),
-            const SizedBox(height: 10),
+            const SizedBox(height: AppSpacing.spaceSm),
 
             // Bottom Row: Total & Actions
             Row(
@@ -164,20 +167,18 @@ class OrderCard extends StatelessWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       'TOTAL',
-                      style: TextStyle(
-                        fontSize: 9.5,
+                      style: AppTypography.labelCaps.copyWith(
                         fontWeight: FontWeight.w700,
                         color: AppColors.slateBody,
                       ),
                     ),
                     Text(
                       priceText,
-                      style: const TextStyle(
-                        fontSize: 15,
+                      style: AppTypography.priceCatalog.copyWith(
                         fontWeight: FontWeight.w900,
-                        color: Color(0xFF0B3B2C),
+                        color: const Color(0xFF0B3B2C),
                       ),
                     ),
                   ],
@@ -190,23 +191,23 @@ class OrderCard extends StatelessWidget {
                         style: OutlinedButton.styleFrom(
                           side: const BorderSide(color: Color(0xFFEF4444)),
                           padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 6,
+                            horizontal: AppSpacing.space12,
+                            vertical: AppSpacing.spaceXs,
                           ),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
+                            borderRadius:
+                                BorderRadius.circular(AppSpacing.spaceSm),
                           ),
                         ),
-                        child: const Text(
+                        child: Text(
                           'Cancel',
-                          style: TextStyle(
-                            color: Color(0xFFEF4444),
-                            fontSize: 12,
+                          style: AppTypography.labelSm.copyWith(
+                            color: const Color(0xFFEF4444),
                             fontWeight: FontWeight.w700,
                           ),
                         ),
                       ),
-                      const SizedBox(width: 8),
+                      const SizedBox(width: AppSpacing.spaceSm),
                     ],
                     if (order.isShipped || order.isDelivered) ...[
                       ElevatedButton(
@@ -221,28 +222,29 @@ class OrderCard extends StatelessWidget {
                           backgroundColor: AppColors.secondary,
                           foregroundColor: Colors.white,
                           padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 6,
+                            horizontal: AppSpacing.space12,
+                            vertical: AppSpacing.spaceXs,
                           ),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
+                            borderRadius:
+                                BorderRadius.circular(AppSpacing.spaceSm),
                           ),
                         ),
-                        child: const Row(
+                        child: Row(
                           children: [
-                            Icon(Icons.local_shipping_outlined, size: 14),
-                            SizedBox(width: 4),
+                            const Icon(Icons.local_shipping_outlined, size: 14),
+                            const SizedBox(width: AppSpacing.spaceXs),
                             Text(
                               'Track',
-                              style: TextStyle(
-                                fontSize: 12,
+                              style: AppTypography.labelSm.copyWith(
                                 fontWeight: FontWeight.w700,
+                                color: Colors.white,
                               ),
                             ),
                           ],
                         ),
                       ),
-                      const SizedBox(width: 8),
+                      const SizedBox(width: AppSpacing.spaceSm),
                     ],
                     ElevatedButton(
                       onPressed: () => onDetailsTap?.call(order),
@@ -250,24 +252,25 @@ class OrderCard extends StatelessWidget {
                         backgroundColor: const Color(0xFF0B3B2C),
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(
-                          horizontal: 14,
-                          vertical: 6,
+                          horizontal: AppSpacing.space12,
+                          vertical: AppSpacing.spaceXs,
                         ),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius:
+                              BorderRadius.circular(AppSpacing.spaceSm),
                         ),
                       ),
-                      child: const Row(
+                      child: Row(
                         children: [
                           Text(
                             'Details',
-                            style: TextStyle(
-                              fontSize: 12,
+                            style: AppTypography.labelSm.copyWith(
                               fontWeight: FontWeight.w700,
+                              color: Colors.white,
                             ),
                           ),
-                          SizedBox(width: 4),
-                          Icon(Icons.arrow_forward_ios, size: 10),
+                          const SizedBox(width: AppSpacing.spaceXs),
+                          const Icon(Icons.arrow_forward_ios, size: 10),
                         ],
                       ),
                     ),

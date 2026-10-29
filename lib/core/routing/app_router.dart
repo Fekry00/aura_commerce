@@ -15,7 +15,6 @@ import 'package:aura/features/product/presentation/views/product_reviews_view.da
 import 'package:aura/features/checkout/presentation/cubit/checkout_cubit.dart';
 import 'package:aura/features/checkout/presentation/views/checkout_view.dart';
 import 'package:aura/features/orders/domain/entities/order_entity.dart';
-import 'package:aura/features/orders/domain/usecases/get_order_tracking_usecase.dart';
 import 'package:aura/features/orders/presentation/cubit/orders_cubit.dart';
 import 'package:aura/features/orders/presentation/views/orders_view.dart';
 import 'package:aura/features/orders/presentation/views/order_success_receipt_view.dart';
@@ -149,11 +148,15 @@ class AppRouter {
           order = args;
           orderId = args.id;
         }
+        final targetOrderId = orderId ?? order?.id ?? 1;
         return _buildPageRoute(
-          OrderTrackingDetailsView(
-            orderId: orderId,
-            initialOrder: order,
-            getOrderTrackingUseCase: sl<GetOrderTrackingUseCase>(),
+          BlocProvider(
+            create: (context) =>
+                sl<OrdersCubit>()..fetchOrderTracking(targetOrderId),
+            child: OrderTrackingDetailsView(
+              orderId: orderId,
+              initialOrder: order,
+            ),
           ),
           settings: settings,
         );
@@ -235,9 +238,10 @@ class AppRouter {
       case Routes.resetPasswordView:
         final resetArgs = arguments as Map<String, dynamic>? ?? {};
         final otp = resetArgs['otp'] as String? ?? '';
+        final email = resetArgs['email'] as String? ?? '';
         return _buildPageRoute(
           BlocProvider(
-            create: (context) => sl<AuthCubit>(),
+            create: (context) => sl<AuthCubit>()..resetEmail = email,
             child: ResetPasswordView(otp: otp),
           ),
           settings: settings,

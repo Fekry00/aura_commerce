@@ -45,38 +45,37 @@ class CheckoutShippingAddressSection extends StatelessWidget {
                     ),
                     GestureDetector(
                       onTap: onChooseSavedAddress,
-                      child: const Text(
+                      child: Text(
                         'Choose Saved Address',
-                        style: TextStyle(
-                          color: Color(0xFF0B3B2C),
+                        style: AppTypography.bodySm.copyWith(
+                          color: const Color(0xFF0B3B2C),
                           fontWeight: FontWeight.w700,
-                          fontSize: 12,
                           decoration: TextDecoration.underline,
                         ),
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: AppSpacing.spaceSm),
               ],
               TextFormField(
                 controller: addressController,
                 maxLines: 2,
                 decoration: InputDecoration(
                   hintText: 'Enter street address, building, apartment, city...',
-                  hintStyle: const TextStyle(fontSize: 13, color: Colors.black38),
+                  hintStyle: AppTypography.bodySm.copyWith(color: Colors.black38),
                   filled: true,
                   fillColor: AppColors.surfaceContainerLowest,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(AppSpacing.space12),
                     borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
                   ),
                   enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(AppSpacing.space12),
                     borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(AppSpacing.space12),
                     borderSide: const BorderSide(
                       color: Color(0xFF0B3B2C),
                       width: 1.5,
@@ -88,7 +87,7 @@ class CheckoutShippingAddressSection extends StatelessWidget {
             ],
           ),
         ),
-        const SizedBox(height: 20),
+        const SizedBox(height: AppSpacing.margin),
         CheckoutSectionCard(
           title: 'RECIPIENT CONTACT PHONE',
           icon: Icons.phone_outlined,
@@ -97,7 +96,7 @@ class CheckoutShippingAddressSection extends StatelessWidget {
             keyboardType: TextInputType.phone,
             decoration: InputDecoration(
               hintText: 'e.g. 010XXXXXXXX',
-              hintStyle: const TextStyle(fontSize: 13, color: Colors.black38),
+              hintStyle: AppTypography.bodySm.copyWith(color: Colors.black38),
               prefixIcon: const Icon(
                 Icons.call_rounded,
                 size: 18,
@@ -106,15 +105,15 @@ class CheckoutShippingAddressSection extends StatelessWidget {
               filled: true,
               fillColor: AppColors.surfaceContainerLowest,
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(AppSpacing.space12),
                 borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
               ),
               enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(AppSpacing.space12),
                 borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
               ),
               focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(AppSpacing.space12),
                 borderSide: const BorderSide(
                   color: Color(0xFF0B3B2C),
                   width: 1.5,

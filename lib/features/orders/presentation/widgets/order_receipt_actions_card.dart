@@ -1,3 +1,4 @@
+import 'package:aura/core/theme/app_typography.dart';
 import 'package:flutter/material.dart';
 
 class OrderReceiptActionsCard extends StatelessWidget {
@@ -19,28 +20,30 @@ class OrderReceiptActionsCard extends StatelessWidget {
         if (onTrackOrder != null) ...[
           SizedBox(
             width: double.infinity,
-            height: 48,
+            height: AppSpacing.space2Xl,
             child: ElevatedButton.icon(
               onPressed: onTrackOrder,
               icon: const Icon(Icons.local_shipping_outlined, size: 18),
-              label: const Text(
+              label: Text(
                 'Track Courier Dispatch',
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                style: AppTypography.bodyMd.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
               ),
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF0B3B2C),
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
+                  borderRadius: BorderRadius.circular(AppSpacing.space12),
                 ),
               ),
             ),
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: AppSpacing.spaceSm),
         ],
         SizedBox(
           width: double.infinity,
-          height: 48,
+          height: AppSpacing.space2Xl,
           child: ElevatedButton(
             onPressed: onViewAllOrders,
             style: ElevatedButton.styleFrom(
@@ -54,33 +57,34 @@ class OrderReceiptActionsCard extends StatelessWidget {
                   ? const BorderSide(color: Color(0xFF0B3B2C))
                   : null,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: BorderRadius.circular(AppSpacing.space12),
               ),
             ),
-            child: const Text(
+            child: Text(
               'View All My Orders',
-              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+              style: AppTypography.bodyMd.copyWith(
+                fontWeight: FontWeight.w700,
+              ),
             ),
           ),
         ),
-        const SizedBox(height: 10),
+        const SizedBox(height: AppSpacing.spaceSm),
         SizedBox(
           width: double.infinity,
-          height: 48,
+          height: AppSpacing.space2Xl,
           child: OutlinedButton(
             onPressed: onReturnHome,
             style: OutlinedButton.styleFrom(
               side: const BorderSide(color: Color(0xFF0B3B2C)),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: BorderRadius.circular(AppSpacing.space12),
               ),
             ),
-            child: const Text(
+            child: Text(
               'Return to Home',
-              style: TextStyle(
-                fontSize: 14,
+              style: AppTypography.bodyMd.copyWith(
                 fontWeight: FontWeight.w700,
-                color: Color(0xFF0B3B2C),
+                color: const Color(0xFF0B3B2C),
               ),
             ),
           ),

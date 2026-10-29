@@ -17,7 +17,7 @@ class CategoryDetailsEmptyState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(40),
+      padding: const EdgeInsets.all(AppSpacing.spaceXl),
       child: Center(
         child: Column(
           children: [
@@ -26,14 +26,14 @@ class CategoryDetailsEmptyState extends StatelessWidget {
               size: 44,
               color: AppColors.outline,
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: AppSpacing.space12),
             Text(
               isSubDepartmentFiltered
                   ? 'No products in this sub-department'
                   : 'No products available in this category',
               style: AppTypography.headlineSm.copyWith(fontSize: 15),
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: AppSpacing.spaceXs),
             Text(
               isSubDepartmentFiltered
                   ? 'Try selecting another department or view all items.'
@@ -44,12 +44,12 @@ class CategoryDetailsEmptyState extends StatelessWidget {
               ),
             ),
             if (isSubDepartmentFiltered) ...[
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.spaceMd),
               OutlinedButton(
                 onPressed: onResetFilter,
                 child: Text(
                   'View All in $categoryName',
-                  style: const TextStyle(color: Color(0xFF0B3B2C)),
+                  style: AppTypography.labelCaps.copyWith(color: const Color(0xFF0B3B2C)),
                 ),
               ),
             ],

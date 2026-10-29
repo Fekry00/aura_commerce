@@ -4,6 +4,7 @@ import 'package:aura/core/databases/cache/cache_helper.dart';
 import 'package:aura/features/cart/data/models/cart_model.dart';
 import 'package:aura/features/cart/data/models/sub_models/order_summary_model.dart';
 import 'package:aura/features/cart/data/models/sub_models/shipping_meter_model.dart';
+import 'package:aura/features/cart/data/models/sub_models/voucher_model.dart';
 
 abstract class CartLocalDataSource {
   Future<CartModel> getLastCart();
@@ -31,12 +32,19 @@ abstract class CartLocalDataSource {
   });
 
   Future<bool> removeVoucherLocal();
+
+  Future<VoucherModel?> getCachedVoucher();
+
+  Future<void> cacheVoucher(VoucherModel voucher);
+
+  Future<void> clearCachedVoucher();
 }
 
 class CartLocalDataSourceImpl implements CartLocalDataSource {
   const CartLocalDataSourceImpl();
 
   static const String cachedCartKey = 'CACHED_CART';
+  static const String cachedVoucherKey = 'CACHED_VOUCHER';
 
   @override
   Future<CartModel> getLastCart() async {
@@ -59,6 +67,31 @@ class CartLocalDataSourceImpl implements CartLocalDataSource {
   }
 
   @override
+  Future<VoucherModel?> getCachedVoucher() async {
+    final cachedData = CacheHelper.getDataString(key: cachedVoucherKey);
+    if (cachedData != null && cachedData.isNotEmpty) {
+      try {
+        final decoded = jsonDecode(cachedData) as Map<String, dynamic>;
+        return VoucherModel.fromJson(decoded);
+      } catch (_) {}
+    }
+    return null;
+  }
+
+  @override
+  Future<void> cacheVoucher(VoucherModel voucher) async {
+    await CacheHelper.saveData(
+      key: cachedVoucherKey,
+      value: jsonEncode(voucher.toJson()),
+    );
+  }
+
+  @override
+  Future<void> clearCachedVoucher() async {
+    await CacheHelper.removeData(key: cachedVoucherKey);
+  }
+
+  @override
   Future<bool> addToCartLocal({
     required int productId,
     int quantity = 1,
@@ -69,6 +102,7 @@ class CartLocalDataSourceImpl implements CartLocalDataSource {
   @override
   Future<bool> clearCartLocal() async {
     await CacheHelper.removeData(key: cachedCartKey);
+    await clearCachedVoucher();
     return true;
   }
 
@@ -92,6 +126,7 @@ class CartLocalDataSourceImpl implements CartLocalDataSource {
 
   @override
   Future<bool> removeVoucherLocal() async {
+    await clearCachedVoucher();
     return true;
   }
 

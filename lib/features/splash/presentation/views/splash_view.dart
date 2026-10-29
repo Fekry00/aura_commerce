@@ -8,8 +8,8 @@ import 'package:aura/features/cart/presentation/cubit/cart_cubit.dart';
 import 'package:aura/features/profile/presentation/cubit/profile_cubit.dart';
 import 'package:aura/features/splash/presentation/widgets/splash_gold_particles_painter.dart';
 import 'package:aura/features/wishlist/presentation/cubit/wishlist_cubit.dart';
+import 'package:aura/core/theme/app_typography.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 /// Interactive Luxury Animated Splash View in Light Mode
 /// Matching the Aura Atelier & Concierge visual identity.
@@ -236,22 +236,12 @@ class _SplashViewState extends State<SplashView>
                       children: [
                         Text(
                           'A U R A',
-                          style: GoogleFonts.cormorantGaramond(
-                            fontSize: 30,
-                            fontWeight: FontWeight.w600,
-                            letterSpacing: 10,
-                            color: const Color(0xFF9E834B),
-                          ),
+                          style: AppTypography.brandSplashTitle,
                         ),
-                        const SizedBox(height: 10),
+                        const SizedBox(height: AppSpacing.spaceSm),
                         Text(
                           'ATELIER & CONCIERGE',
-                          style: GoogleFonts.cormorantGaramond(
-                            fontSize: 11.5,
-                            fontWeight: FontWeight.w500,
-                            letterSpacing: 4,
-                            color: const Color(0xFF8C7A5B),
-                          ),
+                          style: AppTypography.brandSplashSubtitle,
                         ),
                       ],
                     ),

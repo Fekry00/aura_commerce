@@ -48,6 +48,10 @@ class AuthValidationHelper {
   static bool hasSymbol(String password) => password
       .contains(RegExp(r'[!@#\$&*~%^()_\-+=<>?/{}[\]]'));
 
+  /// Check if password satisfies all criteria (min length, number, symbol)
+  static bool isStrong(String password) =>
+      hasMinChars(password) && hasNumber(password) && hasSymbol(password);
+
   /// Password confirmation match check
   static bool isMatching(String password, String confirmPassword) =>
       confirmPassword.isNotEmpty && confirmPassword == password;

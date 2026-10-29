@@ -1,7 +1,6 @@
 import 'package:aura/core/routing/routes.dart';
 import 'package:aura/core/theme/app_typography.dart';
 import 'package:aura/features/orders/domain/entities/order_entity.dart';
-import 'package:aura/features/orders/presentation/controllers/order_receipt_controller.dart';
 import 'package:flutter/material.dart';
 import 'order_receipt_actions_card.dart';
 import 'order_receipt_consignment_card.dart';
@@ -11,12 +10,14 @@ import 'order_receipt_status_header.dart';
 
 class OrderSuccessReceiptBody extends StatelessWidget {
   final OrderEntity order;
-  final OrderReceiptController controller;
+  final VoidCallback onViewAllOrders;
+  final VoidCallback onReturnHome;
 
   const OrderSuccessReceiptBody({
     super.key,
     required this.order,
-    required this.controller,
+    required this.onViewAllOrders,
+    required this.onReturnHome,
   });
 
   @override
@@ -45,8 +46,8 @@ class OrderSuccessReceiptBody extends StatelessWidget {
                 arguments: order,
               );
             },
-            onViewAllOrders: () => controller.onViewAllOrders(context),
-            onReturnHome: () => controller.onReturnHome(context),
+            onViewAllOrders: onViewAllOrders,
+            onReturnHome: onReturnHome,
           ),
           const SizedBox(height: AppSpacing.spaceXl),
         ],

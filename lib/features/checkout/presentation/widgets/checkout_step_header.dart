@@ -17,10 +17,10 @@ class CheckoutStepHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.spaceMd, vertical: AppSpacing.space12),
       decoration: BoxDecoration(
         color: const Color(0xFF0B3B2C).withValues(alpha: 0.05),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AppSpacing.spaceMd),
         border: Border.all(
           color: const Color(0xFF0B3B2C).withValues(alpha: 0.15),
         ),
@@ -37,15 +37,14 @@ class CheckoutStepHeader extends StatelessWidget {
             child: Center(
               child: Text(
                 stepNumber,
-                style: const TextStyle(
+                style: AppTypography.labelCaps.copyWith(
                   color: Colors.white,
                   fontWeight: FontWeight.w700,
-                  fontSize: 13,
                 ),
               ),
             ),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: AppSpacing.space12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -59,7 +58,7 @@ class CheckoutStepHeader extends StatelessWidget {
                     letterSpacing: 1.2,
                   ),
                 ),
-                const SizedBox(height: 2),
+                const SizedBox(height: AppSpacing.space2Xs),
                 Text(
                   stepSubtitle,
                   style: AppTypography.bodySm.copyWith(

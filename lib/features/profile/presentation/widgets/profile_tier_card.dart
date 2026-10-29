@@ -2,6 +2,7 @@ import 'package:aura/core/routing/routes.dart';
 import 'package:aura/core/theme/app_colors.dart';
 import 'package:aura/core/theme/app_typography.dart';
 import 'package:aura/features/profile/presentation/cubit/profile_cubit.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -80,15 +81,14 @@ class ProfileTierCard extends StatelessWidget {
                   radius: AppSpacing.spaceLg + AppSpacing.spaceXs,
                   backgroundColor: const Color(0xFF0B3B2C),
                   backgroundImage: avatarUrl.isNotEmpty
-                      ? NetworkImage(avatarUrl)
+                      ? CachedNetworkImageProvider(avatarUrl)
                       : null,
                   child: avatarUrl.isEmpty
                       ? Text(
                           userName.isNotEmpty ? userName[0].toUpperCase() : 'A',
-                          style: const TextStyle(
+                          style: AppTypography.headlineSm.copyWith(
                             color: Colors.white,
                             fontWeight: FontWeight.w700,
-                            fontSize: 18,
                           ),
                         )
                       : null,
@@ -206,7 +206,7 @@ class ProfileTierCard extends StatelessWidget {
               size: 14,
               color: AppColors.slateBody,
             ),
-            const SizedBox(width: 4),
+            const SizedBox(width: AppSpacing.spaceXs),
             Expanded(
               child: Text(
                 email,
@@ -226,7 +226,7 @@ class ProfileTierCard extends StatelessWidget {
               size: 14,
               color: AppColors.slateBody,
             ),
-            const SizedBox(width: 4),
+            const SizedBox(width: AppSpacing.spaceXs),
             Text(
               phone,
               style: AppTypography.bodySm.copyWith(

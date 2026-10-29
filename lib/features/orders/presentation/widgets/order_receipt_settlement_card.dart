@@ -16,10 +16,10 @@ class OrderReceiptSettlementCard extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AppSpacing.spaceMd),
         border: Border.all(color: const Color(0xFFE2E8F0)),
       ),
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(AppSpacing.spaceMd),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -28,23 +28,22 @@ class OrderReceiptSettlementCard extends StatelessWidget {
             style: AppTypography.labelCaps.copyWith(
               color: const Color(0xFF0B3B2C),
               fontWeight: FontWeight.w800,
-              fontSize: 10.5,
               letterSpacing: 1.1,
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.space12),
           _SummaryLine(
             label: 'Items Subtotal',
             value: formattedTotal,
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: AppSpacing.spaceSm),
           const _SummaryLine(
             label: 'Delivery Protocol',
             value: 'FREE',
             valueColor: Color(0xFF006C49),
           ),
           const Padding(
-            padding: EdgeInsets.symmetric(vertical: 8),
+            padding: EdgeInsets.symmetric(vertical: AppSpacing.spaceSm),
             child: Divider(color: Color(0xFFF1F5F9)),
           ),
           Row(
@@ -52,18 +51,16 @@ class OrderReceiptSettlementCard extends StatelessWidget {
             children: [
               Text(
                 'Total Amount',
-                style: AppTypography.headlineSm.copyWith(
-                  fontSize: 15,
+                style: AppTypography.bodyLg.copyWith(
                   fontWeight: FontWeight.w800,
                   color: const Color(0xFF002419),
                 ),
               ),
               Text(
                 formattedTotal,
-                style: const TextStyle(
-                  fontSize: 18,
+                style: AppTypography.headlineSm.copyWith(
                   fontWeight: FontWeight.w900,
-                  color: Color(0xFF0B3B2C),
+                  color: const Color(0xFF0B3B2C),
                 ),
               ),
             ],
@@ -92,12 +89,11 @@ class _SummaryLine extends StatelessWidget {
       children: [
         Text(
           label,
-          style: const TextStyle(fontSize: 12.5, color: AppColors.slateBody),
+          style: AppTypography.bodySm.copyWith(color: AppColors.slateBody),
         ),
         Text(
           value,
-          style: TextStyle(
-            fontSize: 12.5,
+          style: AppTypography.bodySm.copyWith(
             fontWeight: FontWeight.w700,
             color: valueColor ?? const Color(0xFF1E293B),
           ),

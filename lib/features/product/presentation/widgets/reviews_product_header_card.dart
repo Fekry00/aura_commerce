@@ -1,6 +1,8 @@
 import 'package:aura/core/theme/app_colors.dart';
 import 'package:aura/core/theme/app_typography.dart';
+import 'package:aura/core/widgets/shimmer/app_shimmer.dart';
 import 'package:aura/features/product/domain/entities/sub_entities/product_item_entity.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class ReviewsProductHeaderCard extends StatelessWidget {
@@ -38,13 +40,20 @@ class ReviewsProductHeaderCard extends StatelessWidget {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(12),
               child: imageUrl.isNotEmpty
-                  ? Image.network(
-                      imageUrl,
+                  ? CachedNetworkImage(
+                      imageUrl: imageUrl,
                       fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) =>
-                          const Icon(Icons.shopping_bag_outlined, color: AppColors.slateBody),
+                      placeholder: (context, url) =>
+                          const ShimmerImageLoading(),
+                      errorWidget: (context, url, error) => const Icon(
+                        Icons.shopping_bag_outlined,
+                        color: AppColors.slateBody,
+                      ),
                     )
-                  : const Icon(Icons.shopping_bag_outlined, color: AppColors.slateBody),
+                  : const Icon(
+                      Icons.shopping_bag_outlined,
+                      color: AppColors.slateBody,
+                    ),
             ),
           ),
           const SizedBox(width: AppSpacing.spaceSm + 2),
@@ -63,13 +72,19 @@ class ReviewsProductHeaderCard extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 4),
-                    const Icon(Icons.verified_rounded, color: Color(0xFF1E382B), size: 12),
+                    const Icon(
+                      Icons.verified_rounded,
+                      color: Color(0xFF1E382B),
+                      size: 12,
+                    ),
                   ],
                 ),
                 const SizedBox(height: 2),
                 Text(
                   title,
-                  style: AppTypography.bodySm.copyWith(fontWeight: FontWeight.w700),
+                  style: AppTypography.bodySm.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -91,7 +106,9 @@ class ReviewsProductHeaderCard extends StatelessWidget {
               backgroundColor: const Color(0xFF1E382B),
               elevation: 0,
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
             ),
             onPressed: onWriteReview,
             icon: const Icon(Icons.edit_outlined, color: Colors.white, size: 14),

@@ -1,5 +1,5 @@
 import 'package:aura/core/theme/app_typography.dart';
-import 'package:aura/features/auth/presentation/controllers/auth_passphrase_controller.dart';
+import 'package:aura/features/auth/presentation/utils/auth_validation_helper.dart';
 import 'package:flutter/material.dart';
 import 'auth_field_header.dart';
 import 'auth_text_form_field.dart';
@@ -8,13 +8,11 @@ import 'auth_text_form_field.dart';
 class AuthPassphraseSection extends StatefulWidget {
   final TextEditingController passwordController;
   final TextEditingController confirmPasswordController;
-  final AuthPassphraseController? controller;
 
   const AuthPassphraseSection({
     super.key,
     required this.passwordController,
     required this.confirmPasswordController,
-    this.controller,
   });
 
   @override
@@ -22,24 +20,19 @@ class AuthPassphraseSection extends StatefulWidget {
 }
 
 class _AuthPassphraseSectionState extends State<AuthPassphraseSection> {
-  late final AuthPassphraseController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = widget.controller ?? AuthPassphraseController();
-  }
+  bool _obscurePassword = true;
+  bool _obscureConfirmPassword = true;
 
   @override
   Widget build(BuildContext context) {
     final passwordText = widget.passwordController.text;
     final confirmText = widget.confirmPasswordController.text;
 
-    final hasMinChars = _controller.hasMinChars(passwordText);
-    final hasNumber = _controller.hasNumber(passwordText);
-    final hasSymbol = _controller.hasSymbol(passwordText);
-    final isStrong = _controller.isStrong(passwordText);
-    final isMatching = _controller.isMatching(passwordText, confirmText);
+    final hasMinChars = AuthValidationHelper.hasMinChars(passwordText);
+    final hasNumber = AuthValidationHelper.hasNumber(passwordText);
+    final hasSymbol = AuthValidationHelper.hasSymbol(passwordText);
+    final isStrong = AuthValidationHelper.isStrong(passwordText);
+    final isMatching = AuthValidationHelper.isMatching(passwordText, confirmText);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -64,21 +57,25 @@ class _AuthPassphraseSectionState extends State<AuthPassphraseSection> {
 
         AuthTextFormField(
           controller: widget.passwordController,
-          obscureText: _controller.obscurePassword,
+          obscureText: _obscurePassword,
           hintText: 'Enter secure password',
           prefixIcon: Icons.lock_outline_rounded,
           onChanged: (_) => setState(() {}),
-          validator: _controller.validatePassword,
+          validator: (val) {
+            if (val == null || val.isEmpty) return 'Password is required';
+            if (val.length < 8) return 'Password must be at least 8 characters';
+            return null;
+          },
           suffixWidget: IconButton(
             icon: Icon(
-              _controller.obscurePassword
+              _obscurePassword
                   ? Icons.visibility_off_outlined
                   : Icons.visibility_outlined,
               size: 18,
               color: const Color(0xFF9CA3AF),
             ),
             onPressed: () =>
-                setState(() => _controller.toggleObscurePassword()),
+                setState(() => _obscurePassword = !_obscurePassword),
           ),
         ),
         const SizedBox(height: AppSpacing.spaceSm),
@@ -109,12 +106,19 @@ class _AuthPassphraseSectionState extends State<AuthPassphraseSection> {
         const SizedBox(height: AppSpacing.spaceXs),
         AuthTextFormField(
           controller: widget.confirmPasswordController,
-          obscureText: _controller.obscureConfirmPassword,
+          obscureText: _obscureConfirmPassword,
           hintText: 'Re-enter passphrase',
           prefixIcon: Icons.verified_user_outlined,
           onChanged: (_) => setState(() {}),
-          validator: (value) =>
-              _controller.validateConfirmPassword(value, passwordText),
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return 'Please confirm your password';
+            }
+            if (value != widget.passwordController.text) {
+              return 'Passwords do not match';
+            }
+            return null;
+          },
           suffixWidget: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -134,14 +138,14 @@ class _AuthPassphraseSectionState extends State<AuthPassphraseSection> {
                 ),
               IconButton(
                 icon: Icon(
-                  _controller.obscureConfirmPassword
+                  _obscureConfirmPassword
                       ? Icons.visibility_off_outlined
                       : Icons.visibility_outlined,
                   size: 18,
                   color: const Color(0xFF9CA3AF),
                 ),
-                onPressed: () =>
-                    setState(() => _controller.toggleObscureConfirmPassword()),
+                onPressed: () => setState(
+                    () => _obscureConfirmPassword = !_obscureConfirmPassword),
               ),
             ],
           ),
@@ -169,11 +173,10 @@ class _AuthPassphraseSectionState extends State<AuthPassphraseSection> {
           color:
               isSatisfied ? const Color(0xFF0B3B2C) : const Color(0xFF9CA3AF),
         ),
-        const SizedBox(width: 4),
+        const SizedBox(width: AppSpacing.spaceXs),
         Text(
           title,
-          style: TextStyle(
-            fontSize: 11,
+          style: AppTypography.labelCaps.copyWith(
             color: isSatisfied
                 ? const Color(0xFF0B3B2C)
                 : const Color(0xFF6B7280),

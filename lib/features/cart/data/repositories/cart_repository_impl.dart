@@ -20,22 +20,33 @@ class CartRepositoryImpl implements CartRepository {
 
   @override
   Future<Either<Failure, CartEntity>> getCart() async {
+    final cachedVoucher = await localDataSource.getCachedVoucher();
+
     if (await networkInfo.isConnected) {
       try {
         final remoteCart = await remoteDataSource.getCart();
-        await localDataSource.cacheCart(remoteCart);
-        return Right(remoteCart);
+        final effectiveCart = cachedVoucher != null
+            ? remoteCart.applyVoucher(cachedVoucher)
+            : remoteCart;
+        await localDataSource.cacheCart(effectiveCart);
+        return Right(effectiveCart);
       } on ServerException catch (e) {
         try {
           final localCart = await localDataSource.getLastCart();
-          return Right(localCart);
+          final effectiveCart = cachedVoucher != null
+              ? localCart.applyVoucher(cachedVoucher)
+              : localCart;
+          return Right(effectiveCart);
         } catch (_) {
           return Left(ServerFailure(errMessage: e.errorModel.errorMessage));
         }
       } catch (e) {
         try {
           final localCart = await localDataSource.getLastCart();
-          return Right(localCart);
+          final effectiveCart = cachedVoucher != null
+              ? localCart.applyVoucher(cachedVoucher)
+              : localCart;
+          return Right(effectiveCart);
         } catch (_) {
           return Left(ServerFailure(errMessage: e.toString()));
         }
@@ -43,7 +54,10 @@ class CartRepositoryImpl implements CartRepository {
     } else {
       try {
         final localCart = await localDataSource.getLastCart();
-        return Right(localCart);
+        final effectiveCart = cachedVoucher != null
+            ? localCart.applyVoucher(cachedVoucher)
+            : localCart;
+        return Right(effectiveCart);
       } catch (e) {
         return Left(
           CacheFailure(errMessage: 'No internet connection: ${e.toString()}'),
@@ -139,32 +153,26 @@ class CartRepositoryImpl implements CartRepository {
     required String promoCode,
   }) async {
     try {
-      final isApplied = await localDataSource.applyVoucherLocal(
-        promoCode: promoCode,
-      );
-      if (await networkInfo.isConnected) {
-        await remoteDataSource.applyVoucher(promoCode: promoCode);
-      }
-      return Right(isApplied);
+      final voucher = await remoteDataSource.applyVoucher(promoCode: promoCode);
+      await localDataSource.cacheVoucher(voucher);
+      return const Right(true);
     } on ServerException catch (e) {
       return Left(ServerFailure(errMessage: e.errorModel.errorMessage));
     } catch (e) {
-      return Left(CacheFailure(errMessage: e.toString()));
+      return Left(ServerFailure(errMessage: e.toString()));
     }
   }
 
   @override
   Future<Either<Failure, bool>> removeVoucher() async {
     try {
-      final isRemoved = await localDataSource.removeVoucherLocal();
-      if (await networkInfo.isConnected) {
-        await remoteDataSource.removeVoucher();
-      }
-      return Right(isRemoved);
+      await localDataSource.clearCachedVoucher();
+      await remoteDataSource.removeVoucher();
+      return const Right(true);
     } on ServerException catch (e) {
       return Left(ServerFailure(errMessage: e.errorModel.errorMessage));
     } catch (e) {
-      return Left(CacheFailure(errMessage: e.toString()));
+      return Left(ServerFailure(errMessage: e.toString()));
     }
   }
 }

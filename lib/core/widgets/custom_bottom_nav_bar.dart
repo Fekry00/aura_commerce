@@ -20,7 +20,12 @@ class CustomBottomNavBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.fromLTRB(20, 0, 20, 16),
+      margin: const EdgeInsets.fromLTRB(
+        AppSpacing.margin,
+        0,
+        AppSpacing.margin,
+        AppSpacing.gutter,
+      ),
       decoration: BoxDecoration(
         color: AppColors.surfaceContainerLowest.withValues(alpha: 0.92),
         borderRadius: BorderRadius.circular(28),
@@ -40,7 +45,7 @@ class CustomBottomNavBar extends StatelessWidget {
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
           child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+            padding: const EdgeInsets.all(AppSpacing.spaceSm),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
@@ -81,7 +86,10 @@ class CustomBottomNavBar extends StatelessWidget {
       onTap: () => onItemTapped?.call(index),
       behavior: HitTestBehavior.opaque,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.spaceSm,
+          vertical: AppSpacing.spaceXs,
+        ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -95,12 +103,12 @@ class CustomBottomNavBar extends StatelessWidget {
                     right: -8,
                     child: Container(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 4,
-                        vertical: 2,
+                        horizontal: AppSpacing.spaceXs,
+                        vertical: AppSpacing.space2Xs,
                       ),
                       constraints: const BoxConstraints(
-                        minWidth: 16,
-                        minHeight: 16,
+                        minWidth: AppSpacing.spaceMd,
+                        minHeight: AppSpacing.spaceMd,
                       ),
                       decoration: const BoxDecoration(
                         color: AppColors.primaryContainer,
@@ -109,7 +117,7 @@ class CustomBottomNavBar extends StatelessWidget {
                       alignment: Alignment.center,
                       child: Text(
                         badgeCount > 99 ? '99+' : '$badgeCount',
-                        style: const TextStyle(
+                        style: AppTypography.labelCaps.copyWith(
                           color: AppColors.secondaryContainer,
                           fontSize: 9,
                           fontWeight: FontWeight.w700,
@@ -120,13 +128,12 @@ class CustomBottomNavBar extends StatelessWidget {
                   ),
               ],
             ),
-            const SizedBox(height: 2),
+            const SizedBox(height: AppSpacing.space2Xs),
             Text(
               label,
               style: AppTypography.labelSm.copyWith(
                 color: color,
                 fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                fontSize: 11,
               ),
             ),
           ],

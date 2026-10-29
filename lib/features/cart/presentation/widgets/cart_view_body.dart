@@ -1,6 +1,5 @@
 import 'package:aura/core/theme/app_typography.dart';
 import 'package:aura/core/widgets/shimmer/cart_shimmer_skeleton.dart';
-import 'package:aura/features/cart/presentation/controllers/cart_controller.dart';
 import 'package:aura/features/cart/presentation/cubit/cart_cubit.dart';
 import 'package:aura/features/cart/presentation/cubit/cart_state.dart';
 import 'package:flutter/material.dart';
@@ -15,34 +14,9 @@ import 'cart_shipping_meter_card.dart';
 import 'cart_trust_assurances.dart';
 import 'cart_voucher_section.dart';
 
-/// Pure declarative layout assembling the Cart screen sections.
-class CartViewBody extends StatefulWidget {
-  final CartController? controller;
-
-  const CartViewBody({super.key, this.controller});
-
-  @override
-  State<CartViewBody> createState() => _CartViewBodyState();
-}
-
-class _CartViewBodyState extends State<CartViewBody> {
-  late final CartController _controller;
-  late final bool _internalController;
-
-  @override
-  void initState() {
-    super.initState();
-    _internalController = widget.controller == null;
-    _controller = widget.controller ?? CartController();
-  }
-
-  @override
-  void dispose() {
-    if (_internalController) {
-      _controller.dispose();
-    }
-    super.dispose();
-  }
+/// Pure declarative layout assembling the Cart screen sections with 100% Cubit reactivity.
+class CartViewBody extends StatelessWidget {
+  const CartViewBody({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -50,11 +24,13 @@ class _CartViewBodyState extends State<CartViewBody> {
       bottom: false,
       child: BlocBuilder<CartCubit, CartState>(
         builder: (context, state) {
-          if (state is CartSuccessState) {
-            _controller.updateCart(state.cart);
-          }
+          final cubit = context.read<CartCubit>();
+          final cart = state is CartSuccessState
+              ? state.cart
+              : cubit.currentCart;
 
-          final isLoading = state is CartLoadingState && _controller.isEmpty;
+          final isLoading = state is CartLoadingState && cart == null;
+          final isEmpty = cart == null || cart.isEmpty;
 
           return Stack(
             children: [
@@ -80,37 +56,40 @@ class _CartViewBodyState extends State<CartViewBody> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             CartHeaderSection(
-                              itemCount: _controller.items.length,
+                              itemCount: cart?.items.length ?? 0,
                             ),
                             const SizedBox(
                               height: AppSpacing.spaceSm + AppSpacing.spaceXs,
                             ),
                             if (isLoading) ...[
                               const CartShimmerSkeleton(),
-                            ] else if (_controller.isEmpty) ...[
+                            ] else if (isEmpty) ...[
                               const CartEmptyState(),
                             ] else ...[
-                              CartShippingMeterCard(controller: _controller),
+                              CartShippingMeterCard(meter: cart.shippingMeter),
                               const SizedBox(height: AppSpacing.spaceMd),
                               CartItemsListSection(
-                                controller: _controller,
-                                onIncrement: (item) =>
-                                    _controller.onIncrement(context, item),
-                                onDecrement: (item) =>
-                                    _controller.onDecrement(context, item),
-                                onRemove: (item) =>
-                                    _controller.onRemove(context, item),
+                                items: cart.items,
+                                onIncrement: (item) => cubit.incrementQuantity(
+                                  item.id,
+                                  item.quantity,
+                                ),
+                                onDecrement: (item) => cubit.decrementQuantity(
+                                  item.id,
+                                  item.quantity,
+                                ),
+                                onRemove: (item) => cubit.removeCartItem(item.id),
                               ),
                               const SizedBox(height: AppSpacing.spaceMd),
                               CartVoucherSection(
-                                controller: _controller,
-                                onApply: () =>
-                                    _controller.onApplyVoucher(context),
-                                onRemove: () =>
-                                    _controller.onRemoveVoucher(context),
+                                activeVoucherCode: cart.activeVoucherCode,
+                                voucherLabel: cart.voucherLabel,
+                                hasActiveVoucher: cart.hasDiscount,
+                                onApply: (code) => cubit.applyVoucher(code),
+                                onRemove: () => cubit.removeVoucher(),
                               ),
                               const SizedBox(height: AppSpacing.spaceMd),
-                              CartOrderSummaryCard(controller: _controller),
+                              CartOrderSummaryCard(cart: cart),
                               const SizedBox(height: AppSpacing.spaceMd),
                               const CartTrustAssurances(),
                             ],
@@ -122,17 +101,16 @@ class _CartViewBodyState extends State<CartViewBody> {
                   ),
                 ),
               ),
-              if (!_controller.isEmpty)
+              if (!isEmpty)
                 Positioned(
                   left: 0,
                   right: 0,
                   bottom: 0,
                   child: CartBottomCheckoutTray(
-                    totalPayable: _controller.formattedTotal,
-                    onCheckoutPressed: () =>
-                        _controller.onProceedToCheckout(context),
+                    totalPayable: cart.formattedTotal,
+                    onCheckoutPressed: () => cubit.proceedToCheckout(),
                     onExpressCheckoutPressed: () =>
-                        _controller.onExpressCheckout(context),
+                        cubit.initiateExpressCheckout(),
                   ),
                 ),
             ],

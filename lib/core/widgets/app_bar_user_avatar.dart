@@ -2,8 +2,10 @@ import 'package:aura/core/di/injection_container.dart' as di;
 import 'package:aura/core/network/api/end_points.dart';
 import 'package:aura/core/routing/main_tab_controller.dart';
 import 'package:aura/core/theme/app_colors.dart';
+import 'package:aura/core/theme/app_typography.dart';
 import 'package:aura/features/profile/presentation/cubit/profile_cubit.dart';
 import 'package:aura/features/profile/presentation/cubit/profile_state.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -14,7 +16,7 @@ class AppBarUserAvatar extends StatelessWidget {
 
   const AppBarUserAvatar({
     super.key,
-    this.radius = 16.0,
+    this.radius = AppSpacing.spaceMd,
     this.onTap,
     this.showBorder = false,
   });
@@ -45,7 +47,7 @@ class AppBarUserAvatar extends StatelessWidget {
           avatarWidget = CircleAvatar(
             radius: radius,
             backgroundColor: AppColors.surfaceContainerLow,
-            backgroundImage: NetworkImage(effectiveUrl),
+            backgroundImage: CachedNetworkImageProvider(effectiveUrl),
             onBackgroundImageError: (_, __) {},
           );
         } else if (userName.isNotEmpty) {
@@ -54,7 +56,7 @@ class AppBarUserAvatar extends StatelessWidget {
             backgroundColor: AppColors.primaryContainer,
             child: Text(
               userName[0].toUpperCase(),
-              style: TextStyle(
+              style: AppTypography.labelSm.copyWith(
                 fontSize: radius * 0.9,
                 fontWeight: FontWeight.w700,
                 color: AppColors.onPrimaryContainer,

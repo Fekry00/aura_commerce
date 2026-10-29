@@ -1,18 +1,18 @@
 import 'package:aura/core/theme/app_typography.dart';
-import 'package:aura/features/cart/presentation/controllers/cart_controller.dart';
+import 'package:aura/features/cart/domain/entities/sub_entities/cart_item_entity.dart';
 import 'package:aura/features/cart/presentation/widgets/cart_item_card.dart';
 import 'package:flutter/material.dart';
 
-/// Pure declarative list section rendering cart items and delegating actions to controller.
+/// Pure declarative list section rendering cart items without controllers.
 class CartItemsListSection extends StatelessWidget {
-  final CartController controller;
-  final ValueChanged<CartItemUiModel>? onIncrement;
-  final ValueChanged<CartItemUiModel>? onDecrement;
-  final ValueChanged<CartItemUiModel>? onRemove;
+  final List<CartItemEntity> items;
+  final ValueChanged<CartItemEntity>? onIncrement;
+  final ValueChanged<CartItemEntity>? onDecrement;
+  final ValueChanged<CartItemEntity>? onRemove;
 
   const CartItemsListSection({
     super.key,
-    required this.controller,
+    required this.items,
     this.onIncrement,
     this.onDecrement,
     this.onRemove,
@@ -20,28 +20,21 @@ class CartItemsListSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final list = controller.items;
-
     return Column(
-      children: List.generate(list.length, (index) {
-        final item = list[index];
+      children: List.generate(items.length, (index) {
+        final item = items[index];
+        final uiModel = CartItemUiModel.fromEntity(item);
         return Padding(
           padding: EdgeInsets.only(
-            bottom: index == list.length - 1
+            bottom: index == items.length - 1
                 ? 0
                 : AppSpacing.spaceMd - 2,
           ),
           child: CartItemCard(
-            item: item,
-            onIncrement: () => onIncrement != null
-                ? onIncrement!(item)
-                : controller.onIncrement(context, item),
-            onDecrement: () => onDecrement != null
-                ? onDecrement!(item)
-                : controller.onDecrement(context, item),
-            onRemove: () => onRemove != null
-                ? onRemove!(item)
-                : controller.onRemove(context, item),
+            item: uiModel,
+            onIncrement: () => onIncrement?.call(item),
+            onDecrement: () => onDecrement?.call(item),
+            onRemove: () => onRemove?.call(item),
           ),
         );
       }),

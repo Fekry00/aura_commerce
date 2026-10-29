@@ -1,7 +1,6 @@
 import 'package:aura/core/theme/app_colors.dart';
 import 'package:aura/core/theme/app_typography.dart';
 import 'package:aura/core/utils/functions/custom_snack_bar.dart';
-import 'package:aura/features/orders/presentation/controllers/orders_controller.dart';
 import 'package:aura/features/orders/presentation/cubit/orders_cubit.dart';
 import 'package:aura/features/orders/presentation/cubit/orders_state.dart';
 import 'package:aura/features/orders/presentation/widgets/orders_view_body.dart';
@@ -16,8 +15,6 @@ class OrdersView extends StatefulWidget {
 }
 
 class _OrdersViewState extends State<OrdersView> {
-  final OrdersController _controller = OrdersController();
-
   @override
   void initState() {
     super.initState();
@@ -70,14 +67,25 @@ class _OrdersViewState extends State<OrdersView> {
           }
         },
         builder: (context, state) {
-          final orders = context.read<OrdersCubit>().orders;
+          final cubit = context.read<OrdersCubit>();
+          final orders = cubit.orders;
           final isLoading = state is OrdersLoadingState;
+          final filteredOrders = state is OrdersListSuccessState
+              ? state.filteredOrders
+              : orders;
+          final selectedFilter = state is OrdersListSuccessState
+              ? state.selectedFilter
+              : cubit.selectedFilter;
+          final emptyMessage = state is OrdersListSuccessState
+              ? state.emptyMessage
+              : 'You have not placed any orders yet.';
 
           return OrdersViewBody(
             orders: orders,
+            filteredOrders: filteredOrders,
+            selectedFilter: selectedFilter,
+            emptyMessage: emptyMessage,
             isLoading: isLoading,
-            controller: _controller,
-            onStateUpdate: () => setState(() {}),
           );
         },
       ),

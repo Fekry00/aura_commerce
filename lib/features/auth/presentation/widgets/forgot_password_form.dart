@@ -1,9 +1,9 @@
 import 'package:aura/core/routing/routes.dart';
 import 'package:aura/core/theme/app_typography.dart';
 import 'package:aura/core/utils/functions/custom_snack_bar.dart';
-import 'package:aura/features/auth/presentation/controllers/forgot_password_form_controller.dart';
 import 'package:aura/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:aura/features/auth/presentation/cubit/auth_state.dart';
+import 'package:aura/features/auth/presentation/utils/auth_validation_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'auth_field_header.dart';
@@ -12,31 +12,38 @@ import 'forgot_password_submit_button.dart';
 
 /// Pure declarative UI widget for Forgot Password form.
 class ForgotPasswordForm extends StatefulWidget {
-  final ForgotPasswordFormController? controller;
-
-  const ForgotPasswordForm({super.key, this.controller});
+  const ForgotPasswordForm({super.key});
 
   @override
   State<ForgotPasswordForm> createState() => _ForgotPasswordFormState();
 }
 
 class _ForgotPasswordFormState extends State<ForgotPasswordForm> {
-  late final ForgotPasswordFormController _controller;
-  late final bool _internalController;
-
-  @override
-  void initState() {
-    super.initState();
-    _internalController = widget.controller == null;
-    _controller = widget.controller ?? ForgotPasswordFormController();
-  }
+  final _formKey = GlobalKey<FormState>();
+  final _emailController = TextEditingController();
 
   @override
   void dispose() {
-    if (_internalController) {
-      _controller.dispose();
-    }
+    _emailController.dispose();
     super.dispose();
+  }
+
+  void _onSubmit() {
+    final isValid = _formKey.currentState?.validate() ?? false;
+    context.read<AuthCubit>().forgotPassword(
+          email: _emailController.text.trim(),
+          isFormValid: isValid,
+        );
+  }
+
+  String? _validateEmail(String? val) {
+    if (val == null || val.trim().isEmpty) {
+      return 'Email address is required';
+    }
+    if (!AuthValidationHelper.isValidEmail(val)) {
+      return 'Enter a valid email address';
+    }
+    return null;
   }
 
   @override
@@ -58,7 +65,7 @@ class _ForgotPasswordFormState extends State<ForgotPasswordForm> {
           Navigator.pushReplacementNamed(
             context,
             Routes.verifyOtpView,
-            arguments: {'email': _controller.emailController.text.trim()},
+            arguments: {'email': _emailController.text.trim()},
           );
         }
       },
@@ -66,7 +73,7 @@ class _ForgotPasswordFormState extends State<ForgotPasswordForm> {
         final isLoading = state is AuthLoadingState;
 
         return Form(
-          key: _controller.formKey,
+          key: _formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -78,17 +85,17 @@ class _ForgotPasswordFormState extends State<ForgotPasswordForm> {
               ),
               const SizedBox(height: AppSpacing.spaceXs),
               AuthTextFormField(
-                controller: _controller.emailController,
+                controller: _emailController,
                 hintText: 'name@gmail.com',
                 prefixIcon: Icons.mail_outline_rounded,
                 keyboardType: TextInputType.emailAddress,
-                validator: _controller.validateEmail,
+                validator: _validateEmail,
               ),
               const SizedBox(height: AppSpacing.spaceXl),
 
               ForgotPasswordSubmitButton(
                 isLoading: isLoading,
-                onPressed: () => _controller.onSubmit(context),
+                onPressed: _onSubmit,
               ),
             ],
           ),

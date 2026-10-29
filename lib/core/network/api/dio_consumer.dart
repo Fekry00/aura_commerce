@@ -12,6 +12,7 @@ class DioConsumer extends ApiConsumer {
     dio.options.baseUrl = EndPoint.baseUrl;
     dio.options.connectTimeout = AppConstants.connectTimeout;
     dio.options.receiveTimeout = AppConstants.receiveTimeout;
+    dio.options.persistentConnection = false;
     dio.interceptors.add(ApiInterceptor());
     dio.interceptors.add(
       LogInterceptor(

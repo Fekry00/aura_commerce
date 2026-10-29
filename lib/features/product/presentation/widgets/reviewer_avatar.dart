@@ -1,8 +1,10 @@
 import 'package:aura/core/di/injection_container.dart' as di;
 import 'package:aura/core/network/api/end_points.dart';
 import 'package:aura/core/theme/app_colors.dart';
+import 'package:aura/core/theme/app_typography.dart';
 import 'package:aura/features/product/domain/entities/sub_entities/product_review_entity.dart';
 import 'package:aura/features/profile/presentation/cubit/profile_cubit.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class ReviewerAvatar extends StatelessWidget {
@@ -12,7 +14,7 @@ class ReviewerAvatar extends StatelessWidget {
   const ReviewerAvatar({
     super.key,
     required this.review,
-    this.radius = 16,
+    this.radius = AppSpacing.spaceMd,
   });
 
   @override
@@ -40,7 +42,7 @@ class ReviewerAvatar extends StatelessWidget {
       return CircleAvatar(
         radius: radius,
         backgroundColor: AppColors.surfaceContainerLow,
-        backgroundImage: NetworkImage(avatarUrl),
+        backgroundImage: CachedNetworkImageProvider(avatarUrl),
         onBackgroundImageError: (_, __) {},
       );
     }
@@ -50,7 +52,7 @@ class ReviewerAvatar extends StatelessWidget {
       backgroundColor: const Color(0xFF111827),
       child: Text(
         review.authorInitials,
-        style: TextStyle(
+        style: AppTypography.labelSm.copyWith(
           color: Colors.white,
           fontSize: radius * 0.7,
           fontWeight: FontWeight.bold,

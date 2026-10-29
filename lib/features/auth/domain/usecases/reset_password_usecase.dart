@@ -10,7 +10,12 @@ class ResetPasswordUseCase {
   Future<Either<Failure, bool>> call({
     required String otp,
     required String newPassword,
+    String? email,
   }) {
-    return repository.resetPassword(otp: otp, newPassword: newPassword);
+    return repository.resetPassword(
+      otp: otp,
+      newPassword: newPassword,
+      email: email,
+    );
   }
 }

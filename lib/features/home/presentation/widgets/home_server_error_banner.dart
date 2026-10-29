@@ -1,3 +1,4 @@
+import 'package:aura/core/theme/app_typography.dart';
 import 'package:flutter/material.dart';
 
 class HomeServerErrorBanner extends StatelessWidget {
@@ -13,20 +14,20 @@ class HomeServerErrorBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.spaceMd, vertical: AppSpacing.space12),
       decoration: BoxDecoration(
         color: Colors.red.withValues(alpha: 0.08),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AppSpacing.spaceMd),
         border: Border.all(color: Colors.red.withValues(alpha: 0.2)),
       ),
       child: Row(
         children: [
           const Icon(Icons.cloud_off_outlined, color: Colors.red, size: 20),
-          const SizedBox(width: 12),
+          const SizedBox(width: AppSpacing.space12),
           Expanded(
             child: Text(
               message,
-              style: const TextStyle(fontSize: 12, color: Colors.black87),
+              style: AppTypography.bodySm.copyWith(color: Colors.black87),
             ),
           ),
           TextButton(
@@ -35,9 +36,9 @@ class HomeServerErrorBanner extends StatelessWidget {
               visualDensity: VisualDensity.compact,
               foregroundColor: const Color(0xFF1E382B),
             ),
-            child: const Text(
+            child: Text(
               'Retry',
-              style: TextStyle(fontWeight: FontWeight.bold),
+              style: AppTypography.labelCaps.copyWith(fontWeight: FontWeight.bold),
             ),
           ),
         ],

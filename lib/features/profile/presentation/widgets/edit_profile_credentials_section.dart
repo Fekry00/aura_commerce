@@ -3,13 +3,12 @@ import 'package:aura/core/theme/app_typography.dart';
 import 'package:aura/features/auth/presentation/widgets/auth_text_form_field.dart';
 import 'package:flutter/material.dart';
 
-import 'package:aura/features/profile/presentation/controllers/edit_profile_controller.dart';
+import 'package:aura/features/profile/presentation/utils/profile_validators.dart';
 
 class EditProfileCredentialsSection extends StatefulWidget {
   final String initialName;
   final String initialEmail;
   final bool isLoading;
-  final EditProfileController? controller;
   final void Function({required String name, required String email}) onSave;
 
   const EditProfileCredentialsSection({
@@ -17,7 +16,6 @@ class EditProfileCredentialsSection extends StatefulWidget {
     required this.initialName,
     required this.initialEmail,
     this.isLoading = false,
-    this.controller,
     required this.onSave,
   });
 
@@ -123,8 +121,7 @@ class _EditProfileCredentialsSectionState
               controller: _nameController,
               hintText: 'Enter your full name',
               prefixIcon: Icons.person_outline_rounded,
-              validator: (widget.controller ?? const EditProfileController())
-                  .validateName,
+              validator: ProfileValidators.validateName,
             ),
             const SizedBox(height: AppSpacing.spaceMd),
 
@@ -142,8 +139,7 @@ class _EditProfileCredentialsSectionState
               hintText: 'Enter your email address',
               prefixIcon: Icons.mail_outline_rounded,
               keyboardType: TextInputType.emailAddress,
-              validator: (widget.controller ?? const EditProfileController())
-                  .validateEmail,
+              validator: ProfileValidators.validateEmail,
             ),
             const SizedBox(height: AppSpacing.spaceLg),
 

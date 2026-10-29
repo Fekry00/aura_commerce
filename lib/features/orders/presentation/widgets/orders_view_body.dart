@@ -1,50 +1,80 @@
+import 'package:aura/core/routing/routes.dart';
 import 'package:aura/core/widgets/shimmer/orders_shimmer_skeleton.dart';
 import 'package:aura/features/orders/domain/entities/order_entity.dart';
-import 'package:aura/features/orders/presentation/controllers/orders_controller.dart';
+import 'package:aura/features/orders/presentation/cubit/orders_cubit.dart';
+import 'package:aura/features/orders/presentation/widgets/order_card.dart';
+import 'package:aura/features/orders/presentation/widgets/orders_cancel_dialog.dart';
+import 'package:aura/features/orders/presentation/widgets/orders_empty_state.dart';
+import 'package:aura/features/orders/presentation/widgets/orders_filter_tabs.dart';
 import 'package:flutter/material.dart';
-import 'order_card.dart';
-import 'orders_empty_state.dart';
-import 'orders_filter_tabs.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class OrdersViewBody extends StatelessWidget {
-  final List<OrderEntity> orders;
-  final bool isLoading;
-  final OrdersController controller;
-  final VoidCallback onStateUpdate;
-
   const OrdersViewBody({
     super.key,
     required this.orders,
+    required this.filteredOrders,
+    required this.selectedFilter,
+    required this.emptyMessage,
     required this.isLoading,
-    required this.controller,
-    required this.onStateUpdate,
   });
+
+  final List<OrderEntity> orders;
+  final List<OrderEntity> filteredOrders;
+  final String selectedFilter;
+  final String emptyMessage;
+  final bool isLoading;
+
+  void _onStartShopping(BuildContext context) {
+    Navigator.pushNamedAndRemoveUntil(
+      context,
+      Routes.homeView,
+      (route) => false,
+    );
+  }
+
+  void _onOrderDetailsTap(BuildContext context, OrderEntity order) {
+    Navigator.pushNamed(
+      context,
+      Routes.orderSuccessReceiptView,
+      arguments: order,
+    );
+  }
+
+  void _confirmCancelOrder(BuildContext context, OrderEntity order) {
+    showDialog(
+      context: context,
+      builder: (ctx) => OrdersCancelDialog(
+        orderId: order.id,
+        onKeepOrder: () => Navigator.pop(ctx),
+        onConfirmCancel: () {
+          Navigator.pop(ctx);
+          context.read<OrdersCubit>().cancelOrder(order.id);
+        },
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    final filteredOrders = controller.getFilteredOrders(orders);
+    final cubit = context.read<OrdersCubit>();
 
     return RefreshIndicator(
       color: const Color(0xFF0B3B2C),
-      onRefresh: () => controller.onRefresh(context),
+      onRefresh: () => cubit.fetchMyOrders(),
       child: Column(
         children: [
-          // Filter Tabs
           OrdersFilterTabs(
-            selectedFilter: controller.selectedFilter,
-            onFilterSelected: (key) =>
-                controller.onFilterSelected(key, onStateUpdate),
+            selectedFilter: selectedFilter,
+            onFilterSelected: (key) => cubit.setFilter(key),
           ),
-
-          // Orders List
           Expanded(
             child: isLoading && orders.isEmpty
                 ? const OrdersShimmerSkeleton()
                 : filteredOrders.isEmpty
                     ? OrdersEmptyState(
-                        message: controller.getEmptyMessage(),
-                        onStartShopping: () =>
-                            controller.onStartShopping(context),
+                        message: emptyMessage,
+                        onStartShopping: () => _onStartShopping(context),
                       )
                     : ListView.separated(
                         padding: const EdgeInsets.symmetric(
@@ -61,10 +91,8 @@ class OrdersViewBody extends StatelessWidget {
                           final order = filteredOrders[index];
                           return OrderCard(
                             order: order,
-                            onDetailsTap: (o) =>
-                                controller.onOrderDetailsTap(context, o),
-                            onCancelTap: (o) =>
-                                controller.confirmCancelOrder(context, o),
+                            onDetailsTap: (o) => _onOrderDetailsTap(context, o),
+                            onCancelTap: (o) => _confirmCancelOrder(context, o),
                           );
                         },
                       ),

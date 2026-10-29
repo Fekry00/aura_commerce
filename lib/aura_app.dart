@@ -3,6 +3,7 @@ import 'package:aura/core/routing/app_router.dart';
 import 'package:aura/core/routing/routes.dart';
 import 'package:aura/core/theme/app_theme.dart';
 import 'package:aura/features/cart/presentation/cubit/cart_cubit.dart';
+import 'package:aura/features/orders/presentation/cubit/orders_cubit.dart';
 import 'package:aura/features/profile/presentation/cubit/profile_cubit.dart';
 import 'package:aura/features/wishlist/presentation/cubit/wishlist_cubit.dart';
 import 'package:flutter/material.dart';
@@ -25,6 +26,7 @@ class AuraApp extends StatelessWidget {
         BlocProvider<CartCubit>.value(value: di.sl<CartCubit>()),
         BlocProvider<WishlistCubit>.value(value: di.sl<WishlistCubit>()),
         BlocProvider<ProfileCubit>.value(value: di.sl<ProfileCubit>()),
+        BlocProvider<OrdersCubit>.value(value: di.sl<OrdersCubit>()),
       ],
       child: MaterialApp(
         title: 'Aura',

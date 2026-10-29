@@ -1,3 +1,4 @@
+import 'package:aura/features/cart/domain/entities/cart_entity.dart';
 import 'package:aura/features/cart/domain/usecases/add_to_cart_usecase.dart';
 import 'package:aura/features/cart/domain/usecases/apply_voucher_usecase.dart';
 import 'package:aura/features/cart/domain/usecases/clear_cart_usecase.dart';
@@ -27,6 +28,9 @@ class CartCubit extends Cubit<CartState> {
   final ApplyVoucherUseCase applyVoucherUseCase;
   final RemoveVoucherUseCase removeVoucherUseCase;
 
+  CartEntity? _currentCart;
+  CartEntity? get currentCart => _currentCart;
+
   @override
   void emit(CartState state) {
     if (!isClosed) {
@@ -34,14 +38,21 @@ class CartCubit extends Cubit<CartState> {
     }
   }
 
-  Future<void> fetchCart() async {
+  Future<void> fetchCart({String? successMessage}) async {
     emit(const CartLoadingState());
 
     final result = await getCartUseCase();
 
     result.fold(
       (failure) => emit(CartErrorState(message: failure.errMessage)),
-      (cart) => emit(CartSuccessState(cart: cart)),
+      (cart) {
+        _currentCart = cart;
+        if (successMessage != null) {
+          emit(CartActionSuccessState(cart: cart, message: successMessage));
+        } else {
+          emit(CartSuccessState(cart: cart));
+        }
+      },
     );
   }
 
@@ -84,6 +95,24 @@ class CartCubit extends Cubit<CartState> {
     );
   }
 
+  Future<void> incrementQuantity(String itemId, int currentQuantity) async {
+    await updateCartItemQuantity(
+      itemId: itemId,
+      quantity: currentQuantity + 1,
+    );
+  }
+
+  Future<void> decrementQuantity(String itemId, int currentQuantity) async {
+    if (currentQuantity > 1) {
+      await updateCartItemQuantity(
+        itemId: itemId,
+        quantity: currentQuantity - 1,
+      );
+    } else {
+      await removeCartItem(itemId);
+    }
+  }
+
   Future<void> removeCartItem(String itemId) async {
     final result = await removeCartItemUseCase(itemId: itemId);
 
@@ -94,20 +123,48 @@ class CartCubit extends Cubit<CartState> {
   }
 
   Future<void> applyVoucher(String promoCode) async {
-    final result = await applyVoucherUseCase(promoCode: promoCode);
+    final clean = promoCode.trim();
+    if (clean.isEmpty) {
+      emit(const CartErrorState(
+        message: 'Please enter a promo code (e.g. WELCOME10)',
+      ));
+      return;
+    }
 
-    result.fold(
-      (failure) => emit(CartErrorState(message: failure.errMessage)),
-      (isApplied) => fetchCart(),
+    emit(const CartLoadingState());
+
+    final result = await applyVoucherUseCase(promoCode: clean);
+
+    await result.fold(
+      (failure) async => emit(CartErrorState(message: failure.errMessage)),
+      (isApplied) async =>
+          fetchCart(successMessage: 'Promo code applied successfully!'),
     );
   }
 
   Future<void> removeVoucher() async {
+    emit(const CartLoadingState());
+
     final result = await removeVoucherUseCase();
 
-    result.fold(
-      (failure) => emit(CartErrorState(message: failure.errMessage)),
-      (isRemoved) => fetchCart(),
+    await result.fold(
+      (failure) async => emit(CartErrorState(message: failure.errMessage)),
+      (isRemoved) async => fetchCart(successMessage: 'Promo code removed'),
     );
+  }
+
+  void proceedToCheckout() {
+    final cart = _currentCart;
+    if (cart == null || cart.isEmpty) {
+      emit(const CartErrorState(message: 'Your cart is empty.'));
+      return;
+    }
+    emit(CartNavigateToCheckoutState(cart: cart));
+  }
+
+  void initiateExpressCheckout() {
+    emit(const CartInfoMessageState(
+      message: 'Initializing Express Wallet checkout...',
+    ));
   }
 }

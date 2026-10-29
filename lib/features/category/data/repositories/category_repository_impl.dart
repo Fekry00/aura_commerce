@@ -1,3 +1,4 @@
+import 'package:aura/core/errors/exceptions.dart';
 import 'package:aura/core/errors/failure.dart';
 import 'package:aura/core/network/connection/network_info.dart';
 import 'package:aura/features/category/data/datasources/category_local_data_source.dart';
@@ -26,20 +27,27 @@ class CategoryRepositoryImpl implements CategoryRepository {
           await localDataSource.cacheCategories(remoteCategories);
         }
         return Right(remoteCategories);
-      } catch (e) {
+      } on ServerException catch (e) {
         try {
           final cached = await localDataSource.getCachedCategories();
           return Right(cached);
         } catch (_) {
-          return Left(ServerFailure(errMessage: e.toString()));
+          return Left(ServerFailure(errMessage: e.errorModel.errorMessage));
+        }
+      } catch (_) {
+        try {
+          final cached = await localDataSource.getCachedCategories();
+          return Right(cached);
+        } catch (_) {
+          return const Left(ServerFailure(errMessage: 'An unexpected error occurred while fetching categories'));
         }
       }
     } else {
       try {
         final cached = await localDataSource.getCachedCategories();
         return Right(cached);
-      } catch (e) {
-        return Left(CacheFailure(errMessage: 'No internet connection: ${e.toString()}'));
+      } catch (_) {
+        return const Left(NetworkFailure(errMessage: 'No internet connection'));
       }
     }
   }
@@ -50,13 +58,21 @@ class CategoryRepositoryImpl implements CategoryRepository {
       try {
         final remoteCategory = await remoteDataSource.getCategoryDetails(id);
         return Right(remoteCategory);
-      } catch (e) {
+      } on ServerException catch (e) {
         try {
           final cached = await localDataSource.getCachedCategoryDetails(id);
           if (cached != null) return Right(cached);
-          return Left(ServerFailure(errMessage: e.toString()));
+          return Left(ServerFailure(errMessage: e.errorModel.errorMessage));
         } catch (_) {
-          return Left(ServerFailure(errMessage: e.toString()));
+          return Left(ServerFailure(errMessage: e.errorModel.errorMessage));
+        }
+      } catch (_) {
+        try {
+          final cached = await localDataSource.getCachedCategoryDetails(id);
+          if (cached != null) return Right(cached);
+          return const Left(ServerFailure(errMessage: 'An unexpected error occurred while fetching category details'));
+        } catch (_) {
+          return const Left(ServerFailure(errMessage: 'An unexpected error occurred while fetching category details'));
         }
       }
     } else {
@@ -64,8 +80,8 @@ class CategoryRepositoryImpl implements CategoryRepository {
         final cached = await localDataSource.getCachedCategoryDetails(id);
         if (cached != null) return Right(cached);
         return const Left(CacheFailure(errMessage: 'Category not found in offline cache'));
-      } catch (e) {
-        return Left(CacheFailure(errMessage: 'No internet connection: ${e.toString()}'));
+      } catch (_) {
+        return const Left(NetworkFailure(errMessage: 'No internet connection'));
       }
     }
   }

@@ -18,6 +18,19 @@ class AuthSuccessState extends AuthState {
   final AuthEntity auth;
 }
 
+/// Emitted when the OTP timer ticks each second.
+class AuthOtpTimerTickState extends AuthState {
+  final int secondsRemaining;
+  final bool canResend;
+  final String formattedTimer;
+
+  const AuthOtpTimerTickState({
+    required this.secondsRemaining,
+    required this.canResend,
+    required this.formattedTimer,
+  });
+}
+
 /// Emitted after forgot-password OTP is sent successfully.
 class AuthOtpSentState extends AuthState {
   const AuthOtpSentState();
