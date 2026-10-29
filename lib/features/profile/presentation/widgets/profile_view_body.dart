@@ -5,6 +5,7 @@ import 'package:aura/features/profile/presentation/cubit/profile_cubit.dart';
 import 'package:aura/features/profile/presentation/cubit/profile_state.dart';
 import 'package:aura/features/profile/presentation/models/profile_metrics_data.dart';
 import 'package:aura/features/profile/presentation/widgets/profile_content_section.dart';
+import 'package:aura/features/profile/presentation/widgets/profile_shimmer_skeleton.dart';
 import 'package:aura/features/profile/presentation/widgets/sign_out_confirmation_dialog.dart';
 import 'package:aura/features/wishlist/domain/entities/sub_entities/wishlist_item_entity.dart';
 import 'package:aura/features/wishlist/presentation/cubit/wishlist_cubit.dart';
@@ -58,38 +59,34 @@ class _ProfileViewBodyState extends State<ProfileViewBody> {
       },
       builder: (context, profileState) {
         final ordersState = context.watch<OrdersCubit>().state;
-        final orders = ordersState is OrdersListSuccessState
-            ? ordersState.orders
-            : context.read<OrdersCubit>().orders;
-
+        final orders = ordersState is OrdersListSuccessState ? ordersState.orders : context.read<OrdersCubit>().orders;
         final wishlistState = context.watch<WishlistCubit>().state;
-        final wishlistItems = wishlistState is WishlistSuccessState
-            ? wishlistState.wishlist.items
-            : const <WishlistItemEntity>[];
+        final wishlistItems = wishlistState is WishlistSuccessState ? wishlistState.wishlist.items : const <WishlistItemEntity>[];
+        final metrics = ProfileMetricsData.calculate(orders: orders, wishlistItems: wishlistItems);
 
-        final metrics = ProfileMetricsData.calculate(
-          orders: orders,
-          wishlistItems: wishlistItems,
-        );
+        final isLoading =
+            profileState is ProfileLoadingState && profileState.profile == null;
 
         return SafeArea(
           bottom: false,
           child: RefreshIndicator(
             color: const Color(0xFF0B3B2C),
             onRefresh: _onRefresh,
-            child: SingleChildScrollView(
-              controller: _scrollController,
-              physics: const AlwaysScrollableScrollPhysics(
-                parent: BouncingScrollPhysics(),
-              ),
-              child: ProfileContentSection(
-                user: profileState.profile?.user,
-                profile: profileState.profile,
-                metrics: metrics,
-                scrollController: _scrollController,
-                onSignOut: _onSignOut,
-              ),
-            ),
+            child: isLoading
+                ? const ProfileShimmerSkeleton()
+                : SingleChildScrollView(
+                    controller: _scrollController,
+                    physics: const AlwaysScrollableScrollPhysics(
+                      parent: BouncingScrollPhysics(),
+                    ),
+                    child: ProfileContentSection(
+                      user: profileState.profile?.user,
+                      profile: profileState.profile,
+                      metrics: metrics,
+                      scrollController: _scrollController,
+                      onSignOut: _onSignOut,
+                    ),
+                  ),
           ),
         );
       },

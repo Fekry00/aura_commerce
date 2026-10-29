@@ -1,6 +1,5 @@
 import 'package:aura/core/widgets/product_card.dart';
-import 'package:aura/core/widgets/shimmer/app_shimmer.dart';
-import 'package:aura/core/widgets/shimmer/home_shimmer_skeleton.dart';
+import 'package:aura/features/category/presentation/widgets/category_shimmer_skeleton.dart';
 import 'package:aura/features/category/presentation/widgets/category_details_empty_state.dart';
 import 'package:aura/features/category/presentation/widgets/category_details_error_state.dart';
 import 'package:aura/features/product/domain/entities/sub_entities/product_item_entity.dart';
@@ -39,26 +38,8 @@ class CategoryDetailsProductsGrid extends StatelessWidget {
     return BlocBuilder<ProductCubit, ProductState>(
       builder: (context, productState) {
         if (productState is ProductLoadingState) {
-          return SliverPadding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            sliver: SliverToBoxAdapter(
-              child: AppShimmer(
-                child: GridView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: 4,
-                  gridDelegate:
-                      const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    childAspectRatio: 0.60,
-                    crossAxisSpacing: 16,
-                    mainAxisSpacing: 16,
-                  ),
-                  itemBuilder: (context, index) =>
-                      const ProductCardShimmer(),
-                ),
-              ),
-            ),
+          return const SliverToBoxAdapter(
+            child: CategoryProductsGridShimmer(),
           );
         }
 

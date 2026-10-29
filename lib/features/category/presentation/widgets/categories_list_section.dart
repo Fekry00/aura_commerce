@@ -4,7 +4,8 @@ import 'package:aura/features/category/presentation/cubit/category_state.dart';
 import 'package:aura/features/category/presentation/widgets/categories_empty_state.dart';
 import 'package:aura/features/category/presentation/widgets/categories_error_state.dart';
 import 'package:aura/features/category/presentation/widgets/category_card.dart';
-import 'package:aura/features/category/presentation/widgets/category_shimmer.dart';
+import 'package:aura/core/theme/app_typography.dart';
+import 'package:aura/features/category/presentation/widgets/category_shimmer_skeleton.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -25,8 +26,8 @@ class CategoriesListSection extends StatelessWidget {
         if (state is GetCategoriesLoadingState) {
           return const SliverToBoxAdapter(
             child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20),
-              child: CategoryShimmer(),
+              padding: EdgeInsets.symmetric(horizontal: AppSpacing.margin),
+              child: CategoryShimmerSkeleton(),
             ),
           );
         }

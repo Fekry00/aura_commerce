@@ -1,5 +1,4 @@
 import 'package:aura/core/theme/app_typography.dart';
-import 'package:aura/core/widgets/shimmer/cart_shimmer_skeleton.dart';
 import 'package:aura/features/cart/presentation/cubit/cart_cubit.dart';
 import 'package:aura/features/cart/presentation/cubit/cart_state.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +9,7 @@ import 'cart_empty_state.dart';
 import 'cart_header_section.dart';
 import 'cart_items_list_section.dart';
 import 'cart_order_summary_card.dart';
+import 'cart_shimmer_skeleton.dart';
 import 'cart_shipping_meter_card.dart';
 import 'cart_trust_assurances.dart';
 import 'cart_voucher_section.dart';
@@ -29,7 +29,7 @@ class CartViewBody extends StatelessWidget {
               ? state.cart
               : cubit.currentCart;
 
-          final isLoading = state is CartLoadingState && cart == null;
+          final isLoading = state is CartLoadingState && (cart == null || cart.isEmpty);
           final isEmpty = cart == null || cart.isEmpty;
 
           return Stack(
@@ -70,15 +70,9 @@ class CartViewBody extends StatelessWidget {
                               const SizedBox(height: AppSpacing.spaceMd),
                               CartItemsListSection(
                                 items: cart.items,
-                                onIncrement: (item) => cubit.incrementQuantity(
-                                  item.id,
-                                  item.quantity,
-                                ),
-                                onDecrement: (item) => cubit.decrementQuantity(
-                                  item.id,
-                                  item.quantity,
-                                ),
-                                onRemove: (item) => cubit.removeCartItem(item.id),
+                                onIncrement: (i) => cubit.incrementQuantity(i.id, i.quantity),
+                                onDecrement: (i) => cubit.decrementQuantity(i.id, i.quantity),
+                                onRemove: (i) => cubit.removeCartItem(i.id),
                               ),
                               const SizedBox(height: AppSpacing.spaceMd),
                               CartVoucherSection(
@@ -108,9 +102,8 @@ class CartViewBody extends StatelessWidget {
                   bottom: 0,
                   child: CartBottomCheckoutTray(
                     totalPayable: cart.formattedTotal,
-                    onCheckoutPressed: () => cubit.proceedToCheckout(),
-                    onExpressCheckoutPressed: () =>
-                        cubit.initiateExpressCheckout(),
+                    onCheckoutPressed: cubit.proceedToCheckout,
+                    onExpressCheckoutPressed: cubit.initiateExpressCheckout,
                   ),
                 ),
             ],

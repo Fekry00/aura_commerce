@@ -1,5 +1,4 @@
 import 'package:aura/core/theme/app_typography.dart';
-import 'package:aura/core/widgets/shimmer/wishlist_shimmer_skeleton.dart';
 import 'package:aura/features/wishlist/presentation/cubit/wishlist_cubit.dart';
 import 'package:aura/features/wishlist/presentation/cubit/wishlist_state.dart';
 import 'package:aura/features/wishlist/presentation/models/wishlist_summary_data.dart';
@@ -11,6 +10,7 @@ import 'package:aura/features/wishlist/presentation/widgets/wishlist_header_sect
 import 'package:aura/features/wishlist/presentation/widgets/wishlist_item_data.dart';
 import 'package:aura/features/wishlist/presentation/widgets/wishlist_items_list.dart';
 import 'package:aura/features/wishlist/presentation/widgets/wishlist_sanctuary_summary_card.dart';
+import 'package:aura/features/wishlist/presentation/widgets/wishlist_shimmer_skeleton.dart';
 import 'package:aura/features/wishlist/presentation/widgets/wishlist_sorting_action_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -60,7 +60,7 @@ class WishlistViewBody extends StatelessWidget {
                     ),
                     const SizedBox(height: AppSpacing.spaceMd),
                   ],
-                  if (state is WishlistLoadingState && allItems.isEmpty) ...[
+                  if (state is WishlistLoadingState && (allItems.isEmpty || displayedItems.isEmpty)) ...[
                     const WishlistShimmerSkeleton(),
                   ] else if (allItems.isEmpty) ...[
                     const WishlistEmptyView(),

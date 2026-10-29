@@ -5,6 +5,7 @@ import 'package:aura/features/product/presentation/cubit/product_cubit.dart';
 import 'package:aura/features/product/presentation/cubit/product_state.dart';
 import 'package:aura/features/product/presentation/widgets/product_detail_app_bar.dart';
 import 'package:aura/features/product/presentation/widgets/product_details_body.dart';
+import 'package:aura/features/product/presentation/widgets/product_details_shimmer.dart';
 import 'package:aura/features/product/presentation/widgets/product_sticky_bottom_bar.dart';
 import 'package:aura/features/wishlist/presentation/cubit/wishlist_cubit.dart';
 import 'package:aura/features/wishlist/presentation/cubit/wishlist_state.dart';
@@ -79,11 +80,13 @@ class ProductDetailsView extends StatelessWidget {
             onDecrement: cubit.decrementQuantity,
             onAddToBag: () => cubit.addToCart(productId: intId),
           ),
-          body: ProductDetailsBody(
-            product: product,
-            liveProduct: liveProduct,
-            reviews: details?.reviews,
-          ),
+          body: (state is ProductLoadingState && details == null)
+              ? const ProductDetailsShimmer()
+              : ProductDetailsBody(
+                  product: product,
+                  liveProduct: liveProduct,
+                  reviews: details?.reviews,
+                ),
         );
       },
     );

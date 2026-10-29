@@ -1,11 +1,11 @@
 import 'package:aura/core/routing/routes.dart';
-import 'package:aura/core/widgets/shimmer/orders_shimmer_skeleton.dart';
 import 'package:aura/features/orders/domain/entities/order_entity.dart';
 import 'package:aura/features/orders/presentation/cubit/orders_cubit.dart';
 import 'package:aura/features/orders/presentation/widgets/order_card.dart';
 import 'package:aura/features/orders/presentation/widgets/orders_cancel_dialog.dart';
 import 'package:aura/features/orders/presentation/widgets/orders_empty_state.dart';
 import 'package:aura/features/orders/presentation/widgets/orders_filter_tabs.dart';
+import 'package:aura/features/orders/presentation/widgets/orders_shimmer_skeleton.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -69,7 +69,7 @@ class OrdersViewBody extends StatelessWidget {
             onFilterSelected: (key) => cubit.setFilter(key),
           ),
           Expanded(
-            child: isLoading && orders.isEmpty
+            child: isLoading
                 ? const OrdersShimmerSkeleton()
                 : filteredOrders.isEmpty
                     ? OrdersEmptyState(

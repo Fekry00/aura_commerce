@@ -3,6 +3,7 @@ import 'package:aura/core/theme/app_typography.dart';
 import 'package:aura/features/orders/domain/entities/order_entity.dart';
 import 'package:aura/features/orders/presentation/cubit/orders_cubit.dart';
 import 'package:aura/features/orders/presentation/cubit/orders_state.dart';
+import 'package:aura/features/orders/presentation/widgets/order_details_shimmer.dart';
 import 'package:aura/features/orders/presentation/widgets/order_receipt_app_bar.dart';
 import 'package:aura/features/orders/presentation/widgets/order_tracking_details_body.dart';
 import 'package:flutter/material.dart';
@@ -36,9 +37,7 @@ class OrderTrackingDetailsView extends StatelessWidget {
       body: BlocBuilder<OrdersCubit, OrdersState>(
         builder: (context, state) {
           if (state is OrdersLoadingState && initialOrder == null) {
-            return const Center(
-              child: CircularProgressIndicator(color: AppColors.secondary),
-            );
+            return const OrderDetailsShimmer();
           }
 
           if (state is OrdersErrorState && initialOrder == null) {
