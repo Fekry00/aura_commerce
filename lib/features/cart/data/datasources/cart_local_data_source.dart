@@ -4,6 +4,7 @@ import 'package:aura/core/databases/cache/cache_helper.dart';
 import 'package:aura/features/cart/data/models/cart_model.dart';
 import 'package:aura/features/cart/data/models/sub_models/order_summary_model.dart';
 import 'package:aura/features/cart/data/models/sub_models/shipping_meter_model.dart';
+import 'package:aura/features/cart/data/models/sub_models/store_settings_model.dart';
 import 'package:aura/features/cart/data/models/sub_models/voucher_model.dart';
 
 abstract class CartLocalDataSource {
@@ -38,13 +39,21 @@ abstract class CartLocalDataSource {
   Future<void> cacheVoucher(VoucherModel voucher);
 
   Future<void> clearCachedVoucher();
+
+  Future<StoreSettingsModel> getCachedSettings();
+
+  Future<void> cacheSettings(StoreSettingsModel settings);
 }
 
 class CartLocalDataSourceImpl implements CartLocalDataSource {
-  const CartLocalDataSourceImpl();
+  CartLocalDataSourceImpl() {
+    CacheHelper.removeData(key: cachedVoucherKey);
+  }
 
   static const String cachedCartKey = 'CACHED_CART';
   static const String cachedVoucherKey = 'CACHED_VOUCHER';
+
+  VoucherModel? _activeSessionVoucher;
 
   @override
   Future<CartModel> getLastCart() async {
@@ -52,7 +61,8 @@ class CartLocalDataSourceImpl implements CartLocalDataSource {
     if (cachedData != null && cachedData.isNotEmpty) {
       try {
         final decoded = jsonDecode(cachedData) as Map<String, dynamic>;
-        return CartModel.fromJson(decoded);
+        final cart = CartModel.fromJson(decoded);
+        return cart.applyVoucher(_activeSessionVoucher);
       } catch (_) {}
     }
     return _emptyCart();
@@ -68,27 +78,41 @@ class CartLocalDataSourceImpl implements CartLocalDataSource {
 
   @override
   Future<VoucherModel?> getCachedVoucher() async {
-    final cachedData = CacheHelper.getDataString(key: cachedVoucherKey);
-    if (cachedData != null && cachedData.isNotEmpty) {
-      try {
-        final decoded = jsonDecode(cachedData) as Map<String, dynamic>;
-        return VoucherModel.fromJson(decoded);
-      } catch (_) {}
-    }
-    return null;
+    return _activeSessionVoucher;
   }
 
   @override
   Future<void> cacheVoucher(VoucherModel voucher) async {
-    await CacheHelper.saveData(
-      key: cachedVoucherKey,
-      value: jsonEncode(voucher.toJson()),
-    );
+    _activeSessionVoucher = voucher;
+    await CacheHelper.removeData(key: cachedVoucherKey);
   }
 
   @override
   Future<void> clearCachedVoucher() async {
+    _activeSessionVoucher = null;
     await CacheHelper.removeData(key: cachedVoucherKey);
+  }
+
+  static const String cachedSettingsKey = 'CACHED_STORE_SETTINGS';
+
+  @override
+  Future<StoreSettingsModel> getCachedSettings() async {
+    final cachedData = CacheHelper.getDataString(key: cachedSettingsKey);
+    if (cachedData != null && cachedData.isNotEmpty) {
+      try {
+        final decoded = jsonDecode(cachedData) as Map<String, dynamic>;
+        return StoreSettingsModel.fromJson(decoded);
+      } catch (_) {}
+    }
+    return const StoreSettingsModel();
+  }
+
+  @override
+  Future<void> cacheSettings(StoreSettingsModel settings) async {
+    await CacheHelper.saveData(
+      key: cachedSettingsKey,
+      value: jsonEncode(settings.toJson()),
+    );
   }
 
   @override
@@ -134,19 +158,19 @@ class CartLocalDataSourceImpl implements CartLocalDataSource {
     return const CartModel(
       curatedBadge: '0 CURATED ITEMS',
       shippingMeter: ShippingMeterModel(
-        remainingAmount: 0.0,
+        remainingAmount: 2000.0,
         threshold: 2000.0,
         progressRatio: 0.0,
         progressPercent: 0,
-        message: 'Complimentary Express Courier Included',
-        isComplimentary: true,
+        message: 'Add 2000 EGP more for Complimentary Express Courier',
+        isComplimentary: false,
       ),
       items: [],
       orderSummary: OrderSummaryModel(
         itemsCount: 0,
         subtotal: 0.0,
         discountAmount: 0.0,
-        shippingLabel: 'COMPLIMENTARY',
+        shippingLabel: '-',
         tax: 0.0,
         taxLocation: '',
         total: 0.0,

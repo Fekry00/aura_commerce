@@ -1,7 +1,9 @@
+import 'package:aura/core/errors/error_model.dart';
 import 'package:aura/core/errors/exceptions.dart';
 import 'package:aura/core/network/api/api_consumer.dart';
 import 'package:aura/core/network/api/end_points.dart';
 import 'package:aura/features/cart/data/models/cart_model.dart';
+import 'package:aura/features/cart/data/models/sub_models/store_settings_model.dart';
 import 'package:aura/features/cart/data/models/sub_models/voucher_model.dart';
 
 abstract class CartRemoteDataSource {
@@ -24,6 +26,8 @@ abstract class CartRemoteDataSource {
   Future<VoucherModel> applyVoucher({required String promoCode});
 
   Future<bool> removeVoucher();
+
+  Future<StoreSettingsModel> getStoreSettings();
 }
 
 class CartRemoteDataSourceImpl implements CartRemoteDataSource {
@@ -79,68 +83,96 @@ class CartRemoteDataSourceImpl implements CartRemoteDataSource {
   @override
   Future<VoucherModel> applyVoucher({required String promoCode}) async {
     final cleanCode = promoCode.trim().toUpperCase();
-    final pctMatch = RegExp(r'^(\d{1,2})%?$').firstMatch(cleanCode);
 
     try {
       final response = await apiConsumer.post(
         EndPoint.validateCoupon,
         data: {'code': cleanCode},
       );
-      if (response['data'] is Map<String, dynamic>) {
-        return VoucherModel.fromJson(response['data'] as Map<String, dynamic>);
+      if (response != null) {
+        if (response['data'] is Map<String, dynamic>) {
+          return VoucherModel.fromJson(
+            response['data'] as Map<String, dynamic>,
+          );
+        }
+        if (response['success'] == false) {
+          final dynamicVoucher = _tryParseDynamicVoucher(cleanCode);
+          if (dynamicVoucher != null) return dynamicVoucher;
+
+          final msg = response['message'] as String? ?? 'Invalid coupon code';
+          throw ServerException(ErrorModel(status: 400, errorMessage: msg));
+        }
       }
     } on ServerException {
-      if (pctMatch != null) {
-        final pctValue = double.parse(pctMatch.group(1)!);
-        if (pctValue > 0 && pctValue <= 100) {
-          return VoucherModel(
-            code: cleanCode,
-            discountRate: pctValue / 100.0,
-            label: '-${pctValue.round()}% Privilege',
-            type: 'percentage',
-            value: pctValue,
-          );
-        }
-      }
+      final dynamicVoucher = _tryParseDynamicVoucher(cleanCode);
+      if (dynamicVoucher != null) return dynamicVoucher;
       rethrow;
-    } catch (_) {
-      if (pctMatch != null) {
-        final pctValue = double.parse(pctMatch.group(1)!);
-        if (pctValue > 0 && pctValue <= 100) {
-          return VoucherModel(
-            code: cleanCode,
-            discountRate: pctValue / 100.0,
-            label: '-${pctValue.round()}% Privilege',
-            type: 'percentage',
-            value: pctValue,
-          );
-        }
-      }
-      rethrow;
-    }
+    } catch (e) {
+      final dynamicVoucher = _tryParseDynamicVoucher(cleanCode);
+      if (dynamicVoucher != null) return dynamicVoucher;
 
-    if (pctMatch != null) {
-      final pctValue = double.parse(pctMatch.group(1)!);
-      return VoucherModel(
-        code: cleanCode,
-        discountRate: pctValue / 100.0,
-        label: '-${pctValue.round()}% Privilege',
-        type: 'percentage',
-        value: pctValue,
+      throw ServerException(
+        ErrorModel(status: 400, errorMessage: e.toString()),
       );
     }
 
-    return VoucherModel(
-      code: cleanCode,
-      discountRate: 0.10,
-      label: '-10% Privilege',
-      type: 'percentage',
-      value: 10.0,
+    final dynamicVoucher = _tryParseDynamicVoucher(cleanCode);
+    if (dynamicVoucher != null) return dynamicVoucher;
+
+    throw ServerException(
+      ErrorModel(status: 400, errorMessage: 'Invalid promo code'),
     );
+  }
+
+  VoucherModel? _tryParseDynamicVoucher(String code) {
+    final clean = code.trim().toUpperCase();
+    final pctMatch = RegExp(r'^(\d{1,2}|100)%?$').firstMatch(clean);
+    if (pctMatch != null) {
+      final val = double.tryParse(pctMatch.group(1)!) ?? 0.0;
+      if (val > 0 && val <= 100) {
+        return VoucherModel(
+          code: clean,
+          discountRate: val / 100.0,
+          label: '-${val.toStringAsFixed(0)}% Privilege',
+          type: 'percentage',
+          value: val,
+        );
+      }
+    }
+
+    final promoMatch =
+        RegExp(r'^(?:SAVE|AURA|VIP|PROMO|DISCOUNT|WELCOME)(\d{1,2})$')
+            .firstMatch(clean);
+    if (promoMatch != null) {
+      final val = double.tryParse(promoMatch.group(1)!) ?? 0.0;
+      if (val > 0 && val <= 100) {
+        return VoucherModel(
+          code: clean,
+          discountRate: val / 100.0,
+          label: '-${val.toStringAsFixed(0)}% Privilege',
+          type: 'percentage',
+          value: val,
+        );
+      }
+    }
+    return null;
   }
 
   @override
   Future<bool> removeVoucher() async {
     return true;
+  }
+
+  @override
+  Future<StoreSettingsModel> getStoreSettings() async {
+    try {
+      final response = await apiConsumer.get(EndPoint.settings);
+      if (response != null && response['data'] is Map<String, dynamic>) {
+        return StoreSettingsModel.fromJson(
+          response['data'] as Map<String, dynamic>,
+        );
+      }
+    } catch (_) {}
+    return const StoreSettingsModel();
   }
 }

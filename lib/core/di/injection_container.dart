@@ -23,6 +23,7 @@ import 'package:aura/features/cart/domain/usecases/add_to_cart_usecase.dart';
 import 'package:aura/features/cart/domain/usecases/apply_voucher_usecase.dart';
 import 'package:aura/features/cart/domain/usecases/clear_cart_usecase.dart';
 import 'package:aura/features/cart/domain/usecases/get_cart_usecase.dart';
+import 'package:aura/features/cart/domain/usecases/get_store_settings_usecase.dart';
 import 'package:aura/features/cart/domain/usecases/remove_cart_item_usecase.dart';
 import 'package:aura/features/cart/domain/usecases/remove_voucher_usecase.dart';
 import 'package:aura/features/cart/domain/usecases/update_cart_quantity_usecase.dart';
@@ -141,9 +142,11 @@ Future<void> initDependencies() async {
       clearCartUseCase: sl(),
       applyVoucherUseCase: sl(),
       removeVoucherUseCase: sl(),
+      getStoreSettingsUseCase: sl(),
     ),
   );
   sl.registerLazySingleton(() => GetCartUseCase(sl()));
+  sl.registerLazySingleton(() => GetStoreSettingsUseCase(sl()));
   sl.registerLazySingleton(() => AddToCartUseCase(sl()));
   sl.registerLazySingleton(() => UpdateCartQuantityUseCase(sl()));
   sl.registerLazySingleton(() => RemoveCartItemUseCase(sl()));
@@ -161,7 +164,7 @@ Future<void> initDependencies() async {
     () => CartRemoteDataSourceImpl(apiConsumer: sl()),
   );
   sl.registerLazySingleton<CartLocalDataSource>(
-    () => const CartLocalDataSourceImpl(),
+    () => CartLocalDataSourceImpl(),
   );
 
   // Wishlist

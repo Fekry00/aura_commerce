@@ -3,6 +3,8 @@ import 'package:aura/features/cart/domain/usecases/add_to_cart_usecase.dart';
 import 'package:aura/features/cart/domain/usecases/apply_voucher_usecase.dart';
 import 'package:aura/features/cart/domain/usecases/clear_cart_usecase.dart';
 import 'package:aura/features/cart/domain/usecases/get_cart_usecase.dart';
+import 'package:aura/features/cart/domain/entities/sub_entities/store_settings_entity.dart';
+import 'package:aura/features/cart/domain/usecases/get_store_settings_usecase.dart';
 import 'package:aura/features/cart/domain/usecases/remove_cart_item_usecase.dart';
 import 'package:aura/features/cart/domain/usecases/remove_voucher_usecase.dart';
 import 'package:aura/features/cart/domain/usecases/update_cart_quantity_usecase.dart';
@@ -18,6 +20,7 @@ class CartCubit extends Cubit<CartState> {
     required this.clearCartUseCase,
     required this.applyVoucherUseCase,
     required this.removeVoucherUseCase,
+    this.getStoreSettingsUseCase,
   }) : super(const CartInitialState());
 
   final GetCartUseCase getCartUseCase;
@@ -27,9 +30,12 @@ class CartCubit extends Cubit<CartState> {
   final ClearCartUseCase clearCartUseCase;
   final ApplyVoucherUseCase applyVoucherUseCase;
   final RemoveVoucherUseCase removeVoucherUseCase;
+  final GetStoreSettingsUseCase? getStoreSettingsUseCase;
 
   CartEntity? _currentCart;
   CartEntity? get currentCart => _currentCart;
+  StoreSettingsEntity? _storeSettings;
+  StoreSettingsEntity? get storeSettings => _storeSettings;
 
   @override
   void emit(CartState state) {
@@ -60,6 +66,8 @@ class CartCubit extends Cubit<CartState> {
     required int productId,
     int quantity = 1,
   }) async {
+    emit(const CartLoadingState());
+
     final result = await addToCartUseCase(
       productId: productId,
       quantity: quantity,
@@ -67,16 +75,18 @@ class CartCubit extends Cubit<CartState> {
 
     result.fold(
       (failure) => emit(CartErrorState(message: failure.errMessage)),
-      (isAdded) => fetchCart(),
+      (isAdded) => fetchCart(successMessage: 'Added to Bag!'),
     );
   }
 
   Future<void> clearCart() async {
+    emit(const CartLoadingState());
+
     final result = await clearCartUseCase();
 
     result.fold(
       (failure) => emit(CartErrorState(message: failure.errMessage)),
-      (isCleared) => fetchCart(),
+      (isCleared) => fetchCart(successMessage: 'Bag cleared'),
     );
   }
 
@@ -84,6 +94,8 @@ class CartCubit extends Cubit<CartState> {
     required String itemId,
     required int quantity,
   }) async {
+    emit(const CartLoadingState());
+
     final result = await updateCartQuantityUseCase(
       itemId: itemId,
       quantity: quantity,
@@ -114,11 +126,13 @@ class CartCubit extends Cubit<CartState> {
   }
 
   Future<void> removeCartItem(String itemId) async {
+    emit(const CartLoadingState());
+
     final result = await removeCartItemUseCase(itemId: itemId);
 
     result.fold(
       (failure) => emit(CartErrorState(message: failure.errMessage)),
-      (isRemoved) => fetchCart(),
+      (isRemoved) => fetchCart(successMessage: 'Item removed from Bag'),
     );
   }
 

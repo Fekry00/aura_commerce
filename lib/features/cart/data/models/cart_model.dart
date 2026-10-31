@@ -40,6 +40,38 @@ class CartModel extends CartEntity {
     final summaryItemsCount = ((summaryMap?['itemsCount'] ?? summaryMap?['items_count']) as num?)?.toInt() ?? itemsList.length;
     final summarySubtotal = ((summaryMap?['subtotal'] ?? summaryMap?['subTotal']) as num?)?.toDouble() ?? calculatedSubtotal;
 
+    const double defaultThreshold = 2000.0;
+    const double standardShippingFee = 50.0;
+    final double freeShippingThreshold = json['shipping_meter'] is Map<String, dynamic>
+        ? (((json['shipping_meter'] as Map<String, dynamic>)['threshold'] ??
+                defaultThreshold) as num)
+            .toDouble()
+        : defaultThreshold;
+
+    final bool isComplimentaryShipping =
+        itemsList.isNotEmpty && summarySubtotal >= freeShippingThreshold;
+    final double remainingShippingAmount = isComplimentaryShipping || itemsList.isEmpty
+        ? (itemsList.isEmpty ? freeShippingThreshold : 0.0)
+        : (freeShippingThreshold - summarySubtotal).clamp(0.0, freeShippingThreshold);
+    final double shippingProgressRatio = itemsList.isEmpty
+        ? 0.0
+        : (summarySubtotal / freeShippingThreshold).clamp(0.0, 1.0);
+    final int shippingProgressPercent = (shippingProgressRatio * 100).round();
+    final double shippingFee = itemsList.isEmpty || isComplimentaryShipping
+        ? 0.0
+        : standardShippingFee;
+
+    final shippingMeterModel = ShippingMeterModel(
+      remainingAmount: remainingShippingAmount,
+      threshold: freeShippingThreshold,
+      progressRatio: shippingProgressRatio,
+      progressPercent: shippingProgressPercent,
+      message: isComplimentaryShipping
+          ? 'Complimentary Express Courier Unlocked 🎉'
+          : 'Add ${remainingShippingAmount.toStringAsFixed(0)} EGP more for Complimentary Express Courier',
+      isComplimentary: isComplimentaryShipping,
+    );
+
     final voucher = (json['voucher'] ?? json['voucher_privilege']) != null
         ? VoucherModel.fromJson(
             (json['voucher'] ?? json['voucher_privilege'])
@@ -62,10 +94,9 @@ class CartModel extends CartEntity {
       }
     }
 
-    final shippingLabel = (summaryMap?['shipping_label'] ??
-            summaryMap?['shippingLabel'] ??
-            json['shipping_label']) as String? ??
-        'COMPLIMENTARY';
+    final shippingLabel = isComplimentaryShipping
+        ? 'COMPLIMENTARY'
+        : (itemsList.isEmpty ? '-' : '${shippingFee.toStringAsFixed(0)} EGP');
 
     final tax = ((summaryMap?['tax'] ?? summaryMap?['sales_tax']) as num?)
             ?.toDouble() ??
@@ -76,13 +107,10 @@ class CartModel extends CartEntity {
             json['tax_location']) as String? ??
         '';
 
-    final calculatedTotal = (summarySubtotal - discountAmount + tax)
+    final calculatedTotal = (summarySubtotal - discountAmount + tax + shippingFee)
         .clamp(0.0, double.infinity);
 
-    final total = ((summaryMap?['total'] ?? summaryMap?['total_payable'])
-            as num?)
-        ?.toDouble() ??
-        calculatedTotal;
+    final total = calculatedTotal;
 
     return CartModel(
       curatedBadge: (dataMap['curated_badge'] ??
@@ -90,18 +118,7 @@ class CartModel extends CartEntity {
               json['curated_badge'] ??
               json['curatedBadge']) as String? ??
           '${itemsList.length} CURATED ITEMS',
-      shippingMeter: json['shipping_meter'] is Map<String, dynamic>
-          ? ShippingMeterModel.fromJson(
-              json['shipping_meter'] as Map<String, dynamic>,
-            )
-          : const ShippingMeterModel(
-              remainingAmount: 0.0,
-              threshold: 2000.0,
-              progressRatio: 1.0,
-              progressPercent: 100,
-              message: 'Complimentary Express Courier Included',
-              isComplimentary: true,
-            ),
+      shippingMeter: shippingMeterModel,
       items: itemsList,
       voucher: voucher,
       orderSummary: OrderSummaryModel(
@@ -117,16 +134,45 @@ class CartModel extends CartEntity {
   }
 
   CartModel applyVoucher(VoucherModel? newVoucher) {
+    const double freeShippingThreshold = 2000.0;
+    const double standardShippingFee = 50.0;
+
+    final subtotal = orderSummary.subtotal;
+    final bool isComplimentary = items.isNotEmpty && subtotal >= freeShippingThreshold;
+    final double remaining = isComplimentary || items.isEmpty
+        ? (items.isEmpty ? freeShippingThreshold : 0.0)
+        : (freeShippingThreshold - subtotal).clamp(0.0, freeShippingThreshold);
+    final double progressRatio = items.isEmpty
+        ? 0.0
+        : (subtotal / freeShippingThreshold).clamp(0.0, 1.0);
+    final int progressPercent = (progressRatio * 100).round();
+    final double shippingFee = items.isEmpty || isComplimentary ? 0.0 : standardShippingFee;
+    final String shippingLabel = isComplimentary
+        ? 'COMPLIMENTARY'
+        : (items.isEmpty ? '-' : '${standardShippingFee.toStringAsFixed(0)} EGP');
+
+    final updatedShippingMeter = ShippingMeterModel(
+      remainingAmount: remaining,
+      threshold: freeShippingThreshold,
+      progressRatio: progressRatio,
+      progressPercent: progressPercent,
+      message: isComplimentary
+          ? 'Complimentary Express Courier Unlocked 🎉'
+          : 'Add ${remaining.toStringAsFixed(0)} EGP more for Complimentary Express Courier',
+      isComplimentary: isComplimentary,
+    );
+
     if (newVoucher == null) {
-      final newTotal = (orderSummary.subtotal + orderSummary.tax)
+      final newTotal = (subtotal + orderSummary.tax + shippingFee)
           .clamp(0.0, double.infinity);
       return CartModel(
         curatedBadge: curatedBadge,
-        shippingMeter: shippingMeter as ShippingMeterModel,
+        shippingMeter: updatedShippingMeter,
         items: items.map((e) => e as CartItemModel).toList(),
         voucher: null,
         orderSummary: (orderSummary as OrderSummaryModel).copyWith(
           discountAmount: 0.0,
+          shippingLabel: shippingLabel,
           total: newTotal,
         ),
       );
@@ -134,23 +180,24 @@ class CartModel extends CartEntity {
 
     double discount = 0.0;
     if (newVoucher.type == 'fixed') {
-      discount = newVoucher.value <= orderSummary.subtotal
+      discount = newVoucher.value <= subtotal
           ? newVoucher.value
-          : orderSummary.subtotal;
+          : subtotal;
     } else {
-      discount = orderSummary.subtotal * newVoucher.discountRate;
+      discount = subtotal * newVoucher.discountRate;
     }
 
-    final newTotal = (orderSummary.subtotal - discount + orderSummary.tax)
+    final newTotal = (subtotal - discount + orderSummary.tax + shippingFee)
         .clamp(0.0, double.infinity);
 
     return CartModel(
       curatedBadge: curatedBadge,
-      shippingMeter: shippingMeter as ShippingMeterModel,
+      shippingMeter: updatedShippingMeter,
       items: items.map((e) => e as CartItemModel).toList(),
       voucher: newVoucher,
       orderSummary: (orderSummary as OrderSummaryModel).copyWith(
         discountAmount: discount,
+        shippingLabel: shippingLabel,
         total: newTotal,
       ),
     );

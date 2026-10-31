@@ -4,6 +4,7 @@ import 'package:aura/core/network/connection/network_info.dart';
 import 'package:aura/features/cart/data/datasources/cart_local_data_source.dart';
 import 'package:aura/features/cart/data/datasources/cart_remote_data_source.dart';
 import 'package:aura/features/cart/domain/entities/cart_entity.dart';
+import 'package:aura/features/cart/domain/entities/sub_entities/store_settings_entity.dart';
 import 'package:aura/features/cart/domain/repositories/cart_repository.dart';
 import 'package:dartz/dartz.dart';
 
@@ -25,17 +26,13 @@ class CartRepositoryImpl implements CartRepository {
     if (await networkInfo.isConnected) {
       try {
         final remoteCart = await remoteDataSource.getCart();
-        final effectiveCart = cachedVoucher != null
-            ? remoteCart.applyVoucher(cachedVoucher)
-            : remoteCart;
+        final effectiveCart = remoteCart.applyVoucher(cachedVoucher);
         await localDataSource.cacheCart(effectiveCart);
         return Right(effectiveCart);
       } on ServerException catch (e) {
         try {
           final localCart = await localDataSource.getLastCart();
-          final effectiveCart = cachedVoucher != null
-              ? localCart.applyVoucher(cachedVoucher)
-              : localCart;
+          final effectiveCart = localCart.applyVoucher(cachedVoucher);
           return Right(effectiveCart);
         } catch (_) {
           return Left(ServerFailure(errMessage: e.errorModel.errorMessage));
@@ -43,9 +40,7 @@ class CartRepositoryImpl implements CartRepository {
       } catch (e) {
         try {
           final localCart = await localDataSource.getLastCart();
-          final effectiveCart = cachedVoucher != null
-              ? localCart.applyVoucher(cachedVoucher)
-              : localCart;
+          final effectiveCart = localCart.applyVoucher(cachedVoucher);
           return Right(effectiveCart);
         } catch (_) {
           return Left(ServerFailure(errMessage: e.toString()));
@@ -54,9 +49,7 @@ class CartRepositoryImpl implements CartRepository {
     } else {
       try {
         final localCart = await localDataSource.getLastCart();
-        final effectiveCart = cachedVoucher != null
-            ? localCart.applyVoucher(cachedVoucher)
-            : localCart;
+        final effectiveCart = localCart.applyVoucher(cachedVoucher);
         return Right(effectiveCart);
       } catch (e) {
         return Left(
@@ -173,6 +166,23 @@ class CartRepositoryImpl implements CartRepository {
       return Left(ServerFailure(errMessage: e.errorModel.errorMessage));
     } catch (e) {
       return Left(ServerFailure(errMessage: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, StoreSettingsEntity>> getStoreSettings() async {
+    if (await networkInfo.isConnected) {
+      try {
+        final settings = await remoteDataSource.getStoreSettings();
+        await localDataSource.cacheSettings(settings);
+        return Right(settings);
+      } catch (_) {
+        final cached = await localDataSource.getCachedSettings();
+        return Right(cached);
+      }
+    } else {
+      final cached = await localDataSource.getCachedSettings();
+      return Right(cached);
     }
   }
 }

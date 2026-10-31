@@ -26,10 +26,10 @@ class CartShippingMeterCard extends StatelessWidget {
         (meter != null
             ? '${meter!.remainingAmount.toStringAsFixed(0)} EGP'
             : '0 EGP');
-    final progressValue = progress ?? meter?.progressRatio ?? 1.0;
+    final progressValue = progress ?? meter?.progressRatio ?? 0.0;
     final percent =
-        percentLabel ?? (meter != null ? '${meter!.progressPercent}%' : '100%');
-    final effectiveIsUnlocked = isUnlocked ?? meter?.isComplimentary ?? true;
+        percentLabel ?? (meter != null ? '${meter!.progressPercent}%' : '0%');
+    final effectiveIsUnlocked = isUnlocked ?? meter?.isComplimentary ?? false;
 
     return Container(
       padding: const EdgeInsets.all(AppSpacing.spaceMd),

@@ -1,5 +1,6 @@
 import 'package:aura/core/errors/failure.dart';
 import 'package:aura/features/cart/domain/entities/cart_entity.dart';
+import 'package:aura/features/cart/domain/entities/sub_entities/store_settings_entity.dart';
 import 'package:dartz/dartz.dart';
 
 abstract class CartRepository {
@@ -26,4 +27,6 @@ abstract class CartRepository {
   });
 
   Future<Either<Failure, bool>> removeVoucher();
+
+  Future<Either<Failure, StoreSettingsEntity>> getStoreSettings();
 }

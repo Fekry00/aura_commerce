@@ -36,6 +36,10 @@ class CartOrderSummaryCard extends StatelessWidget {
     final effectiveDiscountPct =
         discountPercentage ?? cart?.formattedDiscountPercentage ?? '0%';
     final effectiveHasDiscount = hasDiscount ?? cart?.hasDiscount ?? false;
+    final effectiveShipping = cart?.orderSummary.shippingLabel.isNotEmpty == true
+        ? cart!.orderSummary.shippingLabel
+        : shipping;
+    final isShippingComplimentary = effectiveShipping == 'COMPLIMENTARY';
     final effectiveTax = tax ?? cart?.formattedTax ?? '0 EGP';
     final effectiveTotal = total ?? cart?.formattedTotal ?? '0 EGP';
 
@@ -127,9 +131,11 @@ class CartOrderSummaryCard extends StatelessWidget {
                 ),
               ),
               Text(
-                shipping,
+                effectiveShipping,
                 style: AppTypography.labelCaps.copyWith(
-                  color: AppColors.secondary,
+                  color: isShippingComplimentary
+                      ? AppColors.secondary
+                      : AppColors.onSurface,
                   fontWeight: FontWeight.w700,
                 ),
               ),

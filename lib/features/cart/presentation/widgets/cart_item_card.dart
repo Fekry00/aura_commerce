@@ -1,8 +1,7 @@
 import 'package:aura/core/theme/app_colors.dart';
 import 'package:aura/core/theme/app_typography.dart';
-import 'package:aura/core/widgets/shimmer/app_shimmer.dart';
+import 'package:aura/core/widgets/app_cached_image.dart';
 import 'package:aura/features/cart/domain/entities/sub_entities/cart_item_entity.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class CartItemUiModel {
@@ -96,28 +95,10 @@ class CartItemCard extends StatelessWidget {
               width: 80,
               height: 96,
               color: AppColors.surfaceContainer,
-              child: item.imageUrl.isNotEmpty
-                  ? CachedNetworkImage(
-                      imageUrl: item.imageUrl,
-                      fit: BoxFit.cover,
-                      placeholder: (context, url) => const ShimmerImageLoading(),
-                      errorWidget: (context, url, error) => Container(
-                        color: AppColors.surfaceContainerHigh,
-                        child: const Icon(
-                          Icons.inventory_2_outlined,
-                          color: AppColors.slateBody,
-                          size: AppSpacing.spaceLg,
-                        ),
-                      ),
-                    )
-                  : Container(
-                      color: AppColors.surfaceContainerHigh,
-                      child: const Icon(
-                        Icons.inventory_2_outlined,
-                        color: AppColors.slateBody,
-                        size: AppSpacing.spaceLg,
-                      ),
-                    ),
+              child: AppCachedImage(
+                imageUrl: item.imageUrl,
+                fit: BoxFit.cover,
+              ),
             ),
           ),
           const SizedBox(width: AppSpacing.spaceMd - 2),

@@ -2,19 +2,25 @@ import 'package:aura/features/cart/domain/entities/sub_entities/voucher_entity.d
 
 class VoucherModel extends VoucherEntity {
   const VoucherModel({
+    super.id,
     required super.code,
     required super.discountRate,
     required super.label,
     super.type = 'percentage',
     super.value = 0.0,
+    super.expiryDate,
   });
 
   factory VoucherModel.fromJson(Map<String, dynamic> json) {
+    final id = (json['id'] as num?)?.toInt();
     final code = (json['code'] as String?)?.toUpperCase().trim() ?? '';
     final type = (json['type'] as String?)?.toLowerCase() ?? 'percentage';
-    final rawValue = (json['value'] as num?)?.toDouble() ??
-        ((json['discount_rate'] ?? json['discountRate']) as num?)?.toDouble() ??
-        0.0;
+    final expiryDate = (json['expiryDate'] ?? json['expiry_date']) as String?;
+
+    final dynamic raw = json['value'] ?? json['discount_rate'] ?? json['discountRate'];
+    final double rawValue = raw is num
+        ? raw.toDouble()
+        : (double.tryParse(raw?.toString() ?? '') ?? 0.0);
 
     double discountRate;
     double value;
@@ -40,21 +46,25 @@ class VoucherModel extends VoucherEntity {
     }
 
     return VoucherModel(
+      id: id,
       code: code,
       discountRate: discountRate,
       label: (json['label'] as String?) ?? label,
       type: type,
       value: value,
+      expiryDate: expiryDate,
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
+      if (id != null) 'id': id,
       'code': code,
       'discount_rate': discountRate,
       'label': label,
       'type': type,
       'value': value,
+      if (expiryDate != null) 'expiryDate': expiryDate,
     };
   }
 }

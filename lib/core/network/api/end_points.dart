@@ -48,6 +48,7 @@ class EndPoint {
   static const String checkout = "checkout";
   static const String coupons = "coupons";
   static const String validateCoupon = "coupons/validate";
+  static const String settings = "settings";
   static String categoryDetails(dynamic id) => "categories/$id";
 }
 
