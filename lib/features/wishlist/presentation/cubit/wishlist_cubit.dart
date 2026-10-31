@@ -1,4 +1,7 @@
+import 'package:aura/core/di/injection_container.dart' as di;
 import 'package:aura/features/cart/domain/usecases/add_to_cart_usecase.dart';
+import 'package:aura/features/cart/presentation/cubit/cart_cubit.dart';
+import 'package:aura/features/wishlist/domain/entities/wishlist_entity.dart';
 import 'package:aura/features/wishlist/domain/usecases/add_to_wishlist_usecase.dart';
 import 'package:aura/features/wishlist/domain/usecases/get_wishlist_usecase.dart';
 import 'package:aura/features/wishlist/domain/usecases/move_all_to_bag_usecase.dart';
@@ -21,9 +24,15 @@ class WishlistCubit extends Cubit<WishlistState> {
   final MoveAllToBagUseCase moveAllToBagUseCase;
   final AddToCartUseCase addToCartUseCase;
 
+  WishlistEntity? _currentWishlist;
+  WishlistEntity? get currentWishlist => _currentWishlist;
+
   @override
   void emit(WishlistState state) {
     if (!isClosed) {
+      if (state is WishlistSuccessState) {
+        _currentWishlist = state.wishlist;
+      }
       super.emit(state);
     }
   }
@@ -36,7 +45,7 @@ class WishlistCubit extends Cubit<WishlistState> {
         ? (state as WishlistSuccessState).sortAscending
         : false;
 
-    if (showLoading && state is! WishlistSuccessState) {
+    if (showLoading) {
       emit(const WishlistLoadingState());
     }
 
@@ -44,11 +53,14 @@ class WishlistCubit extends Cubit<WishlistState> {
 
     result.fold(
       (failure) => emit(WishlistErrorState(message: failure.errMessage)),
-      (wishlist) => emit(WishlistSuccessState(
-        wishlist: wishlist,
-        selectedCategoryIndex: currentCategoryIndex,
-        sortAscending: currentSortAscending,
-      )),
+      (wishlist) {
+        _currentWishlist = wishlist;
+        emit(WishlistSuccessState(
+          wishlist: wishlist,
+          selectedCategoryIndex: currentCategoryIndex,
+          sortAscending: currentSortAscending,
+        ));
+      },
     );
   }
 
@@ -69,6 +81,7 @@ class WishlistCubit extends Cubit<WishlistState> {
   }
 
   Future<void> addToWishlist(int productId) async {
+    emit(const WishlistLoadingState());
     final result = await addToWishlistUseCase(productId: productId);
     result.fold(
       (failure) => emit(WishlistErrorState(message: failure.errMessage)),
@@ -77,6 +90,7 @@ class WishlistCubit extends Cubit<WishlistState> {
         fetchResult.fold(
           (failure) => emit(WishlistErrorState(message: failure.errMessage)),
           (updatedWishlist) {
+            _currentWishlist = updatedWishlist;
             final cur = state is WishlistSuccessState ? (state as WishlistSuccessState) : null;
             emit(WishlistItemAddedSuccessState(
               wishlist: updatedWishlist,
@@ -98,6 +112,7 @@ class WishlistCubit extends Cubit<WishlistState> {
   }
 
   Future<void> removeItem(String productId) async {
+    emit(const WishlistLoadingState());
     final result = await removeFromWishlistUseCase(productId: productId);
 
     result.fold(
@@ -107,6 +122,7 @@ class WishlistCubit extends Cubit<WishlistState> {
         fetchResult.fold(
           (failure) => emit(WishlistErrorState(message: failure.errMessage)),
           (updatedWishlist) {
+            _currentWishlist = updatedWishlist;
             final cur = state is WishlistSuccessState ? (state as WishlistSuccessState) : null;
             emit(WishlistItemRemovedSuccessState(
               wishlist: updatedWishlist,
@@ -123,20 +139,36 @@ class WishlistCubit extends Cubit<WishlistState> {
     final idInt = int.tryParse(productId);
     if (idInt == null) return;
 
+    emit(const WishlistLoadingState());
+
+    // 1. Add item to cart
     final result = await addToCartUseCase(productId: idInt);
-    result.fold(
-      (failure) => emit(WishlistErrorState(message: failure.errMessage)),
-      (_) {
-        final cur = state is WishlistSuccessState ? (state as WishlistSuccessState) : null;
-        if (cur != null) {
-          emit(WishlistItemMovedToBagSuccessState(
-            wishlist: cur.wishlist,
-            selectedCategoryIndex: cur.selectedCategoryIndex,
-            sortAscending: cur.sortAscending,
-          ));
-        } else {
-          fetchWishlist(showLoading: false);
-        }
+
+    await result.fold(
+      (failure) async => emit(WishlistErrorState(message: failure.errMessage)),
+      (_) async {
+        // 2. Remove item from wishlist
+        await removeFromWishlistUseCase(productId: productId);
+
+        // 3. Sync and refresh cart immediately
+        try {
+          di.sl<CartCubit>().fetchCart();
+        } catch (_) {}
+
+        // 4. Fetch updated wishlist and notify UI
+        final fetchResult = await getWishlistUseCase();
+        fetchResult.fold(
+          (failure) => emit(WishlistErrorState(message: failure.errMessage)),
+          (updatedWishlist) {
+            _currentWishlist = updatedWishlist;
+            final cur = state is WishlistSuccessState ? (state as WishlistSuccessState) : null;
+            emit(WishlistItemMovedToBagSuccessState(
+              wishlist: updatedWishlist,
+              selectedCategoryIndex: cur?.selectedCategoryIndex ?? 0,
+              sortAscending: cur?.sortAscending ?? false,
+            ));
+          },
+        );
       },
     );
   }
@@ -154,14 +186,56 @@ class WishlistCubit extends Cubit<WishlistState> {
       return;
     }
 
+    emit(const WishlistLoadingState());
+
     final result = await moveAllToBagUseCase();
-    result.fold(
-      (failure) => emit(WishlistErrorState(message: failure.errMessage)),
+
+    await result.fold(
+      (failure) async {
+        // Resilient fallback: iteratively add each available item to cart and remove from wishlist
+        bool anyAdded = false;
+        for (final item in availableItems) {
+          final idInt = int.tryParse(item.id);
+          if (idInt != null) {
+            final addRes = await addToCartUseCase(productId: idInt);
+            if (addRes.isRight()) {
+              await removeFromWishlistUseCase(productId: item.id);
+              anyAdded = true;
+            }
+          }
+        }
+
+        if (anyAdded) {
+          try {
+            di.sl<CartCubit>().fetchCart();
+          } catch (_) {}
+
+          final fetchResult = await getWishlistUseCase();
+          fetchResult.fold(
+            (fail) => emit(WishlistErrorState(message: fail.errMessage)),
+            (updatedWishlist) {
+              _currentWishlist = updatedWishlist;
+              emit(WishlistAllMovedToBagSuccessState(
+                wishlist: updatedWishlist,
+                selectedCategoryIndex: current.selectedCategoryIndex,
+                sortAscending: current.sortAscending,
+              ));
+            },
+          );
+        } else {
+          emit(WishlistErrorState(message: failure.errMessage));
+        }
+      },
       (_) async {
+        try {
+          di.sl<CartCubit>().fetchCart();
+        } catch (_) {}
+
         final fetchResult = await getWishlistUseCase();
         fetchResult.fold(
           (failure) => emit(WishlistErrorState(message: failure.errMessage)),
           (updatedWishlist) {
+            _currentWishlist = updatedWishlist;
             emit(WishlistAllMovedToBagSuccessState(
               wishlist: updatedWishlist,
               selectedCategoryIndex: current.selectedCategoryIndex,

@@ -88,10 +88,10 @@ class WishlistRepositoryImpl implements WishlistRepository {
   @override
   Future<Either<Failure, bool>> moveAllToBag() async {
     try {
-      final isMoved = await localDataSource.moveAllToBagLocal();
       if (await networkInfo.isConnected) {
         await remoteDataSource.moveAllToBag();
       }
+      final isMoved = await localDataSource.moveAllToBagLocal();
       return Right(isMoved);
     } on ServerException catch (e) {
       return Left(ServerFailure(errMessage: e.errorModel.errorMessage));
