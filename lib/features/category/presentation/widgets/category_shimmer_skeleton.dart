@@ -14,30 +14,30 @@ class CategoryShimmerSkeleton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AppShimmer(
-      child: GridView.builder(
-        physics: const NeverScrollableScrollPhysics(),
-        shrinkWrap: true,
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.gutter,
-          vertical: AppSpacing.space12,
-        ),
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          childAspectRatio: 0.85,
-          crossAxisSpacing: AppSpacing.gutter,
-          mainAxisSpacing: AppSpacing.gutter,
-        ),
-        itemCount: itemCount,
-        itemBuilder: (context, index) {
-          return Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(AppSpacing.spaceMd),
-              color: Colors.white,
-              border: Border.all(
-                color: AppColors.outlineVariant.withValues(alpha: 0.6),
-              ),
+    return GridView.builder(
+      physics: const NeverScrollableScrollPhysics(),
+      shrinkWrap: true,
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.gutter,
+        vertical: AppSpacing.space12,
+      ),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        childAspectRatio: 0.85,
+        crossAxisSpacing: AppSpacing.gutter,
+        mainAxisSpacing: AppSpacing.gutter,
+      ),
+      itemCount: itemCount,
+      itemBuilder: (context, index) {
+        return Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(AppSpacing.spaceMd),
+            color: Colors.white,
+            border: Border.all(
+              color: AppColors.outlineVariant.withValues(alpha: 0.6),
             ),
+          ),
+          child: AppShimmer(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -74,9 +74,9 @@ class CategoryShimmerSkeleton extends StatelessWidget {
                 ),
               ],
             ),
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 }
@@ -92,30 +92,30 @@ class CategoryProductsGridShimmer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AppShimmer(
-      child: GridView.builder(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        itemCount: itemCount,
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.margin,
-          vertical: AppSpacing.space12,
-        ),
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          childAspectRatio: 0.60,
-          crossAxisSpacing: AppSpacing.gutter,
-          mainAxisSpacing: AppSpacing.gutter,
-        ),
-        itemBuilder: (context, index) {
-          return Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(AppSpacing.spaceMd),
-              border: Border.all(
-                color: AppColors.outlineVariant.withValues(alpha: 0.4),
-              ),
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: itemCount,
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.margin,
+        vertical: AppSpacing.space12,
+      ),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        childAspectRatio: 0.60,
+        crossAxisSpacing: AppSpacing.gutter,
+        mainAxisSpacing: AppSpacing.gutter,
+      ),
+      itemBuilder: (context, index) {
+        return Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(AppSpacing.spaceMd),
+            border: Border.all(
+              color: AppColors.outlineVariant.withValues(alpha: 0.4),
             ),
+          ),
+          child: AppShimmer(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -154,9 +154,9 @@ class CategoryProductsGridShimmer extends StatelessWidget {
                 ),
               ],
             ),
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 }

@@ -2,9 +2,9 @@ import 'package:aura/core/di/injection_container.dart' as di;
 import 'package:aura/core/network/api/end_points.dart';
 import 'package:aura/core/theme/app_colors.dart';
 import 'package:aura/core/theme/app_typography.dart';
+import 'package:aura/core/utils/image_cache_manager.dart';
 import 'package:aura/features/product/domain/entities/sub_entities/product_review_entity.dart';
 import 'package:aura/features/profile/presentation/cubit/profile_cubit.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class ReviewerAvatar extends StatelessWidget {
@@ -42,7 +42,7 @@ class ReviewerAvatar extends StatelessWidget {
       return CircleAvatar(
         radius: radius,
         backgroundColor: AppColors.surfaceContainerLow,
-        backgroundImage: CachedNetworkImageProvider(avatarUrl),
+        backgroundImage: AuraImageCacheManager.provider(avatarUrl),
         onBackgroundImageError: (_, __) {},
       );
     }

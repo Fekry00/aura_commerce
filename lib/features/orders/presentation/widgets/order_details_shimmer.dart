@@ -9,25 +9,25 @@ class OrderDetailsShimmer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AppShimmer(
-      child: SingleChildScrollView(
-        physics: const NeverScrollableScrollPhysics(),
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.gutter,
-          vertical: AppSpacing.space12,
-        ),
-        child: Column(
-          children: [
-            // 1. Status Header Card
-            Container(
-              padding: const EdgeInsets.all(AppSpacing.margin),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(AppSpacing.margin),
-                border: Border.all(
-                  color: AppColors.outlineVariant.withValues(alpha: 0.6),
-                ),
+    return SingleChildScrollView(
+      physics: const NeverScrollableScrollPhysics(),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.gutter,
+        vertical: AppSpacing.space12,
+      ),
+      child: Column(
+        children: [
+          // 1. Status Header Card
+          Container(
+            padding: const EdgeInsets.all(AppSpacing.margin),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(AppSpacing.margin),
+              border: Border.all(
+                color: AppColors.outlineVariant.withValues(alpha: 0.6),
               ),
+            ),
+            child: AppShimmer(
               child: Column(
                 children: const [
                   ShimmerBox.circular(size: 56),
@@ -52,18 +52,20 @@ class OrderDetailsShimmer extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(height: AppSpacing.space12),
+          ),
+          const SizedBox(height: AppSpacing.space12),
 
-            // 2. Order Manifest Card
-            Container(
-              padding: const EdgeInsets.all(AppSpacing.gutter),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(AppSpacing.spaceMd),
-                border: Border.all(
-                  color: AppColors.outlineVariant.withValues(alpha: 0.6),
-                ),
+          // 2. Order Manifest Card
+          Container(
+            padding: const EdgeInsets.all(AppSpacing.gutter),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(AppSpacing.spaceMd),
+              border: Border.all(
+                color: AppColors.outlineVariant.withValues(alpha: 0.6),
               ),
+            ),
+            child: AppShimmer(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -126,18 +128,20 @@ class OrderDetailsShimmer extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(height: AppSpacing.space12),
+          ),
+          const SizedBox(height: AppSpacing.space12),
 
-            // 3. Consignment Card
-            Container(
-              padding: const EdgeInsets.all(AppSpacing.gutter),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(AppSpacing.spaceMd),
-                border: Border.all(
-                  color: AppColors.outlineVariant.withValues(alpha: 0.6),
-                ),
+          // 3. Consignment Card
+          Container(
+            padding: const EdgeInsets.all(AppSpacing.gutter),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(AppSpacing.spaceMd),
+              border: Border.all(
+                color: AppColors.outlineVariant.withValues(alpha: 0.6),
               ),
+            ),
+            child: AppShimmer(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: const [
@@ -167,18 +171,20 @@ class OrderDetailsShimmer extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(height: AppSpacing.space12),
+          ),
+          const SizedBox(height: AppSpacing.space12),
 
-            // 4. Settlement Summary Card
-            Container(
-              padding: const EdgeInsets.all(AppSpacing.gutter),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(AppSpacing.spaceMd),
-                border: Border.all(
-                  color: AppColors.outlineVariant.withValues(alpha: 0.6),
-                ),
+          // 4. Settlement Summary Card
+          Container(
+            padding: const EdgeInsets.all(AppSpacing.gutter),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(AppSpacing.spaceMd),
+              border: Border.all(
+                color: AppColors.outlineVariant.withValues(alpha: 0.6),
               ),
+            ),
+            child: AppShimmer(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: const [
@@ -224,9 +230,9 @@ class OrderDetailsShimmer extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(height: AppSpacing.spaceLg),
-          ],
-        ),
+          ),
+          const SizedBox(height: AppSpacing.spaceLg),
+        ],
       ),
     );
   }

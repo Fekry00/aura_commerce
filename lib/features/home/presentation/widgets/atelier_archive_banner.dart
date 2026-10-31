@@ -1,7 +1,7 @@
 import 'package:aura/core/routing/main_tab_controller.dart';
 import 'package:aura/core/theme/app_colors.dart';
 import 'package:aura/core/theme/app_typography.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:aura/core/widgets/app_cached_image.dart';
 import 'package:flutter/material.dart';
 
 class AtelierArchiveBanner extends StatelessWidget {
@@ -27,27 +27,12 @@ class AtelierArchiveBanner extends StatelessWidget {
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(10),
-              child: CachedNetworkImage(
+              child: const AppCachedImage(
                 imageUrl:
                     'https://images.unsplash.com/photo-1581092160607-ee22621dd758?q=80&w=200',
                 width: 54,
                 height: 54,
                 fit: BoxFit.cover,
-                placeholder: (context, url) => Container(
-                  width: 54,
-                  height: 54,
-                  color: AppColors.surfaceContainerLow,
-                ),
-                errorWidget: (context, url, error) => Container(
-                  width: 54,
-                  height: 54,
-                  color: AppColors.surfaceContainerLow,
-                  child: const Icon(
-                    Icons.image_outlined,
-                    color: AppColors.outline,
-                    size: 24,
-                  ),
-                ),
               ),
             ),
             const SizedBox(width: 12),

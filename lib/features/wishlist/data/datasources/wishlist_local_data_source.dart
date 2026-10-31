@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:aura/core/databases/cache/cache_helper.dart';
 import 'package:aura/features/wishlist/data/models/sub_models/sanctuary_summary_model.dart';
+import 'package:aura/features/wishlist/data/models/sub_models/wishlist_item_model.dart';
 import 'package:aura/features/wishlist/data/models/wishlist_model.dart';
 
 abstract class WishlistLocalDataSource {
@@ -48,11 +49,27 @@ class WishlistLocalDataSourceImpl implements WishlistLocalDataSource {
 
   @override
   Future<bool> removeFromWishlistLocal(String productId) async {
+    try {
+      final current = await getLastWishlist();
+      final updatedItems = current.items.where((i) => i.id != productId).toList();
+      final updatedModel = WishlistModel(
+        sanctuarySummary: SanctuarySummaryModel(
+          totalAmount: updatedItems.fold<double>(0.0, (sum, i) => sum + i.price),
+          itemCount: updatedItems.length,
+          description: current.sanctuarySummary.description,
+        ),
+        items: updatedItems.map((e) => e as WishlistItemModel).toList(),
+      );
+      await cacheWishlist(updatedModel);
+    } catch (_) {}
     return true;
   }
 
   @override
   Future<bool> moveAllToBagLocal() async {
+    try {
+      await CacheHelper.removeData(key: cachedWishlistKey);
+    } catch (_) {}
     return true;
   }
 

@@ -64,8 +64,11 @@ class _ProfileViewBodyState extends State<ProfileViewBody> {
         final wishlistItems = wishlistState is WishlistSuccessState ? wishlistState.wishlist.items : const <WishlistItemEntity>[];
         final metrics = ProfileMetricsData.calculate(orders: orders, wishlistItems: wishlistItems);
 
-        final isLoading =
-            profileState is ProfileLoadingState && profileState.profile == null;
+        final isLoading = profileState is ProfileInitialState ||
+            profileState is ProfileLoadingState ||
+            profileState is ProfileAvatarLoadingState ||
+            profileState is ProfileUpdatingState ||
+            profileState.profile == null;
 
         return SafeArea(
           bottom: false,

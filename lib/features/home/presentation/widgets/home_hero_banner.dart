@@ -1,7 +1,6 @@
 import 'package:aura/core/theme/app_typography.dart';
-import 'package:aura/core/widgets/shimmer/app_shimmer.dart';
+import 'package:aura/core/widgets/app_cached_image.dart';
 import 'package:aura/features/home/domain/entities/sub_entities/banner_entity.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 
@@ -64,23 +63,9 @@ class _HomeHeroBannerState extends State<HomeHeroBanner> {
                 child: Stack(
                   fit: StackFit.expand,
                   children: [
-                    CachedNetworkImage(
+                    AppCachedImage(
                       imageUrl: imageUrl,
                       fit: BoxFit.cover,
-                      placeholder: (context, url) =>
-                          const ShimmerImageLoading(),
-                      errorWidget: (context, url, error) {
-                        return Container(
-                          color: const Color(0xFF1E382B),
-                          child: const Center(
-                            child: Icon(
-                              Icons.image_not_supported_outlined,
-                              color: Colors.white54,
-                              size: 48,
-                            ),
-                          ),
-                        );
-                      },
                     ),
                     Container(
                       decoration: BoxDecoration(

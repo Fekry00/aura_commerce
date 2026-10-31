@@ -57,23 +57,14 @@ class CategoryRepositoryImpl implements CategoryRepository {
     if (await networkInfo.isConnected) {
       try {
         final remoteCategory = await remoteDataSource.getCategoryDetails(id);
+        await localDataSource.cacheCategoryDetails(remoteCategory);
         return Right(remoteCategory);
-      } on ServerException catch (e) {
-        try {
-          final cached = await localDataSource.getCachedCategoryDetails(id);
-          if (cached != null) return Right(cached);
-          return Left(ServerFailure(errMessage: e.errorModel.errorMessage));
-        } catch (_) {
-          return Left(ServerFailure(errMessage: e.errorModel.errorMessage));
-        }
       } catch (_) {
         try {
           final cached = await localDataSource.getCachedCategoryDetails(id);
           if (cached != null) return Right(cached);
-          return const Left(ServerFailure(errMessage: 'An unexpected error occurred while fetching category details'));
-        } catch (_) {
-          return const Left(ServerFailure(errMessage: 'An unexpected error occurred while fetching category details'));
-        }
+        } catch (_) {}
+        return const Left(ServerFailure(errMessage: 'An unexpected error occurred while fetching category details'));
       }
     } else {
       try {

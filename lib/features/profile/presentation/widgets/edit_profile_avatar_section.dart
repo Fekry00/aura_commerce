@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:aura/core/theme/app_colors.dart';
 import 'package:aura/core/theme/app_typography.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:aura/core/widgets/app_cached_image.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -141,20 +141,10 @@ class EditProfileAvatarSection extends StatelessWidget {
             ),
             child: ClipOval(
               child: hasValidUrl
-                  ? CachedNetworkImage(
+                  ? AppCachedImage(
                       imageUrl: avatarUrl!,
                       fit: BoxFit.cover,
-                      placeholder: (context, url) => const Center(
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: AppColors.secondary,
-                        ),
-                      ),
-                      errorWidget: (context, url, error) => const Icon(
-                        Icons.person_rounded,
-                        size: 54,
-                        color: AppColors.outline,
-                      ),
+                      fallbackIcon: Icons.person_rounded,
                     )
                   : (avatarUrl != null &&
                           avatarUrl!.isNotEmpty &&

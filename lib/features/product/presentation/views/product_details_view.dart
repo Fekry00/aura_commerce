@@ -59,35 +59,41 @@ class ProductDetailsView extends StatelessWidget {
         final isFav = wishlistState is WishlistSuccessState &&
             wishlistState.wishlist.items.any((i) => i.id == intId.toString());
 
-        return Scaffold(
-          backgroundColor: Colors.white,
-          appBar: ProductDetailAppBar(
-            isFavorite: isFav,
-            onBackTap: () => Navigator.pop(context),
-            onShareTap: () => showCustomSnackBar(
-              context,
-              message: 'Share link copied!',
-              type: SnackBarType.info,
+          final isCartLoading = state is AddToCartLoadingState;
+          final isDetailsLoading =
+              (state is ProductLoadingState || state is ProductInitialState || details == null) &&
+                  state is! ProductErrorState;
+
+          return Scaffold(
+            backgroundColor: Colors.white,
+            appBar: ProductDetailAppBar(
+              isFavorite: isFav,
+              onBackTap: () => Navigator.pop(context),
+              onShareTap: () => showCustomSnackBar(
+                context,
+                message: 'Share link copied!',
+                type: SnackBarType.info,
+              ),
+              onFavoriteTap: () => context
+                  .read<WishlistCubit>()
+                  .toggleWishlist(intId, isCurrentlyFavorite: isFav),
             ),
-            onFavoriteTap: () => context
-                .read<WishlistCubit>()
-                .toggleWishlist(intId, isCurrentlyFavorite: isFav),
-          ),
-          bottomNavigationBar: ProductStickyBottomBar(
-            quantity: quantity,
-            formattedTotalPrice: cubit.formatTotalPrice(rawPrice),
-            onIncrement: cubit.incrementQuantity,
-            onDecrement: cubit.decrementQuantity,
-            onAddToBag: () => cubit.addToCart(productId: intId),
-          ),
-          body: (state is ProductLoadingState && details == null)
-              ? const ProductDetailsShimmer()
-              : ProductDetailsBody(
-                  product: product,
-                  liveProduct: liveProduct,
-                  reviews: details?.reviews,
-                ),
-        );
+            bottomNavigationBar: ProductStickyBottomBar(
+              quantity: quantity,
+              formattedTotalPrice: cubit.formatTotalPrice(rawPrice),
+              isLoading: isCartLoading,
+              onIncrement: cubit.incrementQuantity,
+              onDecrement: cubit.decrementQuantity,
+              onAddToBag: () => cubit.addToCart(productId: intId),
+            ),
+            body: isDetailsLoading
+                ? const ProductDetailsShimmer()
+                : ProductDetailsBody(
+                    product: product,
+                    liveProduct: liveProduct,
+                    reviews: details?.reviews,
+                  ),
+          );
       },
     );
   }

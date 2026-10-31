@@ -1,8 +1,7 @@
 import 'package:aura/core/theme/app_colors.dart';
 import 'package:aura/core/theme/app_typography.dart';
-import 'package:aura/core/widgets/shimmer/app_shimmer.dart';
+import 'package:aura/core/widgets/app_cached_image.dart';
 import 'package:aura/features/product/domain/entities/sub_entities/product_item_entity.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class ReviewsProductHeaderCard extends StatelessWidget {
@@ -30,31 +29,13 @@ class ReviewsProductHeaderCard extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Container(
+          AppCachedImage(
+            imageUrl: imageUrl,
             width: 52,
             height: 52,
-            decoration: BoxDecoration(
-              color: const Color(0xFFF8F9FA),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: imageUrl.isNotEmpty
-                  ? CachedNetworkImage(
-                      imageUrl: imageUrl,
-                      fit: BoxFit.cover,
-                      placeholder: (context, url) =>
-                          const ShimmerImageLoading(),
-                      errorWidget: (context, url, error) => const Icon(
-                        Icons.shopping_bag_outlined,
-                        color: AppColors.slateBody,
-                      ),
-                    )
-                  : const Icon(
-                      Icons.shopping_bag_outlined,
-                      color: AppColors.slateBody,
-                    ),
-            ),
+            borderRadius: BorderRadius.circular(12),
+            fit: BoxFit.cover,
+            fallbackIcon: Icons.shopping_bag_outlined,
           ),
           const SizedBox(width: AppSpacing.spaceSm + 2),
           Expanded(

@@ -63,4 +63,13 @@ class ProductListModel {
       pagination: ProductPaginationModel.fromJson(paginationMap),
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'data': {
+        'items': items.map((e) => e.toJson()).toList(),
+        'pagination': pagination.toJson(),
+      },
+    };
+  }
 }

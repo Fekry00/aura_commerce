@@ -1,3 +1,4 @@
+import 'package:aura/core/theme/app_colors.dart';
 import 'package:aura/core/theme/app_typography.dart';
 import 'package:aura/core/widgets/shimmer/app_shimmer.dart';
 import 'package:flutter/material.dart';
@@ -8,18 +9,18 @@ class WishlistShimmerSkeleton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AppShimmer(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // 1. Sanctuary Summary Card Skeleton
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: Colors.black.withValues(alpha: 0.04)),
-            ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // 1. Sanctuary Summary Card Skeleton
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: AppColors.outlineVariant.withValues(alpha: 0.6)),
+          ),
+          child: AppShimmer(
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: const [
@@ -35,10 +36,12 @@ class WishlistShimmerSkeleton extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(height: AppSpacing.spaceMd),
+        ),
+        const SizedBox(height: AppSpacing.spaceMd),
 
-          // 2. Filter chips skeleton
-          Row(
+        // 2. Filter chips skeleton
+        AppShimmer(
+          child: Row(
             children: const [
               ShimmerBox(width: 50, height: 32, borderRadius: 16),
               SizedBox(width: 8),
@@ -47,22 +50,24 @@ class WishlistShimmerSkeleton extends StatelessWidget {
               ShimmerBox(width: 70, height: 32, borderRadius: 16),
             ],
           ),
-          const SizedBox(height: AppSpacing.spaceMd),
+        ),
+        const SizedBox(height: AppSpacing.spaceMd),
 
-          // 3. Wishlist Items Skeletons
-          ListView.separated(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: 3,
-            separatorBuilder: (_, __) => const SizedBox(height: 12),
-            itemBuilder: (context, index) {
-              return Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: Colors.black.withValues(alpha: 0.04)),
-                ),
+        // 3. Wishlist Items Skeletons
+        ListView.separated(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: 3,
+          separatorBuilder: (_, __) => const SizedBox(height: 12),
+          itemBuilder: (context, index) {
+            return Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: AppColors.outlineVariant.withValues(alpha: 0.6)),
+              ),
+              child: AppShimmer(
                 child: Row(
                   children: [
                     // Product Image thumbnail
@@ -95,11 +100,11 @@ class WishlistShimmerSkeleton extends StatelessWidget {
                     ),
                   ],
                 ),
-              );
-            },
-          ),
-        ],
-      ),
+              ),
+            );
+          },
+        ),
+      ],
     );
   }
 }

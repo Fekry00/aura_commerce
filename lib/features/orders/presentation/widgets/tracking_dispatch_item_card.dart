@@ -1,7 +1,6 @@
-import 'package:aura/core/network/api/end_points.dart';
 import 'package:aura/core/theme/app_colors.dart';
 import 'package:aura/core/theme/app_typography.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:aura/core/widgets/app_cached_image.dart';
 import 'package:flutter/material.dart';
 
 class TrackingDispatchItemCard extends StatelessWidget {
@@ -47,20 +46,10 @@ class TrackingDispatchItemCard extends StatelessWidget {
               child: Stack(
                 children: [
                   Positioned.fill(
-                    child: CachedNetworkImage(
-                      imageUrl: EndPoint.fixImageUrl(imageUrl),
+                    child: AppCachedImage(
+                      imageUrl: imageUrl,
                       fit: BoxFit.cover,
-                      placeholder: (context, url) => Container(
-                        color: AppColors.surfaceContainerLow,
-                      ),
-                      errorWidget: (context, url, error) => Container(
-                        color: AppColors.surfaceContainerLow,
-                        child: const Icon(
-                          Icons.inventory_2_outlined,
-                          size: 24,
-                          color: AppColors.slateBody,
-                        ),
-                      ),
+                      fallbackIcon: Icons.inventory_2_outlined,
                     ),
                   ),
                   Positioned(

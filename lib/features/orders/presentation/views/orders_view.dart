@@ -69,7 +69,7 @@ class _OrdersViewState extends State<OrdersView> {
         builder: (context, state) {
           final cubit = context.read<OrdersCubit>();
           final orders = cubit.orders;
-          final isLoading = state is OrdersLoadingState;
+          final isLoading = state is OrdersLoadingState || state is OrdersInitialState;
           final filteredOrders = state is OrdersListSuccessState
               ? state.filteredOrders
               : orders;

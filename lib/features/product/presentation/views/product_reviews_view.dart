@@ -58,7 +58,7 @@ class ProductReviewsView extends StatelessWidget {
       builder: (context, state) {
         final reviews = context.watch<ReviewCubit>().reviews;
         final count = reviews.length;
-        final isLoading = state is ReviewLoadingState && reviews.isEmpty;
+        final isLoading = (state is ReviewLoadingState || state is ReviewInitialState) && reviews.isEmpty;
 
         return Scaffold(
           backgroundColor: const Color(0xFFF9FAFB),

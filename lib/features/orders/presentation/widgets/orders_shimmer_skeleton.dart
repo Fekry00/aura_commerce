@@ -14,24 +14,24 @@ class OrdersShimmerSkeleton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AppShimmer(
-      child: ListView.separated(
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.gutter,
-          vertical: AppSpacing.space12,
-        ),
-        physics: const NeverScrollableScrollPhysics(),
-        itemCount: itemCount,
-        separatorBuilder: (_, __) =>
-            const SizedBox(height: AppSpacing.space12),
-        itemBuilder: (context, index) {
-          return Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(AppSpacing.spaceMd),
-              border: Border.all(color: AppColors.outlineVariant.withValues(alpha: 0.6)),
-            ),
-            padding: const EdgeInsets.all(AppSpacing.gutter),
+    return ListView.separated(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.gutter,
+        vertical: AppSpacing.space12,
+      ),
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: itemCount,
+      separatorBuilder: (_, __) =>
+          const SizedBox(height: AppSpacing.space12),
+      itemBuilder: (context, index) {
+        return Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(AppSpacing.spaceMd),
+            border: Border.all(color: AppColors.outlineVariant.withValues(alpha: 0.6)),
+          ),
+          padding: const EdgeInsets.all(AppSpacing.gutter),
+          child: AppShimmer(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -128,9 +128,9 @@ class OrdersShimmerSkeleton extends StatelessWidget {
                 ),
               ],
             ),
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 }

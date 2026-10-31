@@ -1,7 +1,7 @@
 import 'package:aura/core/theme/app_colors.dart';
 import 'package:aura/core/theme/app_typography.dart';
+import 'package:aura/core/widgets/app_cached_image.dart';
 import 'package:aura/features/orders/presentation/widgets/tracking_courier_protocol_box.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class TrackingCourierLiaisonCard extends StatelessWidget {
@@ -40,39 +40,13 @@ class TrackingCourierLiaisonCard extends StatelessWidget {
               Stack(
                 children: [
                   ClipOval(
-                    child: (courierAvatarUrl != null &&
-                            courierAvatarUrl!.isNotEmpty)
-                        ? CachedNetworkImage(
-                            imageUrl: courierAvatarUrl!,
-                            width: 48,
-                            height: 48,
-                            fit: BoxFit.cover,
-                            placeholder: (context, url) => Container(
-                              width: 48,
-                              height: 48,
-                              color: AppColors.surfaceContainerLow,
-                            ),
-                            errorWidget: (context, url, error) => Container(
-                              width: 48,
-                              height: 48,
-                              color: AppColors.primaryContainer,
-                              child: const Icon(
-                                Icons.shield_outlined,
-                                color: Colors.white,
-                                size: 22,
-                              ),
-                            ),
-                          )
-                        : Container(
-                            width: 48,
-                            height: 48,
-                            color: AppColors.primaryContainer,
-                            child: const Icon(
-                              Icons.shield_outlined,
-                              color: Colors.white,
-                              size: 22,
-                            ),
-                          ),
+                    child: AppCachedImage(
+                      imageUrl: courierAvatarUrl ?? '',
+                      width: 48,
+                      height: 48,
+                      fit: BoxFit.cover,
+                      fallbackIcon: Icons.shield_outlined,
+                    ),
                   ),
                   Positioned(
                     right: 0,

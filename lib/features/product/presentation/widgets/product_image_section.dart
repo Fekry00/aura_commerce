@@ -1,7 +1,6 @@
 import 'package:aura/core/theme/app_colors.dart';
 import 'package:aura/core/theme/app_typography.dart';
-import 'package:aura/core/widgets/shimmer/app_shimmer.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:aura/core/widgets/app_cached_image.dart';
 import 'package:flutter/material.dart';
 
 class ProductImageSection extends StatelessWidget {
@@ -28,26 +27,11 @@ class ProductImageSection extends StatelessWidget {
         children: [
           AspectRatio(
             aspectRatio: 1.0,
-            child: imageUrl.isNotEmpty
-                ? CachedNetworkImage(
-                    imageUrl: imageUrl,
-                    fit: BoxFit.contain,
-                    placeholder: (context, url) => const ShimmerImageLoading(),
-                    errorWidget: (context, url, error) => const Center(
-                      child: Icon(
-                        Icons.inventory_2_outlined,
-                        size: 72,
-                        color: Color(0xFFCED4DA),
-                      ),
-                    ),
-                  )
-                : const Center(
-                    child: Icon(
-                      Icons.inventory_2_outlined,
-                      size: 72,
-                      color: Color(0xFFCED4DA),
-                    ),
-                  ),
+            child: AppCachedImage(
+              imageUrl: imageUrl,
+              fit: BoxFit.contain,
+              fallbackIcon: Icons.inventory_2_outlined,
+            ),
           ),
           Positioned(
             top: 16,

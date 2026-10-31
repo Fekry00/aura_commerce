@@ -23,7 +23,7 @@ class CategoriesListSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<CategoryCubit, CategoryState>(
       builder: (context, state) {
-        if (state is GetCategoriesLoadingState) {
+        if (state is GetCategoriesLoadingState || state is CategoryInitialState) {
           return const SliverToBoxAdapter(
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: AppSpacing.margin),

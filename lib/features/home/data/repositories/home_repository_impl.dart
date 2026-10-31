@@ -59,12 +59,17 @@ class HomeRepositoryImpl implements HomeRepository {
           onlyPopular: onlyPopular,
         );
         return Right(highlights);
-      } else {
-        return Left(NetworkFailure(errMessage: 'No internet connection'));
       }
-    } catch (e) {
-      return Left(ServerFailure(errMessage: e.toString()));
-    }
+    } catch (_) {}
+
+    try {
+      final cachedFeed = await localDataSource.getLastHomeFeed();
+      if (cachedFeed.highlights.isNotEmpty) {
+        return Right(cachedFeed.highlights);
+      }
+    } catch (_) {}
+
+    return const Left(NetworkFailure(errMessage: 'No internet connection'));
   }
 
   @override

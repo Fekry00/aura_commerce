@@ -1,5 +1,6 @@
 import 'package:aura/core/theme/app_colors.dart';
 import 'package:aura/core/theme/app_typography.dart';
+import 'package:aura/core/widgets/shimmer/app_shimmer.dart';
 import 'package:flutter/material.dart';
 
 class ProductStickyBottomBar extends StatelessWidget {
@@ -8,6 +9,7 @@ class ProductStickyBottomBar extends StatelessWidget {
   final VoidCallback onIncrement;
   final VoidCallback onDecrement;
   final VoidCallback onAddToBag;
+  final bool isLoading;
 
   const ProductStickyBottomBar({
     super.key,
@@ -16,6 +18,7 @@ class ProductStickyBottomBar extends StatelessWidget {
     required this.onIncrement,
     required this.onDecrement,
     required this.onAddToBag,
+    this.isLoading = false,
   });
 
   @override
@@ -172,43 +175,54 @@ class ProductStickyBottomBar extends StatelessWidget {
             SizedBox(
               width: double.infinity,
               height: AppSpacing.space2Xl,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF0B3B2C),
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(AppSpacing.spaceMd),
-                  ),
-                  elevation: 2,
-                ),
-                onPressed: onAddToBag,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(
-                      Icons.shopping_bag_outlined,
-                      color: Colors.white,
-                      size: AppSpacing.margin,
-                    ),
-                    const SizedBox(width: AppSpacing.spaceSm),
-                    Text(
-                      'Add to Bag',
-                      style: AppTypography.bodyLg.copyWith(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w700,
+              child: isLoading
+                  ? AppShimmer(
+                      child: Container(
+                        width: double.infinity,
+                        height: AppSpacing.space2Xl,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(AppSpacing.spaceMd),
+                        ),
+                      ),
+                    )
+                  : ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF0B3B2C),
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(AppSpacing.spaceMd),
+                        ),
+                        elevation: 2,
+                      ),
+                      onPressed: onAddToBag,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(
+                            Icons.shopping_bag_outlined,
+                            color: Colors.white,
+                            size: AppSpacing.margin,
+                          ),
+                          const SizedBox(width: AppSpacing.spaceSm),
+                          Text(
+                            'Add to Bag',
+                            style: AppTypography.bodyLg.copyWith(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                          const SizedBox(width: AppSpacing.spaceSm),
+                          Text(
+                            '•  $formattedTotalPrice EGP',
+                            style: AppTypography.bodySm.copyWith(
+                              color: const Color(0xFF86EFAC),
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    const SizedBox(width: AppSpacing.spaceSm),
-                    Text(
-                      '•  $formattedTotalPrice EGP',
-                      style: AppTypography.bodySm.copyWith(
-                        color: const Color(0xFF86EFAC),
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
             ),
           ],
         ),

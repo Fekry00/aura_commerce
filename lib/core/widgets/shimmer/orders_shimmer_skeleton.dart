@@ -1,26 +1,27 @@
+import 'package:aura/core/theme/app_colors.dart';
 import 'package:aura/core/widgets/shimmer/app_shimmer.dart';
 import 'package:flutter/material.dart';
 
-/// Shimmer Skeleton for Orders Screen
+/// Shimmer Skeleton for Orders Screen with high contrast white cards
 class OrdersShimmerSkeleton extends StatelessWidget {
   const OrdersShimmerSkeleton({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return AppShimmer(
-      child: ListView.separated(
-        padding: const EdgeInsets.all(16),
-        physics: const NeverScrollableScrollPhysics(),
-        itemCount: 3,
-        separatorBuilder: (_, __) => const SizedBox(height: 14),
-        itemBuilder: (context, index) {
-          return Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: Colors.black.withValues(alpha: 0.04)),
-            ),
+    return ListView.separated(
+      padding: const EdgeInsets.all(16),
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: 3,
+      separatorBuilder: (_, __) => const SizedBox(height: 14),
+      itemBuilder: (context, index) {
+        return Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: AppColors.outlineVariant.withValues(alpha: 0.6)),
+          ),
+          child: AppShimmer(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -80,9 +81,9 @@ class OrdersShimmerSkeleton extends StatelessWidget {
                 ),
               ],
             ),
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 }

@@ -1,7 +1,6 @@
 import 'package:aura/core/theme/app_colors.dart';
 import 'package:aura/core/theme/app_typography.dart';
-import 'package:aura/core/widgets/shimmer/app_shimmer.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:aura/core/widgets/app_cached_image.dart';
 import 'package:flutter/material.dart';
 
 class WishlistItemThumbnail extends StatelessWidget {
@@ -25,26 +24,10 @@ class WishlistItemThumbnail extends StatelessWidget {
             color: AppColors.surfaceContainerLow,
             borderRadius: BorderRadius.circular(AppSpacing.spaceSm),
           ),
-          child: ClipRRect(
+          child: AppCachedImage(
+            imageUrl: imageUrl,
+            fit: BoxFit.cover,
             borderRadius: BorderRadius.circular(AppSpacing.spaceSm),
-            child: imageUrl.isNotEmpty
-                ? CachedNetworkImage(
-                    imageUrl: imageUrl,
-                    fit: BoxFit.cover,
-                    placeholder: (context, url) => const ShimmerImageLoading(),
-                    errorWidget: (context, url, error) => const Center(
-                      child: Icon(
-                        Icons.image_not_supported_outlined,
-                        color: AppColors.outline,
-                      ),
-                    ),
-                  )
-                : const Center(
-                    child: Icon(
-                      Icons.image_not_supported_outlined,
-                      color: AppColors.outline,
-                    ),
-                  ),
           ),
         ),
         if (badge != null)

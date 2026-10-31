@@ -43,8 +43,22 @@ class ProductRepositoryImpl implements ProductRepository {
         page: page,
         perPage: perPage,
       );
+      if (remoteList.items.isNotEmpty) {
+        await localDataSource.cacheProductList(
+          remoteList,
+          categoryId: categoryId,
+        );
+      }
       return Right(remoteList);
     } catch (e) {
+      try {
+        final cachedList = await localDataSource.getLastProductList(
+          categoryId: categoryId,
+        );
+        if (cachedList.items.isNotEmpty) {
+          return Right(cachedList);
+        }
+      } catch (_) {}
       return Left(ServerFailure(errMessage: e.toString()));
     }
   }

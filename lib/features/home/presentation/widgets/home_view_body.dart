@@ -35,7 +35,7 @@ class HomeViewBody extends StatelessWidget {
                   const SizedBox(height: AppSpacing.spaceSm),
                   const HomeHeaderSection(),
                   const SizedBox(height: AppSpacing.spaceMd),
-                  if (state is HomeLoadingState && feed == null)
+                  if ((state is HomeLoadingState || state is HomeInitialState) && feed == null)
                     const HomeShimmerSkeleton()
                   else ...[
                     if (state is HomeErrorState && feed == null) ...[

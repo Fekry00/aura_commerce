@@ -6,12 +6,14 @@ abstract class CategoryLocalDataSource {
   Future<List<CategoryModel>> getCachedCategories();
   Future<void> cacheCategories(List<CategoryModel> categories);
   Future<CategoryModel?> getCachedCategoryDetails(int id);
+  Future<void> cacheCategoryDetails(CategoryModel category);
 }
 
 class CategoryLocalDataSourceImpl implements CategoryLocalDataSource {
   const CategoryLocalDataSourceImpl();
 
   static const String cachedCategoriesKey = 'CACHED_CATEGORIES';
+  static const String cachedCategoryDetailsPrefix = 'CACHED_CATEGORY_DETAILS_';
 
   @override
   Future<List<CategoryModel>> getCachedCategories() async {
@@ -40,7 +42,24 @@ class CategoryLocalDataSourceImpl implements CategoryLocalDataSource {
   }
 
   @override
+  Future<void> cacheCategoryDetails(CategoryModel category) async {
+    try {
+      await CacheHelper.saveData(
+        key: '$cachedCategoryDetailsPrefix${category.id}',
+        value: jsonEncode(category.toJson()),
+      );
+    } catch (_) {}
+  }
+
+  @override
   Future<CategoryModel?> getCachedCategoryDetails(int id) async {
+    try {
+      final cachedData = CacheHelper.getDataString(key: '$cachedCategoryDetailsPrefix$id');
+      if (cachedData != null && cachedData.isNotEmpty) {
+        final decoded = jsonDecode(cachedData) as Map<String, dynamic>;
+        return CategoryModel.fromJson(decoded);
+      }
+    } catch (_) {}
     final list = await getCachedCategories();
     try {
       return list.firstWhere((element) => element.id == id);

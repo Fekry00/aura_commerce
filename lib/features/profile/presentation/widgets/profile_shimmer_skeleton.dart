@@ -9,25 +9,25 @@ class ProfileShimmerSkeleton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AppShimmer(
-      child: SingleChildScrollView(
-        physics: const NeverScrollableScrollPhysics(),
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.gutter,
-          vertical: AppSpacing.space12,
-        ),
-        child: Column(
-          children: [
-            // 1. Profile Tier Card Skeleton
-            Container(
-              padding: const EdgeInsets.all(AppSpacing.margin),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(AppSpacing.margin),
-                border: Border.all(
-                  color: AppColors.outlineVariant.withValues(alpha: 0.6),
-                ),
+    return SingleChildScrollView(
+      physics: const NeverScrollableScrollPhysics(),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.gutter,
+        vertical: AppSpacing.space12,
+      ),
+      child: Column(
+        children: [
+          // 1. Profile Tier Card Skeleton
+          Container(
+            padding: const EdgeInsets.all(AppSpacing.margin),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(AppSpacing.margin),
+              border: Border.all(
+                color: AppColors.outlineVariant.withValues(alpha: 0.6),
               ),
+            ),
+            child: AppShimmer(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -97,29 +97,31 @@ class ProfileShimmerSkeleton extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(height: AppSpacing.spaceMd),
+          ),
+          const SizedBox(height: AppSpacing.spaceMd),
 
-            // 2. Quick Actions 2x2 Grid Skeleton
-            GridView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: 4,
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                childAspectRatio: 1.25,
-                crossAxisSpacing: AppSpacing.space12,
-                mainAxisSpacing: AppSpacing.space12,
-              ),
-              itemBuilder: (context, index) {
-                return Container(
-                  padding: const EdgeInsets.all(AppSpacing.space12),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(AppSpacing.margin),
-                    border: Border.all(
-                      color: AppColors.outlineVariant.withValues(alpha: 0.6),
-                    ),
+          // 2. Quick Actions 2x2 Grid Skeleton
+          GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: 4,
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              childAspectRatio: 1.25,
+              crossAxisSpacing: AppSpacing.space12,
+              mainAxisSpacing: AppSpacing.space12,
+            ),
+            itemBuilder: (context, index) {
+              return Container(
+                padding: const EdgeInsets.all(AppSpacing.space12),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(AppSpacing.margin),
+                  border: Border.all(
+                    color: AppColors.outlineVariant.withValues(alpha: 0.6),
                   ),
+                ),
+                child: AppShimmer(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -157,20 +159,22 @@ class ProfileShimmerSkeleton extends StatelessWidget {
                       ),
                     ],
                   ),
-                );
-              },
-            ),
-            const SizedBox(height: AppSpacing.spaceMd),
-
-            // 3. Settings Sections List Tiles Skeleton
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(AppSpacing.margin),
-                border: Border.all(
-                  color: AppColors.outlineVariant.withValues(alpha: 0.6),
                 ),
+              );
+            },
+          ),
+          const SizedBox(height: AppSpacing.spaceMd),
+
+          // 3. Settings Sections List Tiles Skeleton
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(AppSpacing.margin),
+              border: Border.all(
+                color: AppColors.outlineVariant.withValues(alpha: 0.6),
               ),
+            ),
+            child: AppShimmer(
               child: Column(
                 children: List.generate(
                   4,
@@ -201,9 +205,9 @@ class ProfileShimmerSkeleton extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(height: AppSpacing.spaceXl),
-          ],
-        ),
+          ),
+          const SizedBox(height: AppSpacing.spaceXl),
+        ],
       ),
     );
   }

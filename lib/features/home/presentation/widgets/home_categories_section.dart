@@ -3,7 +3,7 @@ import 'package:aura/core/theme/app_colors.dart';
 import 'package:aura/core/theme/app_typography.dart';
 import 'package:aura/features/home/domain/entities/sub_entities/category_entity.dart';
 import 'package:aura/features/home/presentation/utils/home_category_icon_helper.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:aura/core/widgets/app_cached_image.dart';
 import 'package:flutter/material.dart';
 
 class HomeCategoriesSection extends StatelessWidget {
@@ -148,10 +148,10 @@ class HomeCategoriesSection extends StatelessWidget {
                       ),
                       child: ClipOval(
                         child: (imageUrl != null && imageUrl.isNotEmpty)
-                            ? CachedNetworkImage(
+                            ? AppCachedImage(
                                 imageUrl: imageUrl,
                                 fit: BoxFit.cover,
-                                placeholder: (context, url) => Container(
+                                placeholder: Container(
                                   color: isSelected
                                       ? const Color(0xFF1E382B)
                                       : const Color(0xFFF1F5F9),
@@ -163,7 +163,7 @@ class HomeCategoriesSection extends StatelessWidget {
                                     size: 22,
                                   ),
                                 ),
-                                errorWidget: (context, url, error) => Icon(
+                                errorWidget: Icon(
                                   icon,
                                   color: isSelected
                                       ? Colors.white

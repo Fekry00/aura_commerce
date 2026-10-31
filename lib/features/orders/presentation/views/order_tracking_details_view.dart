@@ -36,11 +36,17 @@ class OrderTrackingDetailsView extends StatelessWidget {
       appBar: const OrderReceiptAppBar(title: 'Dispatch Logistics'),
       body: BlocBuilder<OrdersCubit, OrdersState>(
         builder: (context, state) {
-          if (state is OrdersLoadingState && initialOrder == null) {
+          final order = (state is OrderTrackingSuccessState)
+              ? state.order
+              : (state is OrderDetailsSuccessState)
+                  ? state.order
+                  : initialOrder;
+
+          if (state is OrdersLoadingState || state is OrdersInitialState || (order == null && state is! OrdersErrorState)) {
             return const OrderDetailsShimmer();
           }
 
-          if (state is OrdersErrorState && initialOrder == null) {
+          if (state is OrdersErrorState && order == null) {
             return Center(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: AppSpacing.gutter),
@@ -73,14 +79,8 @@ class OrderTrackingDetailsView extends StatelessWidget {
             );
           }
 
-          final order = (state is OrderTrackingSuccessState)
-              ? state.order
-              : (state is OrderDetailsSuccessState)
-                  ? state.order
-                  : initialOrder;
-
           if (order == null) {
-            return const Center(child: Text('No tracking data found.'));
+            return const OrderDetailsShimmer();
           }
 
           return RefreshIndicator(

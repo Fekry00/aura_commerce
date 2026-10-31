@@ -37,7 +37,7 @@ class CategoryDetailsProductsGrid extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<ProductCubit, ProductState>(
       builder: (context, productState) {
-        if (productState is ProductLoadingState) {
+        if (productState is ProductLoadingState || productState is ProductInitialState) {
           return const SliverToBoxAdapter(
             child: CategoryProductsGridShimmer(),
           );
