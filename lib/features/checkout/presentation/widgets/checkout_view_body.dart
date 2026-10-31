@@ -102,8 +102,11 @@ class _CheckoutViewBodyState extends State<CheckoutViewBody> {
       },
       builder: (context, state) {
         final isLoading = state is CheckoutLoadingState;
-        final cartState = context.watch<CartCubit>().state;
-        final cart = cartState is CartSuccessState ? cartState.cart : null;
+        final cartCubit = context.watch<CartCubit>();
+        final cartState = cartCubit.state;
+        final cart = (cartState is CartSuccessState)
+            ? cartState.cart
+            : cartCubit.currentCart;
 
         return Scaffold(
           backgroundColor: Colors.transparent,

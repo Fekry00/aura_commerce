@@ -1,4 +1,5 @@
 import 'package:aura/core/routing/main_tab_controller.dart';
+import 'package:aura/core/routing/routes.dart';
 import 'package:aura/core/theme/app_colors.dart';
 import 'package:aura/core/utils/functions/custom_snack_bar.dart';
 import 'package:aura/features/cart/presentation/cubit/cart_cubit.dart';
@@ -41,6 +42,10 @@ class _HomeViewState extends State<HomeView> {
           listener: (context, state) {
             if (state is CartActionSuccessState) {
               showCustomSnackBar(context, message: state.message, type: SnackBarType.success);
+            } else if (state is CartNavigateToCheckoutState) {
+              Navigator.of(context).pushNamed(Routes.checkoutView);
+            } else if (state is CartInfoMessageState) {
+              showCustomSnackBar(context, message: state.message, type: SnackBarType.info);
             } else if (state is CartErrorState) {
               showCustomSnackBar(context, message: state.message, type: SnackBarType.error);
             }
@@ -51,6 +56,14 @@ class _HomeViewState extends State<HomeView> {
             if (state is WishlistItemAddedSuccessState) {
               showCustomSnackBar(context, message: state.message, type: SnackBarType.success);
             } else if (state is WishlistItemRemovedSuccessState) {
+              showCustomSnackBar(context, message: state.message, type: SnackBarType.info);
+            } else if (state is WishlistItemMovedToBagSuccessState) {
+              context.read<CartCubit>().fetchCart();
+              showCustomSnackBar(context, message: state.message, type: SnackBarType.success);
+            } else if (state is WishlistAllMovedToBagSuccessState) {
+              context.read<CartCubit>().fetchCart();
+              showCustomSnackBar(context, message: state.message, type: SnackBarType.success);
+            } else if (state is WishlistInfoMessageState) {
               showCustomSnackBar(context, message: state.message, type: SnackBarType.info);
             } else if (state is WishlistErrorState) {
               showCustomSnackBar(context, message: state.message, type: SnackBarType.error);

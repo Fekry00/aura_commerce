@@ -15,8 +15,23 @@ import 'cart_trust_assurances.dart';
 import 'cart_voucher_section.dart';
 
 /// Pure declarative layout assembling the Cart screen sections with 100% Cubit reactivity.
-class CartViewBody extends StatelessWidget {
+class CartViewBody extends StatefulWidget {
   const CartViewBody({super.key});
+
+  @override
+  State<CartViewBody> createState() => _CartViewBodyState();
+}
+
+class _CartViewBodyState extends State<CartViewBody> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (context.read<CartCubit>().state is CartInitialState) {
+        context.read<CartCubit>().fetchCart();
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +44,7 @@ class CartViewBody extends StatelessWidget {
               ? state.cart
               : cubit.currentCart;
 
-          final isLoading = state is CartLoadingState && (cart == null || cart.isEmpty);
+          final isLoading = state is CartLoadingState || state is CartInitialState;
           final isEmpty = cart == null || cart.isEmpty;
 
           return Stack(
@@ -95,7 +110,7 @@ class CartViewBody extends StatelessWidget {
                   ),
                 ),
               ),
-              if (!isEmpty)
+              if (!isEmpty && !isLoading)
                 Positioned(
                   left: 0,
                   right: 0,
